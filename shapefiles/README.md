@@ -1,7 +1,3 @@
-# Tiger Shapefiles
-
-Some documentation here. 
-
 
 ## Load From GitHub
 
@@ -12,8 +8,25 @@ phx <- read( ... )
 
 
 ```
-
-
 # To Convert
 
-code here...
+library(rgdal)
+library(geojsonio)
+## 2010 shapefile downloaded from https://www.census.gov/geo/maps-data/data/tiger-line.html on 2/26/19.
+
+## This command reads in the shapefile
+county <- readOGR("tl_2010_04013_tract00/tl_2010_04013_tract00.shp")
+
+head(county@data, 10)
+
+## This command creates a json geofeaturecollection
+county_json <- geojson_json(county)
+
+## Writing to geojson format
+geojson_write(county_json, file = "/Users/aggal/Desktop/Capstone/Maps/shapefiles/2010/county.geojson")
+
+## The resource that I used for this.
+https://blog.exploratory.io/creating-geojson-out-of-shapefile-in-r-40bc0005857d
+
+## This is to convert the county shapefile from sf to sp
+sp_mcpa <- fortify(county)
