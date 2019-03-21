@@ -1,3 +1,12 @@
+Rules for creating the crosswalk
+
+1. If a tract-id was split from xxxx-00 to xxxx-01 and xxxx-02 then asssign xxxx-00 to both.
+2. If a tract-id was split from xxxx-08 to xxxx-08 and xxxx-09 then assign xxxx-08 to both.
+
+Basically you need to assign 1990 data from the combined tract to all of the new tracts. 
+
+
+
 These files were created as follows:
 
 ```r
