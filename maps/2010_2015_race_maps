@@ -1,0 +1,284 @@
+####This is the code for the chloropleth maps that depict racial variables in 2010 and 2015 ---
+title: "Replicating Race for 2010 and 2015"
+author: "Anthony Gallegos, Abigail Henderson, Kendelle Brown"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    df_print: paged
+    theme: flatly
+    highlight: haddock
+    toc: yes
+    toc_float: yes
+---
+
+```{r knitr_init, echo=FALSE, cache=FALSE, message=FALSE}
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+```
+
+
+
+
+# Steps. It helps to just load all the libraries above at once.
+
+
+```{r}
+
+
+# Census Key
+censuskey <- "20f2773e863a33466e0fbace2116919a1c67e4a5"
+
+# Read csv file with all filtered variables. 
+Metadata_2010_ACS5 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/2010ACS5DataDictionary.csv")
+
+#Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
+race_2010_vars <- read.csv("/Users/abigailhenderson/Desktop/Capstone/race_2010_ACS5.csv")
+
+# Create Variable list based off variables in the first column
+var.list.race.2010 <- race_2010_vars$name
+
+
+# Pull Data using variable list only. Make sure the censusapi package is loaded.
+race.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010, key=censuskey,
+                               vars = var.list.race.2010,
+                               region="tract:*", regionin="state:04&county:013" )
+
+# Rename data
+race.pop.2010 <- rename(race.pop.2010, Total_2010=B25006_001E, White_2010=B25006_002E, Black_2010=B25006_003E, American_Indian_2010=B25006_004E, Asian_2010=B25006_005E , Pacific_Islander_2010=B25006_006E, Two_plus_races_2010= B25006_008E, Other_Race_2010=B25006_007E)
+
+# Add Percentages
+
+race.pop.2010 <- race.pop.2010 %>% group_by(tract) %>% 
+  mutate(( White_Percent = White_2010 / Total_2010) * 100) %>%
+mutate(( Black_Percent_2010 = Black_2010 / Total_2010) * 100) %>% 
+mutate(( Indian_Percent_2010 = American_Indian_2010 / Total_2010 ) * 100) %>%
+mutate(( Asian_Percent_2010 = Asian_2010 / Total_2010 ) * 100) %>%
+mutate(( Pacific_Islander_Percent_2010 = Pacific_Islander_2010 / Total_2010 ) * 100) %>%
+mutate(( Two_plus_racesPercent_2010 = Two_plus_races_2010 / Total_2010 ) * 100) %>%
+mutate(( Other_Percent_2010 = Other_Race_2010 / Total_2010 ) * 100)
+
+# Write into new csv file
+write.csv( race.pop.2010, "/Users/abigailhenderson/Desktop/Capstone/race_pop_2010.csv", row.names=T)
+
+
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID in 2010 Race Data
+geoid_2010 <- paste0( race.pop.2010$state, race.pop.2010$county, race.pop.2010$tract)
+
+race.pop.2010$geoid <- geoid_2010
+
+# Join shapefile with race by tract
+mcpa_2010 <- left_join(county_st, race.pop.2010, by=c("GEOID10"="geoid"))
+
+
+# Mapping Total Population Density
+
+# Orange map plot
+ggplot(mcpa_2010) + 
+  geom_sf(aes(fill=Total_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Maricopa County Population Concentrations", caption="2010 Source: US Census")
+```
+
+# Multi Plot using single variables  
+```{r}
+op <- par(mfrow=c(3,2))
+
+p1 <- ggplot(mcpa_2010) + 
+  geom_sf(aes(fill=White_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="White", caption="2010 Source: US Census")
+
+p2 <- ggplot(mcpa_2010) + 
+  geom_sf(aes(fill=Black_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Black", caption="2010 Source: US Census")
+
+p3 <- ggplot(mcpa_2010) + 
+  geom_sf(aes(fill=American_Indian_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Native American", caption="2010 Source: US Census")
+
+p4 <- ggplot(mcpa_2010) + 
+  geom_sf(aes(fill=Asian_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Asian", caption="2010 Source: US Census")
+
+p5 <- ggplot(mcpa_2010) + 
+  geom_sf(aes(fill=Pacific_Islander_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Hawaiian or Pacific Islander", caption="2010 Source: US Census")
+
+p6 <- ggplot(mcpa_2010) + 
+  geom_sf(aes(fill=Other_Race_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Other Race", caption="2010 Source: US Census")
+
+grid.arrange( p1, p2, p3, p4, p5, p6, nrow=3)
+```
+
+
+
+```{r}
+Metadata_2015_ACS5 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/2015ACS5DataDictionary.csv")
+
+#Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
+race_2015_vars <- read.csv("/Users/abigailhenderson/Desktop/Capstone/race_2015_ACS5.csv")
+
+# Create Variable list based off variables in the first column
+var.list.race.2015 <- race_2015_vars$name
+
+
+# Pull Data using variable list only. Make sure the censusapi package is loaded.
+race.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = var.list.race.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+# Rename data
+race.pop.2015 <- rename(race.pop.2015, Total_2015=B25006_001E, White_2015=B02001_002E, Black_2015=B02001_003E, American_Indian_2015=B02001_004E, Asian_2015=B02001_005E , Pacific_Islander_2015=B02001_006E, Two_plus_races_2015= B02001_008E, Other_Race_2015=B02001_007E)
+
+# Add Percentages
+
+race.pop.2015 <- race.pop.2015 %>% group_by(tract) %>% 
+  mutate(( White_Percent_2015 = White_2015 / Total_2015) * 100) %>%
+mutate(( Black_Percent_2015 = Black_2015 / Total_2015) * 100) %>% 
+mutate(( Indian_Percent_2015 = American_Indian_2015 / Total_2015 ) * 100) %>%
+mutate(( Asian_Percent_2015 = Asian_2015 / Total_2015 ) * 100) %>%
+mutate(( Pacific_Islander_Percent_2015 = Pacific_Islander_2015 / Total_2015 ) * 100) %>%
+mutate(( Two_plus_racesPercent_2015 = Two_plus_races_2015 / Total_2015 ) * 100) %>%
+mutate(( Other_Percent_2015 = Other_Race_2015 / Total_2015 ) * 100)
+
+# Write into new csv file
+write.csv( race.pop.2015, "/Users/abigailhenderson/Desktop/Capstone/race_pop_2015.csv", row.names=T)
+
+
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID of FIPS Code elements
+geoid_2015 <- paste0( race.pop.2015$state, race.pop.2015$county, race.pop.2015$tract)
+
+race.pop.2015$geoid <- geoid_2015
+
+# Join shapefile with race by tract
+mcpa_2015 <- left_join(county_st, race.pop.2015, by=c("GEOID10"="geoid"))
+
+
+# Mapping Total Population Density
+
+# Blue map plot
+# ggplot(mcpa) + geom_sf(aes(fill=Total)) +  scale_fill_distiller(direction=1, name="Population") +
+#   labs(title="Maricopa County Population Concentrations", caption="1990 Source: US Census")
+
+
+# Orange map plot
+ggplot(mcpa_2015) + 
+  geom_sf(aes(fill=Total_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Maricopa County Population Concentrations", caption="2015 Source: US Census")
+```
+
+```{r}
+
+op <- par(mfrow=c(3,2))
+
+p7 <- ggplot(mcpa_2015) + 
+  geom_sf(aes(fill=White_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="White", caption="2015 Source: US Census")
+
+p8 <- ggplot(mcpa_2015) + 
+  geom_sf(aes(fill=Black_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Black", caption="2015 Source: US Census")
+
+p9 <- ggplot(mcpa_2015) + 
+  geom_sf(aes(fill=American_Indian_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Native American", caption="2015 Source: US Census")
+
+p10 <- ggplot(mcpa_2015) + 
+  geom_sf(aes(fill=Asian_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Asian", caption="2015 Source: US Census")
+
+p11 <- ggplot(mcpa_2015) + 
+  geom_sf(aes(fill=Pacific_Islander_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Hawaiian or Pacific Islander", caption="2015 Source: US Census")
+
+p12 <- ggplot(mcpa_2015) + 
+  geom_sf(aes(fill=Other_Race_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Other Race", caption="2015 Source: US Census")
+
+grid.arrange( p7, p8, p9, p10, p11, p12, nrow=3)
+
+```
+
+
+
+
+
