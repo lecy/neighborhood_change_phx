@@ -1,0 +1,157 @@
+---
+title: "Racial Map 2000"
+author: "Anthony Gallegos, Abigail Henderson, Kendelle Brown"
+date: "March 24, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+
+Censuskey <- "9cb83c4560f4fbcc326ddd18ea31460fdd34546f"
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+
+```
+
+# 2000sf1 Racial Variables 
+```{r}
+
+racialsf1 <- read.csv("C:/Users/ksbrow15/Desktop/CAPSTONE PROJECT/CensusData/2000sf1_Racial Variables.csv" ) 
+
+racialvar.list.sf1 <- `racialsf1`$name
+
+```
+
+# Testing Racial Variables Pull 
+```{r}
+
+testing.racialvar2000 <- getCensus( name = "sf1", vintage = 2000, key=Censuskey,
+                               vars = racialvar.list.sf1,
+                               region="tract:*", regionin="state:04&county:13" )
+
+```
+
+# Rename Racial Variables
+```{r}
+
+race.pop2000 <- rename(testing.racialvar2000, Total2000=P003001, White2000=P003003, Black2000=P003004, AmericanIndian_Alaskn2000=P003005, Asian2000=P003006, PacificIsland2000=P003007, Other_Race2000=P003008)
+
+# Add Percentages
+
+race.pop2000 <- race.pop2000 %>% group_by(tract) %>% mutate(( White_Percent2000 = White2000 / Total2000) * 100) %>%
+mutate(( Black_Percent2000 = Black2000 / Total2000) * 100) %>% 
+mutate(( AmericanIndian_Percent2000 = AmericanIndian_Alaskn2000 / Total2000) * 100) %>%
+mutate(( Asian_Percent2000 = Asian2000 / Total2000) * 100) %>%
+mutate(( Pacific_Percent2000 = PacificIsland2000 / Total2000) * 100) %>%
+mutate(( Other_Percent2000 = Other_Race2000 / Total2000) * 100)
+
+# Write into new csv file
+write.csv( race.pop2000, "C:/Users/ksbrow15/Desktop/CAPSTONE PROJECT/CensusData/race_pop2000.csv", row.names=T)
+
+```
+
+
+# Import Shapefile
+```{r}
+county_shp <- "C:/Users/ksbrow15/Desktop/CAPSTONE PROJECT/CensusData/shapefiles/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID in 2010 Race Data
+geoid_2000 <- paste0( race.pop2000$state, race.pop2000$county, race.pop2000$tract)
+
+race.pop2000$geoid <- geoid_2000
+
+# Join shapefile with race by tract
+mcpa_2000 <- left_join(county_st, race.pop2000, by=c("GEOID10"="geoid"))
+```
+
+
+# Mapping Total Population Density
+```{r}
+# Orange map plot
+ggplot(mcpa_2000) + 
+     geom_sf(aes(fill=Total2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+     labs(title="Maricopa County Population Concentrations", caption="2010 Source: US      Census")
+```
+
+# Multi Plot using single variables  
+```{r}
+op <- par(mfrow=c(3,2))
+
+p1 <- ggplot(mcpa_2000) + 
+  geom_sf(aes(fill=White2000), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="White", caption="2000 Source: US Census")
+
+p2 <- ggplot(mcpa_2000) + 
+  geom_sf(aes(fill=Black2000), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Black", caption="2000 Source: US Census")
+
+p3 <- ggplot(mcpa_2000) + 
+  geom_sf(aes(fill=AmericanIndian_Alaskn2000), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Native American", caption="2000 Source: US Census")
+
+p4 <- ggplot(mcpa_2000) + 
+     geom_sf(aes(fill=Asian2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+     labs(title="Asian", caption="2000 Source: US Census")
+
+p5 <- ggplot(mcpa_2000) + 
+    geom_sf(aes(fill=PacificIsland2000), color="white") +
+    theme_void() +
+    theme(panel.grid.major = element_line(colour = 'transparent')) +
+    scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+    labs(title="Hawaiian or Pacific Islander", caption="2000 Source: US Census")
+
+p6 <- ggplot(mcpa_2000) + 
+     geom_sf(aes(fill=Other_Race2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+     labs(title="Other Race", caption="2000 Source: US Census")
+
+grid.arrange( p1, p2, p3, p4, p5, p6, nrow=3)
+
+```
+
