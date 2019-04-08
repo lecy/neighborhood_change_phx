@@ -1,0 +1,131 @@
+---
+title: "NHGIS"
+author: "Abby Henderson"
+date: "4/7/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+
+## Global options
+options(max.print="105")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=105)
+```
+
+
+
+```{r}
+# Read csv file with all variables from the NHGIS website with 1990, 2000, and 2010 represented
+NHGIS_data <- read.csv("/Users/abigailhenderson/Desktop/Capstone/NHGIS_geog_data_190405aeh.csv")
+
+NHGIS_data <- rename(NHGIS_data,
+                         Male_1990=CM0AA1990,
+                        Male_2000=CM0AA2000, 
+                        Male_2010=CM0AA2010,
+                        Female_1990=CM0AB1990,
+                        Female_2000=CM0AB2000, 
+                        Female_2010=CM0AB2010)
+
+#Make percentages
+NHGIS_data <- NHGIS_data %>%
+  mutate(Total_Sex_1990 = coalesce(Male_1990 + Female_1990))
+  
+NHGIS_data <- NHGIS_data %>% mutate(Total_Sex_2000 = coalesce(Male_2000 + Female_2000))
+
+NHGIS_data <- NHGIS_data %>% mutate(Total_Sex_2010 = coalesce(Male_2010 + Female_2010))
+
+NHGIS_data <- NHGIS_data %>% group_by(GISJOIN) %>% 
+  mutate((Male_Percent_1990 = Male_1990 / Total_Sex_1990 * 100)) %>%
+  mutate((Female_Percent_1990 = Female_1990 / Total_Sex_1990 * 100)) %>%
+  mutate((Male_Percent_2000 = Male_2000 / Total_Sex_2000 *100)) %>%
+  mutate((Female_Percent_2000 = Female_2000 / Total_Sex_2000 * 100)) %>%
+  mutate((Male_Percent_2010 = Male_2010 / Total_Sex_2010 * 100)) %>%
+  mutate((Female_Percent_2010 = Female_2010 / Total_Sex_2010 * 100))
+
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID of FIPS Code elements
+county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
+
+county_st$geoid <- county_geo_id
+
+# Join shapefile with race by tract
+NHGIS_mapdata <- left_join(county_st, NHGIS_data, by=c("geoid"="GISJOIN"))
+
+Male_1990 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Male_1990), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Male Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+Male_2000 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Male_2000), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Male Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+Male_2010 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Male_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Male Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+Female_1990 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Female_1990), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Female Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+Female_2000 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Female_2000), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Female Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+
+Female_2010 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Female_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Female Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+
+```
+
+
+
+
