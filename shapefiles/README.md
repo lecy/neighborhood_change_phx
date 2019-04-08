@@ -22,7 +22,7 @@ Census tract shapefiles downloaded from https://www.census.gov/geo/maps-data/dat
 ## This command reads in the shapefile
 
 ```r
-county <- readOGR("tl_2010_04013_tract00/tl_2010_04013_tract00.shp")
+county <- readOGR("tl_2010_04013_tract10/tl_2010_04013_tract10.shp")
 head(county@data, 10)
 ```
 
