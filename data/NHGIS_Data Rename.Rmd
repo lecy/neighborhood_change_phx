@@ -1,0 +1,95 @@
+---
+title: "NHGIS Data Rename1"
+author: "Kendelle Brown, Abby Henderson"
+date: "April 7, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+
+Censuskey <- "9cb83c4560f4fbcc326ddd18ea31460fdd34546f"
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+
+```
+
+# Data
+```{r}
+
+library(readr)
+NHGIS_geog_data_190405aeh <- read_csv("NHGIS Data/NHGIS_geog_data_190405aeh.csv")
+
+NHGIS_Data <- NHGIS_geog_data_190405aeh
+
+```
+
+# Rename Ethnicity Variables
+```{r}
+
+NHGIS_Data <- rename(NHGIS_Data, NotHispanic.Latino_1990=CP4AA1990, NotHispanic.Latino_2000=CP4AA2000, NotHispanic.Latino_2010=CP4AA2010, Hispanic.Latino1990=CP4AB1990, Hispanic.Latino2000=CP4AB2000, Hispanic.Latino2010=CP4AB2010)
+
+```
+
+# Rename Racial Variables
+```{r}
+
+NHGIS_Data <- rename(NHGIS_Data, White_1990=CM1AA1990, White_2000=CM1AA2000, White_2010=CM1AA2010, Black_AA_1990=CM1AB1990, Black_AA_2000=CM1AB2000, Black_AA_2010=CM1AB2010, NativeAm_Alaskan1990=CM1AC1990, NativeAm_Alaskan2000=CM1AC2000,NativeAm_Alaskan2010=CM1AC2010, Asian_1990=CM1AD1990,Asian_2000=CM1AD2000, Asian_2010=CM1AD2010, NativeHawaiian.PacificIslander_1990=CM1AE1990,NativeHawaiian.PacificIslander_2000=CM1AE2000, NativeHawaiian.PacificIslander_2010=CM1AE2010, SomeOther_1990=CM1AF1990, SomeOther_2000=CM1AF2000, SomeOther_2010=CM1AF2010, Two.OrMore_1990=CM1AG1990, Two.OrMore_2000=CM1AG2000, Two.OrMore_2010=CM1AG2010 )
+
+```
+
+# Rename Number of Units Variables
+```{r}
+
+NHGIS_Data <- rename(NHGIS_Data, HousingUnits_1990=CM7AA1990, HousingUnits_2000=CM7AA2000, HousingUnits_2010=CM7AA2010)
+
+```
+
+# Rename Occupancy Variable 
+```{r}
+
+NHGIS_Data <- rename(NHGIS_Data, HousingUnits_Occupied_1990=CM9AA1990, HousingUnits_Occupied_2000=CM9AA2000, HousingUnits_Occupied_2010=CM9AA2010, HousingUnits_Vacant_1990=CM9AB1990, HousingUnits_Vacant_2000=CM9AB2000, HousingUnits_Vacant_2010=CM9AB2010)
+
+```
+
+# Rename Vacancy Status Variables 
+```{r}
+
+NHGIS_Data <- rename(NHGIS_Data, Vacant_ForRent_1990=CN0AA1990, Vacant_ForRent_2000=CN0AA2000, Vacant_ForRent_2010=CN0AA2010, Vacant_ForSale_1990=CN0AB1990, Vacant_ForSale_2000=CN0AB2000, Vacant_ForSale_2010=CN0AB2010, Vacant_RentedOrSold_1990=CN0AC1990, Vacant_RentedOrSold_2000=CN0AC2000, Vacant_RentedOrSold_2010=CN0AC2010, Vacant_OccasionalUse_1990=CN0AD1990, Vacant_OccasionalUse_2000=CN0AD2000, Vacant_OccasionalUse_2010=CN0AD2010, Vacant_MigrantWorkers_1990=CN0AE1990, Vacant_MigrantWorkers_2000=CN0AE2000, Vacant_MigrantWorkers_2010=CN0AE2010, Vacant_Other_1990=CN0AF1990, Vacant_Other_2000=CN0AF2000, Vacant_Other_2010=CN0AF2010)
+
+```
+
+# Write new CSV File
+```{r}
+
+write.csv( NHGIS_Data, "NHGIS Data Rename1", row.names=F)
+
+```
+
+
+
+
