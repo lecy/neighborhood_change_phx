@@ -1,0 +1,643 @@
+---
+title: "value_maps_2010_2015"
+author: "Abby Henderson"
+date: "3/31/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+
+censuskey <- "20f2773e863a33466e0fbace2116919a1c67e4a5"
+
+
+## Global options
+options(max.print="105")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=105)
+```
+
+
+
+```{r}
+
+Metadata_2010_ACS5 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/2010ACS5DataDictionary.csv")
+
+#Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
+value_2010_vars <- read.csv("/Users/abigailhenderson/Desktop/Capstone/value_vars_2010.csv")
+
+# Create Variable list based off variables in the first column
+var.list.value.2010 <- value_2010_vars$name
+
+value.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010, key=censuskey,
+                               vars = var.list.value.2010,
+                               region="tract:*", regionin="state:04&county:013" )
+
+
+value.pop.2010 <- rename(value.pop.2010,
+                         Total_value_2010=B25075_001E,
+                        Lessthan10k_2010=B25075_002E, 
+                        TenkTo14k_2010=B25075_003E,
+                        Fifteenkto20k_2010=B25075_004E,
+                        TwentykTo25k_2010=B25075_005E, 
+                        TwentyfivekTo30k_2010=B25075_006E, 
+                        ThirtykTo35k_2010= B25075_007E,
+                       ThirtyfivekTo40k_2010=B25075_008E,
+                       FortykTo50k_2010=B25075_009E,
+                       FiftykTo60k_2010=B25075_010E,
+                       SixtykTo70k_2010=B25075_011E, 
+                       SeventykTo80k_2010=B25075_012E,
+                       Eightykto90k_2010=B25075_013E,
+                       Ninetykto100k_2010=B25075_014E,
+                       OnehundredkTo125k_2010=B25075_015E, 
+                       OnetwentyfivekTo150k_2010=B25075_016E,
+                       OnefiftykTo175k_2010=B25075_017E, 
+                       One75kTo200k_2010=B25075_018E, 
+                       Twohundredkto250k_2010=B25075_019E, 
+                       Twofiftykto300k_2010=B25075_020E, 
+                       Threehundredkto400k_2010=B25075_021E, 
+                       Fourhundredkto500k_2010=B25075_022E, 
+                       Fivehundredkto750k_2010=B25075_023E, 
+                       Sevenfiftykto1mil_2010=B25075_024E, 
+                       OnemilPlus_2010=B25075_025E)
+
+
+```
+
+
+```{r}
+#Create percentage variables of each educational category
+
+value.pop.2010 <- value.pop.2010 %>% group_by(tract) %>% 
+  mutate((Lessthan10k_Percent_2010 = Lessthan10k_2010 / Total_value_2010) * 100) %>%
+  mutate(( TenkTo14k_Percent_2010 = TenkTo14k_2010 / Total_value_2010) * 100) %>%
+mutate(( TenkTo14k_Percent_2010 = TenkTo14k_2010 / Total_value_2010) * 100) %>% 
+mutate(( Fifteenkto20k_Percent_2010 = Fifteenkto20k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( TwentykTo25k_Percent_2010 = TwentykTo25k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( TwentyfivekTo30k_Percent_2010 = TwentyfivekTo30k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( ThirtykTo35k_2010 = ThirtykTo35k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( ThirtyfivekTo40k_Percent_2010 = ThirtyfivekTo40k_2010  / Total_value_2010 ) * 100) %>%
+mutate(( FortykTo50k_Percent_2010 = FortykTo50k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( FiftykTo60k_Percent_2010 = FiftykTo60k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( SixtykTo70k_Percent_2010 = SixtykTo70k_2010 / Total_value_2010 ) * 100) %>%
+mutate((  Eightykto90k_Percent_2010 =  Eightykto90k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( Ninetykto100k_Percent_2010 = Ninetykto100k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( OnehundredkTo125k_Percent_2010 = OnehundredkTo125k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( OnetwentyfivekTo150k_Percent_2010 = OnetwentyfivekTo150k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( OnefiftykTo175k_Percent_2010 = OnefiftykTo175k_2010 / Total_value_2010 ) * 100) %>%
+mutate((  One75kTo200k_Percent_2010 =  One75kTo200k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( Twohundredkto250k_Percent_2010 = Twohundredkto250k_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( Twofiftykto300k_Percent_2010 = Twofiftykto300k_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( Threehundredkto400k_Percent_2010 = Threehundredkto400k_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( Fourhundredkto500k_Percent_2010 = Fourhundredkto500k_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( Fivehundredkto750k_Percent_2010 = Fivehundredkto750k_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( Sevenfiftykto1mil_Percent_2010 = Sevenfiftykto1mil_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( OnemilPlus_Percent_2010 = OnemilPlus_2010 / Total_value_2010 ) * 100)
+
+#Write the data into a .csv file
+write.csv( value.pop.2010, "/Users/abigailhenderson/Desktop/Capstone/value_pop_2010.csv", row.names=T)
+
+
+
+
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID of FIPS Code elements
+value_geoid_2010 <- paste0( value.pop.2010$state, value.pop.2010$county, value.pop.2010$tract)
+
+value.pop.2010$geoid <- value_geoid_2010
+
+# Join shapefile with race by tract
+mcpa_value_2010 <- left_join(county_st, value.pop.2010, by=c("GEOID10"="geoid"))
+
+# Mapping Total Population Density
+
+# Purple map plot
+ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Total_value_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Maricopa County Population Concentrations", title.cex=.75, caption="2010 Source: US Census")
+
+```
+
+
+```{r}
+op <- par(mfrow=c(3,2))
+
+p1_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill= Lessthan10k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Less than $10k", title.cex=0.5, caption="2010 Source: US Census")
+
+
+p2_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=TenkTo14k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $10,000 and $14,000", title.cex=0.5, caption="2010 Source: US Census")
+
+
+p3_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Fifteenkto20k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $15,000 and $20,000", title.cex=0.5, caption="2010 Source: US Census")
+
+p4_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=TwentykTo25k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $20,000 and $25,000", title.cex=0.5, caption="2010 Source: US Census")
+
+p5_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=TwentyfivekTo30k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $25,000 and $30,000", title.cex=0.5, caption="2010 Source: US Census")
+
+p6_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=ThirtykTo35k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $30,000 and $35,000", title.cex=0.5, caption="2010 Source: US Census")
+
+
+p7_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=ThirtyfivekTo40k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $35,000 and $40,000", title.cex=0.5, caption="2010 Source: US Census")
+
+
+p8_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=FortykTo50k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $40,000 and $50,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p9_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=FiftykTo60k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $50,000 and $60,000", title.cex=0.5, caption="2010 Source: US Census")
+
+
+p10_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=SixtykTo70k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $60,000 and $70,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p11_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=SeventykTo80k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $70,000 and $80,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p12_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Eightykto90k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $80,000 and $90,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p13_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Ninetykto100k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $90,000 and $100,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p14_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=OnehundredkTo125k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $100,000 and $125,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p15_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=OnetwentyfivekTo150k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $125,000 and $150,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p16_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=OnefiftykTo175k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $150,000 and $175,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p17_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=One75kTo200k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $175,000 and $200,000", title.cex=0.5, caption="2010 Source: US Census")
+ 
+p18_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Twohundredkto250k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $200,000 and $250,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p19_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Twofiftykto300k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $250,000 and $300,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p20_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Threehundredkto400k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $300,000 and $400,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p21_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Fourhundredkto500k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $400,000 and $500,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+p22_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Fivehundredkto750k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $500,000 and $750,000", title.cex=0.5, caption="2010 Source: US Census")
+
+p23_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Sevenfiftykto1mil_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $750,000 and $1,000,000", title.cex=0.5, caption="2010 Source: US Census")
+
+p24_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=OnemilPlus_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Over $1,000,000", title.cex=0.5, caption="2010 Source: US Census")
+
+
+grid.arrange( p1_value_2010, p5_value_2010, p8_value_2010, p14_value_2010, p20_value_2010, p24_value_2010, nrow=3)
+  
+```
+
+
+
+
+```{r}
+Metadata_2015_ACS5 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/2015ACS5DataDictionary.csv")
+
+#Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
+value_2015_vars <- read.csv("/Users/abigailhenderson/Desktop/Capstone/value_vars_2015.csv")
+
+# Create Variable list based off variables in the first column
+var.list.value.2015 <- value_2015_vars$name
+
+value.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = var.list.value.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+
+value.pop.2015 <- rename(value.pop.2015,
+                         Total_value_2015=B25075_001E,
+                        Lessthan10k_2015=B25075_002E, 
+                        TenkTo14k_2015=B25075_003E,
+                        Fifteenkto20k_2015=B25075_004E,
+                        TwentykTo25k_2015=B25075_005E, 
+                        TwentyfivekTo30k_2015=B25075_006E, 
+                        ThirtykTo35k_2015= B25075_007E,
+                       ThirtyfivekTo40k_2015=B25075_008E,
+                       FortykTo50k_2015=B25075_009E,
+                       FiftykTo60k_2015=B25075_010E,
+                       SixtykTo70k_2015=B25075_011E, 
+                       SeventykTo80k_2015=B25075_012E,
+                       Eightykto90k_2015=B25075_013E,
+                       Ninetykto100k_2015=B25075_014E,
+                       OnehundredkTo125k_2015=B25075_015E, 
+                     OnetwentyfivekTo150k_2015=B25075_016E,
+                       OnefiftykTo175k_2015=B25075_017E, 
+                       One75kTo200k_2015=B25075_018E, 
+                       Twohundredkto250k_2015=B25075_019E, 
+                       Twofiftykto300k_2015=B25075_020E, 
+                       Threehundredkto400k_2015=B25075_021E,
+                       Fourhundredkto500k_2015=B25075_022E, 
+                       Fivehundredkto750k_2015=B25075_023E, 
+                       Sevenfiftykto1mil_2015=B25075_024E, 
+                       OnemiltoOnemilhalf_2015=B25075_025E,
+                       Onemilhalfto2mil_2015=B25075_026E,
+                       Twomilplus_2015=B25075_027E)
+
+
+
+#Create percentage variables of each educational category
+
+value.pop.2015 <- value.pop.2015 %>% group_by(tract) %>% 
+  mutate((Lessthan10k_Percent_2015 = Lessthan10k_2015 / Total_value_2015) * 100) %>%
+  mutate(( TenkTo14k_Percent_2015 = TenkTo14k_2015 / Total_value_2015) * 100) %>%
+mutate(( TenkTo14k_Percent_2015 = TenkTo14k_2015 / Total_value_2015) * 100) %>% 
+mutate(( Fifteenkto20k_Percent_2015 = Fifteenkto20k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( TwentykTo25k_Percent_2015 = TwentykTo25k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( TwentyfivekTo30k_Percent_2015 = TwentyfivekTo30k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( ThirtykTo35k_2015 = ThirtykTo35k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( ThirtyfivekTo40k_Percent_2015 = ThirtyfivekTo40k_2015  / Total_value_2015 ) * 100) %>%
+mutate(( FortykTo50k_Percent_2015 = FortykTo50k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( FiftykTo60k_Percent_2015 = FiftykTo60k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( SixtykTo70k_Percent_2015 = SixtykTo70k_2015 / Total_value_2015 ) * 100) %>%
+mutate((  Eightykto90k_Percent_2015 =  Eightykto90k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( Ninetykto100k_Percent_2015 = Ninetykto100k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( OnehundredkTo125k_Percent_2015 = OnehundredkTo125k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( OnetwentyfivekTo150k_Percent_2015 = OnetwentyfivekTo150k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( OnefiftykTo175k_Percent_2015 = OnefiftykTo175k_2015 / Total_value_2015 ) * 100) %>%
+mutate((  One75kTo200k_Percent_2015 =  One75kTo200k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( Twohundredkto250k_Percent_2015 = Twohundredkto250k_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Twofiftykto300k_Percent_2015 = Twofiftykto300k_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Threehundredkto400k_Percent_2015 = Threehundredkto400k_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Fourhundredkto500k_Percent_2015 = Fourhundredkto500k_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Fivehundredkto750k_Percent_2015 = Fivehundredkto750k_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Sevenfiftykto1mil_Percent_2015 = Sevenfiftykto1mil_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Sevenfiftykto1mil_Percent_2015 = Sevenfiftykto1mil_2015 / Total_value_2015 ) * 100) %>%
+   mutate(( OnemiltoOnemilhalf_Percent_2015 = OnemiltoOnemilhalf_2015 / Total_value_2015 ) * 100) %>%
+    mutate(( Onemilhalfto2mil_Percent_2015 = Onemilhalfto2mil_2015 / Total_value_2015 ) * 100) %>%
+     mutate(( Twomilplus_Percent_2015 = Twomilplus_2015 / Total_value_2015 ) * 100) 
+
+  
+  
+  
+
+#Write the data into a .csv file
+write.csv( value.pop.2015, "/Users/abigailhenderson/Desktop/Capstone/value_pop_2015.csv", row.names=T)
+
+
+
+
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID of FIPS Code elements
+value_geoid_2015 <- paste0( value.pop.2015$state, value.pop.2015$county, value.pop.2015$tract)
+
+value.pop.2015$geoid <- value_geoid_2015
+
+# Join shapefile with race by tract
+mcpa_value_2015 <- left_join(county_st, value.pop.2015, by=c("GEOID10"="geoid"))
+
+# Mapping Total Population Density
+
+# Purple map plot
+ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Total_value_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Maricopa County Population Concentrations", title.cex=.75, caption="2015 Source: US Census")
+
+```
+
+
+```{r}
+op <- par(mfrow=c(3,2))
+
+p1_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill= Lessthan10k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Less than $10k", title.cex=0.5, caption="2015 Source: US Census")
+
+
+p2_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=TenkTo14k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $10,000 and $14,000", title.cex=0.5, caption="2015 Source: US Census")
+
+
+p3_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Fifteenkto20k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $15,000 and $20,000", title.cex=0.5, caption="2015 Source: US Census")
+
+p4_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=TwentykTo25k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $20,000 and $25,000", title.cex=0.5, caption="2015 Source: US Census")
+
+p5_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=TwentyfivekTo30k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $25,000 and $30,000", title.cex=0.5, caption="2015 Source: US Census")
+
+p6_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=ThirtykTo35k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $30,000 and $35,000", title.cex=0.5, caption="2015 Source: US Census")
+
+
+p7_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=ThirtyfivekTo40k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $35,000 and $40,000", title.cex=0.5, caption="2015 Source: US Census")
+
+
+p8_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=FortykTo50k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $40,000 and $50,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p9_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=FiftykTo60k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $50,000 and $60,000", title.cex=0.5, caption="2015 Source: US Census")
+
+
+p10_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=SixtykTo70k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $60,000 and $70,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p11_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=SeventykTo80k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $70,000 and $80,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p12_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Eightykto90k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $80,000 and $90,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p13_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Ninetykto100k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $90,000 and $100,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p14_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=OnehundredkTo125k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $100,000 and $125,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p15_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=OnetwentyfivekTo150k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $125,000 and $150,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p16_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=OnefiftykTo175k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $150,000 and $175,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p17_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=One75kTo200k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $175,000 and $200,000", title.cex=0.5, caption="2015 Source: US Census")
+ 
+p18_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Twohundredkto250k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $200,000 and $250,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p19_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Twofiftykto300k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $250,000 and $300,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p20_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Threehundredkto400k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $300,000 and $400,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p21_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Fourhundredkto500k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $400,000 and $500,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p22_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Fivehundredkto750k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $500,000 and $750,000", title.cex=0.5, caption="2015 Source: US Census")
+
+p23_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Sevenfiftykto1mil_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $750,000 and $1,000,000", title.cex=0.5, caption="2015 Source: US Census")
+
+p24_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=OnemiltoOnemilhalf_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $1,000,000 and $1,500,000", title.cex=0.5, caption="2015 Source: US Census")
+
+
+p25_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Onemilhalfto2mil_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $1,500,000 and $2,000,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+p26_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Twomilplus_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Over $2,000,000", title.cex=0.5, caption="2015 Source: US Census")
+
+
+grid.arrange( p1_value_2015, p5_value_2015, p8_value_2015, p14_value_2015, p20_value_2015, p26_value_2015, nrow=3)
+```
