@@ -1,0 +1,343 @@
+---
+title: "Travel_time_2010_2015_maps"
+author: "Abby Henderson"
+date: "4/8/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+
+censuskey <- "20f2773e863a33466e0fbace2116919a1c67e4a5"
+
+
+## Global options
+options(max.print="105")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=105)
+```
+
+
+
+```{r}
+
+Metadata_2010_ACS5 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/2010ACS5DataDictionary.csv")
+
+#Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
+traveltime_vars_2010 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/traveltime_vars_2010.csv")
+
+# Create Variable list based off variables in the first column
+var.list.travel.2010 <- traveltime_vars_2010$name
+
+travel.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010, key=censuskey,
+                               vars = var.list.travel.2010,
+                               region="tract:*", regionin="state:04&county:013" )
+
+
+travel.pop.2010 <- rename(travel.pop.2010, Total_travel_2010=B08303_001E,
+                        Lessthan5_2010=B08303_002E, 
+                        Fiveto9_2010=B08303_003E,
+                        Tento14_2010=B08303_004E,
+                        Fifteento19_2010=B08303_005E, 
+                        Twentyto24_2010=B08303_006E, 
+                        Twentyfiveto29_2010=B08303_007E,
+                       Thirtyto34_2010=B08303_008E,
+                       Thirtyfiveto39_2010=B08303_009E,
+                       Fortyto44_2010=B08303_010E,
+                       Fortyfiveto59_2010=B08303_011E,
+                       Sixtyto89_2010=B08303_012E, 
+                       Ninetyplus_2010=B08303_013E)
+
+```
+
+```{r}
+#Write the data into a .csv file
+write.csv( travel.pop.2010, "/Users/abigailhenderson/Desktop/Capstone/travel_pop_2010.csv", row.names=T)
+
+
+
+
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID of FIPS Code elements
+travel_geoid_2010 <- paste0( travel.pop.2010$state, travel.pop.2010$county, travel.pop.2010$tract)
+
+travel.pop.2010$geoid <- travel_geoid_2010
+
+# Join shapefile with race by tract
+mcpa_travel_2010 <- left_join(county_st, travel.pop.2010, by=c("GEOID10"="geoid"))
+
+# Mapping Total Population Density
+
+# Purple/Orange map plot
+ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill=Total_travel_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Maricopa County Population Concentrations", title.cex=.75, caption="2010 Source: US Census")
+```
+
+
+
+```{r}
+travel_lessthan5_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Lessthan5_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Less than 5 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_5to9_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Fiveto9_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 5 and 9 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_10to14_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Tento14_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 10 and 14 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_15to19_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Fifteento19_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 15 and 19 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_20to24_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Twentyto24_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 20 and 24 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_25to29_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Twentyfiveto29_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 25 and 29 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_30to34_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Thirtyto34_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 30 and 34 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_35to39_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Thirtyfiveto39_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 35 and 39 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_40to44_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Fortyto44_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 40 and 44 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_45to59_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Fortyfiveto59_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 45 to 59 minutes", title.cex=0.5, caption="2010 Source: US Census")
+  
+  travel_60to89_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Sixtyto89_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 60 and 89 minutes", title.cex=0.5, caption="2010 Source: US Census")
+  
+  travel_90plus_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Ninetyplus_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Over 90 minutes", title.cex=0.5, caption="2010 Source: US Census")
+```
+
+
+
+```{r}
+
+
+Metadata_2015_ACS5 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/2010ACS5DataDictionary.csv")
+
+#Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
+traveltime_vars_2015 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/traveltime_vars_2015.csv")
+
+# Create Variable list based off variables in the first column
+var.list.travel.2015 <- traveltime_vars_2015$name
+
+travel.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = var.list.travel.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+
+travel.pop.2015 <- rename(travel.pop.2015, Total_travel_2015=B08303_001E,
+                        Lessthan5_2015=B08303_002E, 
+                        Fiveto9_2015=B08303_003E,
+                        Tento14_2015=B08303_004E,
+                        Fifteento19_2015=B08303_005E, 
+                        Twentyto24_2015=B08303_006E, 
+                        Twentyfiveto29_2015=B08303_007E,
+                       Thirtyto34_2015=B08303_008E,
+                       Thirtyfiveto39_2015=B08303_009E,
+                       Fortyto44_2015=B08303_010E,
+                       Fortyfiveto59_2015=B08303_011E,
+                       Sixtyto89_2015=B08303_012E, 
+                       Ninetyplus_2015=B08303_013E)
+```
+
+```{r}
+#Write the data into a .csv file
+write.csv( travel.pop.2015, "/Users/abigailhenderson/Desktop/Capstone/travel_pop_2010.csv", row.names=T)
+
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID of FIPS Code elements
+travel_geoid_2015 <- paste0( travel.pop.2015$state, travel.pop.2015$county, travel.pop.2015$tract)
+
+travel.pop.2015$geoid <- travel_geoid_2015
+
+# Join shapefile with race by tract
+mcpa_travel_2015 <- left_join(county_st, travel.pop.2015, by=c("GEOID10"="geoid"))
+
+# Mapping Total Population Density
+
+# Purple/Orange map plot
+ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill=Total_travel_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Maricopa County Population Concentrations", title.cex=.75, caption="2015 Source: US Census")
+```
+
+```{r}
+travel_lessthan5_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Lessthan5_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Less than 5 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_5to9_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Fiveto9_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 5 and 9 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_10to14_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Tento14_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 10 and 14 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_15to19_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Fifteento19_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 15 and 19 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_20to24_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Twentyto24_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 20 and 24 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_25to29_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Twentyfiveto29_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 25 and 29 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_30to34_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Thirtyto34_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 30 and 34 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_35to39_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Thirtyfiveto39_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 35 and 39 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_40to44_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Fortyto44_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 40 and 44 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_45to59_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Fortyfiveto59_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 45 to 59 minutes", title.cex=0.5, caption="2015 Source: US Census")
+  
+  travel_60to89_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Sixtyto89_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 60 and 89 minutes", title.cex=0.5, caption="2015 Source: US Census")
+  
+  travel_90plus_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Ninetyplus_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Over 90 minutes", title.cex=0.5, caption="2015 Source: US Census")
+```
+
