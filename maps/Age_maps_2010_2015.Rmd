@@ -1,0 +1,188 @@
+---
+title: "Age_2015_maps"
+author: "Abby Henderson"
+date: "4/3/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+
+censuskey <- "20f2773e863a33466e0fbace2116919a1c67e4a5"
+
+
+## Global options
+options(max.print="105")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=105)
+```
+
+
+
+```{r}
+
+Metadata_2015_ACS5 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/2015ACS5DataDictionary.csv")
+
+#Read csv file with only age variables. I created this by selecting variables from the Metadata and putting them into a separate csv file. Unfortunately, there was no "Age of Householder" available in 2015, so I selected age variables by owner/renter and will combine the categories after the data is downloaded. This can create issues with the data because anyone not listed as a renter or owner will not be included, which will skew the data towards older ages.
+age_vars_2015 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/age_vars_2015.csv")
+
+# Create Variable list based off variables in the first column
+var.list.age.2015 <- age_vars_2015$name
+
+age.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = var.list.age.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+```
+
+```{r}
+#Rename the variables
+age.pop.2015 <- rename(age.pop.2015,
+                         Total_age_2010=B25007_001E,
+                         Owner_15to24_2015= B25007_003E,
+                         Owner_25to34_2015= B25007_004E,
+                         Owner_35to44_2015= B25007_005E,
+                         Owner_45to54_2015= B25007_006E,
+                         Owner_55to59_2015= B25007_007E,
+                         Owner_60to64_2015= B25007_008E,
+                         Owner_65to74_2015= B25007_009E,
+                         Owner_75to84_2015= B25007_010E,
+                         Owner_85plus_2015= B25007_011E,
+                         Renter_15to24_2015= B25007_013E,
+                         Renter_25to34_2015= B25007_014E,
+                         Renter_35to44_2015= B25007_015E,
+                         Renter_45to54_2015= B25007_016E,
+                         Renter_55to59_2015= B25007_017E,
+                         Renter_60to64_2015= B25007_018E,
+                         Renter_65to74_2015= B25007_019E,
+                         Renter_75to84_2015= B25007_020E,
+                         Renter_85plus_2015= B25007_021E)
+
+#Combine categories of owner and renter to create age range variables for the full sample 
+age.pop.2015 <- age.pop.2015 %>%
+  mutate(age_15to24_2015 = coalesce(Owner_15to24_2015 + Renter_15to24_2015))
+  
+age.pop.2015 <- age.pop.2015 %>%
+  mutate(age_25to34_2015 = coalesce(Owner_25to34_2015 +  Renter_25to34_2015))
+
+age.pop.2015 <- age.pop.2015 %>%
+  mutate(age_35to44_2015 = coalesce(Owner_35to44_2015 + Renter_35to44_2015))
+  
+age.pop.2015 <- age.pop.2015 %>%
+  mutate(age_45to54_2015 = coalesce(Owner_45to54_2015 + Renter_45to54_2015))
+  
+age.pop.2015 <- age.pop.2015 %>%
+  mutate(age_55to59_2015 = coalesce(Owner_55to59_2015 + Renter_55to59_2015))
+  
+age.pop.2015 <- age.pop.2015 %>%
+  mutate(age_60to64_2015 = coalesce(Owner_60to64_2015 + Renter_60to64_2015))
+  
+age.pop.2015 <- age.pop.2015 %>%
+  mutate(age_65to74_2015 = coalesce(Owner_65to74_2015 + Renter_65to74_2015))
+  
+age.pop.2015 <- age.pop.2015 %>%
+  mutate(age_75to84_2015 = coalesce(Owner_75to84_2015 + Renter_75to84_2015))
+  
+age.pop.2015 <- age.pop.2015 %>%
+  mutate(age_85plus_2015 = coalesce(Owner_85plus_2015 + Renter_85plus_2015))
+```
+
+
+```{r}
+#Write the data into a .csv file
+write.csv( age.pop.2015, "/Users/abigailhenderson/Desktop/Capstone/age_pop_2015.csv", row.names=T)
+
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID of FIPS Code elements
+age_geoid_2015 <- paste0( age.pop.2015$state, age.pop.2015$county, age.pop.2015$tract)
+
+age.pop.2015$geoid <- age_geoid_2015
+
+# Join shapefile with race by tract
+mcpa_age_2015 <- left_join(county_st, age.pop.2015, by=c("GEOID10"="geoid"))
+
+```
+```{r}
+age_15to24_2015 <- ggplot(mcpa_age_2015) + 
+  geom_sf(aes(fill= age_15to24_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlOrRd", direction=1, name="Population") +
+  labs(title="Ages 15 to 24", title.cex=0.5, caption="2015 Source: US Census")
+
+age_25to34_2015 <- ggplot(mcpa_age_2015) + 
+  geom_sf(aes(fill= age_25to34_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlOrRd", direction=1, name="Population") +
+  labs(title="Ages 25 to 34", title.cex=0.5, caption="2015 Source: US Census")
+
+age_35to44_2015 <- ggplot(mcpa_age_2015) + 
+  geom_sf(aes(fill= age_35to44_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlOrRd", direction=1, name="Population") +
+  labs(title="Ages 35 to 44", title.cex=0.5, caption="2015 Source: US Census")
+  
+age_45to54_2015 <- ggplot(mcpa_age_2015) + 
+  geom_sf(aes(fill= age_45to54_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlOrRd", direction=1, name="Population") +
+  labs(title="Ages 45 to 54", title.cex=0.5, caption="2015 Source: US Census")
+  
+age_55to59_2015 <- ggplot(mcpa_age_2015) + 
+  geom_sf(aes(fill= age_55to59_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlOrRd", direction=1, name="Population") +
+  labs(title="Ages 55 to 59", title.cex=0.5, caption="2015 Source: US Census")
+  
+age_60to74_2015 <- ggplot(mcpa_age_2015) + 
+  geom_sf(aes(fill= age_60to74_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlOrRd", direction=1, name="Population") +
+  labs(title="Ages 60 to 74", title.cex=0.5, caption="2015 Source: US Census")
+  
+age_75to84_2015 <- ggplot(mcpa_age_2015) + 
+  geom_sf(aes(fill= age_75to84_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlOrRd", direction=1, name="Population") +
+  labs(title="Ages 75 to 84", title.cex=0.5, caption="2015 Source: US Census")
+  
+age_85plus_2015 <- ggplot(mcpa_age_2015) + 
+  geom_sf(aes(fill= age_85plus_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlOrRd", direction=1, name="Population") +
+  labs(title="Ages 85 and above", title.cex=0.5, caption="2015 Source: US Census")
+  
+```
