@@ -1,0 +1,112 @@
+---
+title: "2015 Occupancy Maps"
+author: "Abby Henderson"
+date: "4/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+
+censuskey <- "20f2773e863a33466e0fbace2116919a1c67e4a5"
+
+
+## Global options
+options(max.print="105")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=105)
+```
+
+
+
+```{r}
+
+Metadata_2015_ACS5 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/2015ACS5DataDictionary.csv")
+
+#Read csv file with only age variables. I created this by selecting variables from the Metadata and putting them into a separate csv file. Unfortunately, there was no "Sex" alone variables, so I selected Total sex estimates from a different concept.
+occupancy_vars_2015 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/occupancy_vars_2015.csv")
+
+# Create Variable list based off variables in the first column
+occupancy.list.age.2015 <- occupancy_vars_2015$name
+
+occupancy.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = occupancy.list.age.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+```
+
+```{r}
+#Rename the variables
+occupancy.pop.2015 <- rename(occupancy.pop.2015,
+                       Total_occupancy_2015= B25002_001E,
+                         occupied_2015= B25002_001E,
+                         vacant_2015= B25002_001E)
+
+
+```
+
+
+```{r}
+#Write the data into a .csv file
+write.csv( occupancy.pop.2015, "/Users/abigailhenderson/Desktop/Capstone/occupancy_pop_2015.csv", row.names=T)
+
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID of FIPS Code elements
+occupancy_geoid_2015 <- paste0( occupancy.pop.2015$state, occupancy.pop.2015$county, occupancy.pop.2015$tract)
+
+occupancy.pop.2015$geoid <- occupancy_geoid_2015
+
+# Join shapefile with race by tract
+mcpa_occupancy_2015 <- left_join(county_st, occupancy.pop.2015, by=c("GEOID10"="geoid"))
+
+```
+
+
+
+```{r}
+Occupied_2015 <- ggplot(mcpa_occupancy_2015) + 
+  geom_sf(aes(fill= occupied_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="RdYlBu", direction=1, name="Population") +
+  labs(title="Occupied Homes", title.cex=0.5, caption="2015 Source: US Census")
+
+Vacant_2015 <- ggplot(mcpa_occupancy_2015) + 
+  geom_sf(aes(fill= vacant_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="RdYlBu", direction=1, name="Population") +
+  labs(title="Vacant Homes", title.cex=0.5, caption="2015 Source: US Census")
+
+Occupied_2015
+
+Vacant_2015
+
+```
+
