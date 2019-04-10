@@ -1,0 +1,11 @@
+﻿name,label,concept,predicateType,group,limit,attributes,required
+B25006_001E,Estimate!!Total,RACE OF HOUSEHOLDER,int,B25006,0,"B25006_001EA,B25006_001M,B25006_001MA",NA
+B25006_002E,Estimate!!Total!!Householder who is White alone,RACE OF HOUSEHOLDER,int,B25006,0,"B25006_002EA,B25006_002M,B25006_002MA",NA
+B25006_004E,Estimate!!Total!!Householder who is American Indian and Alaska Native alone,RACE OF HOUSEHOLDER,int,B25006,0,"B25006_004EA,B25006_004M,B25006_004MA",NA
+B25006_003E,Estimate!!Total!!Householder who is Black or African American alone,RACE OF HOUSEHOLDER,int,B25006,0,"B25006_003EA,B25006_003M,B25006_003MA",NA
+B25006_009E,Estimate!!Total!!Householder who is Two or more races!!Householder who is Two races including Some other race,RACE OF HOUSEHOLDER,int,B25006,0,"B25006_009EA,B25006_009M,B25006_009MA",NA
+B25006_006E,Estimate!!Total!!Householder who is Native Hawaiian and Other Pacific Islander alone,RACE OF HOUSEHOLDER,int,B25006,0,"B25006_006EA,B25006_006M,B25006_006MA",NA
+B25006_005E,Estimate!!Total!!Householder who is Asian alone,RACE OF HOUSEHOLDER,int,B25006,0,"B25006_005EA,B25006_005M,B25006_005MA",NA
+B25006_008E,Estimate!!Total!!Householder who is Two or more races,RACE OF HOUSEHOLDER,int,B25006,0,"B25006_008EA,B25006_008M,B25006_008MA",NA
+B25006_007E,Estimate!!Total!!Householder who is Some other race alone,RACE OF HOUSEHOLDER,int,B25006,0,"B25006_007EA,B25006_007M,B25006_007MA",NA
+B25006_010E,"Estimate!!Total!!Householder who is Two or more races!!Householder who is Two races excluding Some other race, and three or more races",RACE OF HOUSEHOLDER,int,B25006,0,"B25006_010EA,B25006_010M,B25006_010MA",NA

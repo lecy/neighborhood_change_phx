@@ -1,0 +1,9 @@
+﻿name,label,concept,predicateType,group,limit,attributes,required
+B25081_001E,Estimate!!Total,MORTGAGE STATUS,int,B25081,0,"B25081_001EA,B25081_001M,B25081_001MA",NA
+B25081_002E,"Estimate!!Total!!Housing units with a mortgage, contract to purchase, or similar debt",MORTGAGE STATUS,int,B25081,0,"B25081_002EA,B25081_002M,B25081_002MA",NA
+B25081_003E,"Estimate!!Total!!Housing units with a mortgage, contract to purchase, or similar debt!!With either a second mortgage or home equity loan, but not both",MORTGAGE STATUS,int,B25081,0,"B25081_003EA,B25081_003M,B25081_003MA",NA
+B25081_004E,"Estimate!!Total!!Housing units with a mortgage, contract to purchase, or similar debt!!With either a second mortgage or home equity loan, but not both!!Second mortgage only",MORTGAGE STATUS,int,B25081,0,"B25081_004EA,B25081_004M,B25081_004MA",NA
+B25081_005E,"Estimate!!Total!!Housing units with a mortgage, contract to purchase, or similar debt!!With either a second mortgage or home equity loan, but not both!!Home equity loan only",MORTGAGE STATUS,int,B25081,0,"B25081_005EA,B25081_005M,B25081_005MA",NA
+B25081_006E,"Estimate!!Total!!Housing units with a mortgage, contract to purchase, or similar debt!!Both second mortgage and home equity loan",MORTGAGE STATUS,int,B25081,0,"B25081_006EA,B25081_006M,B25081_006MA",NA
+B25081_007E,"Estimate!!Total!!Housing units with a mortgage, contract to purchase, or similar debt!!No second mortgage and no home equity loan",MORTGAGE STATUS,int,B25081,0,"B25081_007EA,B25081_007M,B25081_007MA",NA
+B25081_008E,Estimate!!Total!!Housing units without a mortgage,MORTGAGE STATUS,int,B25081,0,"B25081_008EA,B25081_008M,B25081_008MA",NA

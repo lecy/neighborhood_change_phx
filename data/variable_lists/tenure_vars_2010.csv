@@ -1,0 +1,4 @@
+﻿name,label,concept,predicateType,group,limit,attributes,required
+B25003_001E,Estimate!!Total,TENURE,int,B25003,0,"B25003_001EA,B25003_001M,B25003_001MA",NA
+B25003_002E,Estimate!!Total!!Owner occupied,TENURE,int,B25003,0,"B25003_002EA,B25003_002M,B25003_002MA",NA
+B25003_003E,Estimate!!Total!!Renter occupied,TENURE,int,B25003,0,"B25003_003EA,B25003_003M,B25003_003MA",NA

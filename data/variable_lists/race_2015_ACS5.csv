@@ -1,0 +1,12 @@
+﻿name,label,concept,predicateType,group,limit,attributes,required
+B02001_001E,Estimate!!Total,RACE,int,B02001,,,
+B02001_002E,Estimate!!Total!!White alone,RACE,int,B02001,,,
+B02001_003E,Estimate!!Total!!Black or African American alone,RACE,int,B02001,,,
+B02001_004E,Estimate!!Total!!American Indian and Alaska Native alone,RACE,int,B02001,,,
+B02001_005E,Estimate!!Total!!Asian alone,RACE,int,B02001,,,
+B02001_006E,Estimate!!Total!!Native Hawaiian and Other Pacific Islander alone,RACE,int,B02001,,,
+B02001_007E,Estimate!!Total!!Some other race alone,RACE,int,B02001,,,
+B02001_008E,Estimate!!Total!!Two or more races,RACE,int,B02001,,,
+B02001_009E,Estimate!!Total!!Two or more races!!Two races including Some other race,RACE,int,B02001,,,
+B02001_010E,"Estimate!!Total!!Two or more races!!Two races excluding Some other race, and three or more races",RACE,int,B02001,,,
+B25006_001E,Estimate!!Total,RACE OF HOUSEHOLDER,int,B25006,,,
