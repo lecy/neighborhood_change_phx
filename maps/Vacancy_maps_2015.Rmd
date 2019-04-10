@@ -1,0 +1,161 @@
+---
+title: "Vacancy Maps 2015"
+author: "Abby Henderson"
+date: "4/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+
+censuskey <- "20f2773e863a33466e0fbace2116919a1c67e4a5"
+
+
+## Global options
+options(max.print="105")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=105)
+```
+
+
+
+```{r}
+
+Metadata_2015_ACS5 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/2010ACS5DataDictionary.csv")
+
+#Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
+vacancy_vars_2015 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/vacancy_vars_2015.csv")
+
+# Create Variable list based off variables in the first column
+var.list.vacancy.2015 <- vacancy_vars_2015$name
+
+vacancy.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = var.list.vacancy.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+```
+
+```{r}
+#Rename the variables
+vacancy.pop.2015 <- rename(vacancy.pop.2015, Total_vacancy_2015=B25004_001E,
+                        For_rent_2015=B25004_002E, 
+                        Rented_unoccupied_2015=B25004_003E,
+                        Forsale_2015=B25004_004E,
+                        Sold_unoccupied_2015=B25004_005E, 
+                        Seasonaluse_2015=B25004_006E, 
+                        Migrant_workers_2015= B25004_007E,
+                       Other_vacant_2015=B25004_008E)
+
+
+#Write the data into a .csv file
+write.csv( vacancy.pop.2015, "/Users/abigailhenderson/Desktop/Capstone/vacancy_pop_2015.csv", row.names=T)
+
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID of FIPS Code elements
+vacancy_geoid_2015 <- paste0( vacancy.pop.2015$state, vacancy.pop.2015$county, vacancy.pop.2015$tract)
+
+vacancy.pop.2015$geoid <- vacancy_geoid_2015
+
+# Join shapefile with race by tract
+mcpa_vacancy_2015 <- left_join(county_st, vacancy.pop.2015, by=c("GEOID10"="geoid"))
+
+```
+```{r}
+
+
+For_rent_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= For_rent_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="For Rent", title.cex=0.5, caption="2015 Source: US Census")
+
+
+Rented_unoccupied_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Rented_unoccupied_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Rented but Unoccupied", title.cex=0.5, caption="2015 Source: US Census")
+
+
+Forsale_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Forsale_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="For Sale", title.cex=0.5, caption="2015 Source: US Census")
+
+
+Sold_unoccupied_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Sold_unoccupied_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Sold but Unoccupied", title.cex=0.5, caption="2015 Source: US Census")
+
+
+Seasonaluse_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Seasonaluse_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Reserved for seasonal or recreational use", title.cex=0.5, caption="2015 Source: US Census")
+
+
+Migrant_workers_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Migrant_workers_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Housing reserved for migrant workers", title.cex=0.5, caption="2015 Source: US Census")
+
+Other_vacant_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Other_vacant_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Vacant for some other reason", title.cex=0.5, caption="2015 Source: US Census")
+
+For_rent_2015
+
+Rented_unoccupied_2015
+
+Forsale_2015
+
+Sold_unoccupied_2015
+
+Seasonaluse_2015
+
+Migrant_workers_2015
+
+Other_vacant_2015
+
+```
