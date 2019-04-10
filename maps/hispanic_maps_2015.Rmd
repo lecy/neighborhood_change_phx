@@ -1,0 +1,108 @@
+---
+title: "2015 Ethnicity Maps"
+author: "Abby Henderson"
+date: "4/10/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+
+censuskey <- "20f2773e863a33466e0fbace2116919a1c67e4a5"
+
+
+## Global options
+options(max.print="105")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=105)
+```
+
+
+
+```{r}
+
+Metadata_2015_ACS5 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/2015ACS5DataDictionary.csv")
+
+#Read csv file with only age variables. I created this by selecting variables from the Metadata and putting them into a separate csv file. Unfortunately, there was no "Sex" alone variables, so I selected Total sex estimates from a different concept.
+hispanic_vars_2015 <- read.csv("/Users/abigailhenderson/Desktop/Capstone/hispanic_vars_2015.csv")
+
+# Create Variable list based off variables in the first column
+hispanic.list.age.2015 <- hispanic_vars_2015$name
+
+hispanic.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = hispanic.list.age.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+```
+
+```{r}
+#Rename the variables
+hipsanic.pop.2015 <- rename(hispanic.pop.2015,
+                       Total_sex_2015= B03003_001E,
+                         Not_hispanic_2015= B03003_002E,
+                         Hispanic_2015= B03003_003E)
+
+
+```
+
+
+```{r}
+#Write the data into a .csv file
+write.csv( hispanic.pop.2015, "/Users/abigailhenderson/Desktop/Capstone/age_pop_2015.csv", row.names=T)
+
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+#Create GEOID of FIPS Code elements
+hispanic_geoid_2015 <- paste0( hispanic.pop.2015$state, hispanic.pop.2015$county, hispanic.pop.2015$tract)
+
+hispanic.pop.2015$geoid <- hispanic_geoid_2015
+
+# Join shapefile with race by tract
+mcpa_hispanic_2015 <- left_join(county_st, hispanic.pop.2015, by=c("GEOID10"="geoid"))
+
+```
+
+
+
+```{r}
+Hispanic_2015 <- ggplot(mcpa_hispanic_2015) + 
+  geom_sf(aes(fill= Hispanic_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlGn", direction=1, name="Population") +
+  labs(title="Hispanic Population", title.cex=0.5, caption="2015 Source: US Census")
+
+Not_hispanic_2015 <- ggplot(mcpa_hispanic_2015) + 
+  geom_sf(aes(fill= Not_hispanic_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlGn", direction=1, name="Population") +
+  labs(title="Adult Females", title.cex=0.5, caption="2015 Source: US Census")
+
+```
+
