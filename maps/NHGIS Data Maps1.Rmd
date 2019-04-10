@@ -1,0 +1,481 @@
+---
+title: "NHGIS Data Maps"
+author: "Kendelle Brown, Abby Henderson"
+date: "April 8, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+
+Censuskey <- "9cb83c4560f4fbcc326ddd18ea31460fdd34546f"
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+
+```
+
+# Data
+```{r}
+
+library(readr)
+NHGIS_Data_Rename1 <- read_csv("NHGIS Data Rename1.csv")
+
+
+```
+
+# Import Shapefile
+```{r}
+county_shp <- "/Users/ksbrow15/Desktop/CAPSTONE PROJECT/CensusData/shapefiles/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+#Create GEOID of FIPS Code elements
+county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
+
+county_st$geoid <- county_geo_id
+```
+
+# Join shapefile by tract
+```{r}
+
+NHGIS_Data_Rename1 <- left_join(county_st, NHGIS_Data_Rename1, by=c("geoid"="GISJOIN"))
+
+```
+
+# Ethnicity Maps
+```{r}
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Hispanic.Latino1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set3", direction=1, name="Population") +
+     labs(title="Hispanic/Latino1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Hispanic.Latino2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set3", direction=1, name="Population") +
+     labs(title="Hispanic/Latino2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Hispanic.Latino2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set3", direction=1, name="Population") +
+     labs(title="Hispanic/Latino2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NotHispanic.Latino_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Accent", direction=1, name="Population") +
+     labs(title="Not Hispanic/Latino1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NotHispanic.Latino_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Accent", direction=1, name="Population") +
+     labs(title="Not Hispanic/Latino2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NotHispanic.Latino_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Accent", direction=1, name="Population") +
+     labs(title="Not Hispanic/Latino2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+```
+
+# Racial Maps
+```{r}
+
+#white
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=White_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set1", direction=1, name="Population") +
+     labs(title="White 1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=White_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set1", direction=1, name="Population") +
+     labs(title="White 2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=White_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set1", direction=1, name="Population") +
+     labs(title="White 2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+#Black.AA
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Black_AA_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+     labs(title="Black/African American1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Black_AA_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+     labs(title="Black/African American2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Black_AA_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+     labs(title="Black/African American2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+# NativeAm_Alaskan Maps
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeAm_Alaskan1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdGy", direction=1, name="Population") +
+     labs(title="NativeAm_Alaskan1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeAm_Alaskan2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdGy", direction=1, name="Population") +
+     labs(title="NativeAm_Alaskan2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeAm_Alaskan2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdGy", direction=1, name="Population") +
+     labs(title="NativeAm_Alaskan2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+# Asian
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Asian_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+     labs(title="Asian1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Asian_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+     labs(title="Asian2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Asian_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+     labs(title="Asian2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+# NativeHawaiian.PacificIslander
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeHawaiian.PacificIslander_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="BrBG", direction=1, name="Population") +
+     labs(title="NativeHawaiian.PacificIslander_1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeHawaiian.PacificIslander_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="BrBG", direction=1, name="Population") +
+     labs(title="NativeHawaiian.PacificIslander_2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeHawaiian.PacificIslander_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="BrBG", direction=1, name="Population") +
+     labs(title="NativeHawaiian.PacificIslander_2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+# SomeOther Variable
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=SomeOther_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PiYG", direction=1, name="Population") +
+     labs(title="SomeOther_1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=SomeOther_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PiYG", direction=1, name="Population") +
+     labs(title="SomeOther_2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=SomeOther_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PiYG", direction=1, name="Population") +
+     labs(title="SomeOther_2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+# Two or More Races Variable
+# Data not available for 1990
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Two.OrMore_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdBu", direction=1, name="Population") +
+     labs(title="Two Or More Races 2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Two.OrMore_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdBu", direction=1, name="Population") +
+     labs(title="Two Or More Races 2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+```
+
+# Housing Unit Maps
+```{r} 
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdBu", direction=1, name="Population") +
+     labs(title="Housing Units 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdBu", direction=1, name="Population") +
+     labs(title="Housing Units 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdBu", direction=1, name="Population") +
+     labs(title="Housing Units 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+```
+
+# Occupancy Housing Variable
+```{r}
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Occupied_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel2", direction=1, name="Population") +
+     labs(title="Occupied Housing Units 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Occupied_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel2", direction=1, name="Population") +
+     labs(title="Occupied Housing Units 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Occupied_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel2", direction=1, name="Population") +
+     labs(title="Occupied Housing Units 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Vacant_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel1", direction=1, name="Population") +
+     labs(title="Vacant Housing Units 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Vacant_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel1", direction=1, name="Population") +
+     labs(title="Vacant Housing Units 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Vacant_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel1", direction=1, name="Population") +
+     labs(title="Vacant Housing Units 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Vacant_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel1", direction=1, name="Population") +
+     labs(title="Vacant Housing Units 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+```
+
+# Vacancy Status Variable 
+```{r}
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForRent_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Rent Housing Unit 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForRent_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Rent Housing Unit 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForRent_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Rent Housing Unit 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForSale_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Sale Housing Unit 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForSale_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Sale Housing Unit 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForSale_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Sale Housing Unit 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_RentedOrSold_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Rented Or Sold 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_RentedOrSold_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Rented Or Sold 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_RentedOrSold_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Rented Or Sold 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_OccasionalUse_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Occasional Use 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_OccasionalUse_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Occasional Use 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_OccasionalUse_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Occasional Use 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_MigrantWorkers_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Migrant Workers 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_MigrantWorkers_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Migrant Workers 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_MigrantWorkers_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Migrant Workers 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_Other_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Other 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_Other_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Other 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_Other_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Other 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+```
