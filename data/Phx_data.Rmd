@@ -1,0 +1,843 @@
+---
+title: "Phoenix Neighborhoods Data"
+author: "Kendelle Brown & Abby Henderson"
+date: "4/14/2019"
+output: html_document
+---
+```{r}
+# Load libraries
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+library(rmapshaper)
+
+setwd( ".." )
+
+#Load in census key
+##Census Key
+censuskey <- "20f2773e863a33466e0fbace2116919a1c67e4a5"
+
+# Load Meta data
+
+## Read csv file with all filtered variables. 
+Metadata_2010_ACS5 <- read.csv("./data/2010ACS5DataDictionary.csv")
+Metadata_2015_ACS5 <- read.csv("./data/2015ACS5DataDictionary.csv")
+
+#Load time series tables
+NHGIS_data <- read.csv(“./data/NHGIS_geog_data.csv”)
+
+
+#Race 
+
+##1990 to 2010
+
+NHGIS_Data <- rename(NHGIS_Data, White_1990=CM1AA1990, White_2000=CM1AA2000, White_2010=CM1AA2010, Black_AA_1990=CM1AB1990, Black_AA_2000=CM1AB2000, Black_AA_2010=CM1AB2010, NativeAm_Alaskan1990=CM1AC1990, NativeAm_Alaskan2000=CM1AC2000,NativeAm_Alaskan2010=CM1AC2010, Asian_1990=CM1AD1990,Asian_2000=CM1AD2000, Asian_2010=CM1AD2010, NativeHawaiian.PacificIslander_1990=CM1AE1990,NativeHawaiian.PacificIslander_2000=CM1AE2000, NativeHawaiian.PacificIslander_2010=CM1AE2010, SomeOther_1990=CM1AF1990, SomeOther_2000=CM1AF2000, SomeOther_2010=CM1AF2010, Two.OrMore_1990=CM1AG1990, Two.OrMore_2000=CM1AG2000, Two.OrMore_2010=CM1AG2010 )
+
+
+##2015
+
+## Variable list
+
+race_2015_vars <- read.csv("./data/variable_lists/race_2015_ACS5.csv")
+
+## Download data
+### Create Variable list based off variables in the first column
+var.list.race.2015 <- race_2015_vars$name
+
+### Pull Data using variable list only. Make sure the censusapi package is loaded.
+race.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = var.list.race.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+## Rename variables
+### Rename data
+race.pop.2015 <- rename(race.pop.2015, Total_2015=B25006_001E, White_2015=B02001_002E, Black_2015=B02001_003E, American_Indian_2015=B02001_004E, Asian_2015=B02001_005E , Pacific_Islander_2015=B02001_006E, Two_plus_races_2015= B02001_008E, Other_Race_2015=B02001_007E)
+
+### Add Percentages
+
+race.pop.2015 <- race.pop.2015 %>% group_by(tract) %>% 
+  mutate(( White_Percent_2015 = White_2015 / Total_2015) * 100) %>%
+mutate(( Black_Percent_2015 = Black_2015 / Total_2015) * 100) %>% 
+mutate(( Indian_Percent_2015 = American_Indian_2015 / Total_2015 ) * 100) %>%
+mutate(( Asian_Percent_2015 = Asian_2015 / Total_2015 ) * 100) %>%
+mutate(( Pacific_Islander_Percent_2015 = Pacific_Islander_2015 / Total_2015 ) * 100) %>%
+mutate(( Two_plus_racesPercent_2015 = Two_plus_races_2015 / Total_2015 ) * 100) %>%
+mutate(( Other_Percent_2015 = Other_Race_2015 / Total_2015 ) * 100)
+
+##Geoid
+###Create GEOID of FIPS Code elements
+race_geoid_2015 <- paste0( race.pop.2015$state, race.pop.2015$county, race.pop.2015$tract)
+
+race.pop.2015$geoid <- race_geoid_2015
+
+# Sex
+
+##1990, 2000, and 2010
+
+###Rename variables
+NHGIS_data <- rename(NHGIS_data,
+                         Male_1990=CM0AA1990,
+                        Male_2000=CM0AA2000, 
+                        Male_2010=CM0AA2010,
+                        Female_1990=CM0AB1990,
+                        Female_2000=CM0AB2000, 
+                        Female_2010=CM0AB2010)
+
+###Make percentages
+NHGIS_data <- NHGIS_data %>%
+  mutate(Total_Sex_1990 = coalesce(Male_1990 + Female_1990))
+  
+
+
+NHGIS_data <- NHGIS_data %>% mutate(Total_Sex_2000 = coalesce(Male_2000 + Female_2000))
+NHGIS_data <- NHGIS_data %>% mutate(Total_Sex_2010 = coalesce(Male_2010 + Female_2010))
+NHGIS_data <- NHGIS_data %>% group_by(GISJOIN) %>% 
+  mutate((Male_Percent_1990 = Male_1990 / Total_Sex_1990 * 100)) %>%
+  mutate((Female_Percent_1990 = Female_1990 / Total_Sex_1990 * 100)) %>%
+  mutate((Male_Percent_2000 = Male_2000 / Total_Sex_2000 *100)) %>%
+  mutate((Female_Percent_2000 = Female_2000 / Total_Sex_2000 * 100)) %>%
+  mutate((Male_Percent_2010 = Male_2010 / Total_Sex_2010 * 100)) %>%
+  mutate((Female_Percent_2010 = Female_2010 / Total_Sex_2010 * 100))
+
+###GeoID
+
+
+county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
+county_st$geoid <- county_geo_id
+
+
+##2015
+###Read csv file with only age variables. I created this by selecting variables from the Metadata and putting them into a separate csv file. Unfortunately, there was no "Sex" alone variables, so I selected Total sex estimates from a different concept.
+
+sex_vars_2015 <- read.csv("./data/variable_lists/sex_vars_2015.csv")
+
+### Create Variable list based off variables in the first column
+sex.list.2015 <- sex_vars_2015$name
+sex.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = sex.list.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+#Rename the variables
+sex.pop.2015 <- rename(sex.pop.2015,
+                       Total_sex_2015= B01001_001E,
+                         Male_2015= B01001_002E,
+                         Female_2015= B01001_026E)
+###Create GEOID of FIPS Code elements
+sex_geoid_2015 <- paste0( sex.pop.2015$state, sex.pop.2015$county, sex.pop.2015$tract)
+sex.pop.2015$geoid <- sex_geoid_2015
+
+# Ethnicity
+
+##1990, 2000, 2010
+
+###Rename data
+NHGIS_Data <- rename(NHGIS_Data, NotHispanic.Latino_1990=CP4AA1990, NotHispanic.Latino_2000=CP4AA2000, NotHispanic.Latino_2010=CP4AA2010, Hispanic.Latino1990=CP4AB1990, Hispanic.Latino2000=CP4AB2000, Hispanic.Latino2010=CP4AB2010)
+
+###Create GEOID of FIPS Code elements
+county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
+county_st$geoid <- county_geo_id
+
+##2015
+
+##Variable list
+###Read csv file with only age variables. I created this by selecting variables from the Metadata and putting them into a separate csv file. 
+hispanic_vars_2015 <- read.csv("./data/variable_lists/hispanic_vars_2015.csv")
+
+### Create Variable list based off variables in the first column
+hispanic.list. 2015 <- hispanic_vars_2015$name
+
+###Download the data
+hispanic.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = hispanic.list. 2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+###Rename the variables
+hipsanic.pop.2015 <- rename(hispanic.pop.2015,
+                       Total_sex_2015= B03003_001E,
+                         Not_hispanic_2015= B03003_002E,
+                         Hispanic_2015= B03003_003E)
+
+###Create GEOID of FIPS Code elements
+hispanic_geoid_2015 <- paste0( hispanic.pop.2015$state, hispanic.pop.2015$county, hispanic.pop.2015$tract)
+hispanic.pop.2015$geoid <- hispanic_geoid_2015
+
+
+
+# Education
+
+##2010 and 2015
+
+###Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
+educ_2010_vars <- read.csv("./data/variable_lists/educ_2010_vars.csv")
+
+### Create Variable list based off variables in the first column
+var.list.educ.2010 <- educ_2010_vars$name
+
+educ.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010, key=censuskey,
+                               vars = var.list.educ.2010,
+                               region="tract:*", regionin="state:04&county:013" )
+
+
+educ.pop.2010 <- rename(educ.pop.2010, Total_2010=B15002_001E,
+                        No_school_2010_M=B15002_003E, Fourth_2010_M=B15002_004E,
+                        Sixth_2010_M=B15002_005E, Eighth_2010_M=B15002_006E, 
+                        Ninth_2010_M=B15002_007E, Tenth_2010_M= B15002_008E,
+                       Eleventh_2010_M=B15002_009E, Twelfth_NO_2010_M=B15002_010E,
+                       HSD_GED_2010_M=B15002_011E, SomeCollege_0yr_2010_M=B15002_012E,
+                       SomeCollege_1yr_2010_M=B15002_013E, AA_2010_M=B15002_014E,
+                       BA_2010_M=B15002_015E, Masters_2010_M=B15002_016E,
+                       ProfSchool_2010_M=B15002_017E, Doctoral_2010_M=B15002_018E,
+                        No_school_2010_F=B15002_020E, Fourth_2010_F=B15002_021E,
+                        Sixth_2010_F=B15002_022E, Eighth_2010_F=B15002_023E, 
+                        Ninth_2010_F=B15002_024E, Tenth_2010_F=B15002_025E,
+                       Eleventh_2010_F=B15002_026E, Twelfth_NO_2010_F=B15002_027E,
+                       HSD_GED_2010_F=B15002_028E, SomeCollege_0yr_2010_F=B15002_029E,
+                       SomeCollege_1yr_2010_F=B15002_030E, AA_2010_F=B15002_031E,
+                       BA_2010_F=B15002_032E, Masters_2010_F=B15002_033E,
+                       ProfSchool_2010_F=B15002_034E, Doctoral_2010_F=B15002_035E)
+
+
+###Combine variable categories as necessary, including combining Male and Female to get a population count.
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(LessThanNinth_2010 = coalesce(Fourth_2010_M + Fourth_2010_F + Sixth_2010_M + Sixth_2010_F + Eighth_2010_M +  Eighth_2010_F))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(NoSchool_2010 = coalesce(No_school_2010_F + No_school_2010_M))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(Ninthgrade_2010 = coalesce(Ninth_2010_M + Ninth_2010_F))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(Tenthgrade_2010 = coalesce(Tenth_2010_M+ Tenth_2010_F))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(Eleventhgrade_2010 = coalesce(Eleventh_2010_M + Eleventh_2010_F))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(Twelfthgrade_2010 = coalesce(Twelfth_NO_2010_M + Twelfth_NO_2010_F))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(HSDiploma_GED_2010 = coalesce(HSD_GED_2010_M + HSD_GED_2010_F))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(SomeCollege_2010 = coalesce(SomeCollege_0yr_2010_M + SomeCollege_1yr_2010_M + SomeCollege_0yr_2010_F + SomeCollege_1yr_2010_F))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(AA_2010 = coalesce(AA_2010_M + AA_2010_F))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(BA_2010 = coalesce(BA_2010_M + BA_2010_F))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(Masters_2010 = coalesce(Masters_2010_M + Masters_2010_F))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(ProfSchool_2010 = coalesce(ProfSchool_2010_M + ProfSchool_2010_F))
+
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(Doctoral_2010 = coalesce(Doctoral_2010_M + Doctoral_2010_F))
+
+
+###Create percentage variables of each educational category
+
+educ.pop.2010 <- educ.pop.2010 %>% group_by(tract) %>% 
+  mutate((No_school_Percent_2010 = NoSchool_2010 / Total_2010) * 100) %>%
+  mutate(( LessThanNinth_Percent_2010 = LessThanNinth_2010 / Total_2010) * 100) %>%
+mutate(( Ninthgrade_Percent_2010 = Ninthgrade_2010 / Total_2010) * 100) %>% 
+mutate(( Tenthgrade_Percent_2010 = Tenthgrade_2010 / Total_2010 ) * 100) %>%
+mutate(( Eleventhgrade_Percent_2010 = Eleventhgrade_2010 / Total_2010 ) * 100) %>%
+mutate(( Twelfthgrade_Percent_2010 = Twelfthgrade_2010 / Total_2010 ) * 100) %>%
+mutate(( HSD_GED_Percent_2010 = HSDiploma_GED_2010 / Total_2010 ) * 100) %>%
+mutate(( SomeCollege_Percent_2010 = SomeCollege_2010  / Total_2010 ) * 100) %>%
+mutate(( AA_Percent_2010 = AA_2010 / Total_2010 ) * 100) %>%
+mutate(( BA_Percent_2010 = BA_2010 / Total_2010 ) * 100) %>%
+mutate(( Masters_Percent_2010 = Masters_2010 / Total_2010 ) * 100) %>%
+mutate(( ProfSchool_Percent_2010 = ProfSchool_2010 / Total_2010 ) * 100) %>%
+mutate(( Doctoral_Percent_2010 = Doctoral_2010 / Total_2010 ) * 100)
+
+### Geoid
+
+#Create GEOID of FIPS Code elements
+educ_geoid_2010 <- paste0( educ.pop.2010$state, educ.pop.2010$county, educ.pop.2010$tract)
+
+educ.pop.2010$geoid <- educ_geoid_2010
+
+###Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
+educ_2015_vars <- read.csv(".data/variable_lists/educ_2015_vars.csv")
+
+### Create Variable list based off variables in the first column
+var.list.educ.2015 <- educ_2015_vars$name
+
+
+### Pull Data using variable list only. 
+educ.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = var.list.educ.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+### Rename data
+educ.pop.2015 <- rename(educ.pop.2015, Total_2015=B15003_001E,
+                        No_school_2015=B15003_002E, Prek_2015=B15003_003E,
+                        Kinder_2015=B15003_004E, Firstgrade_2015=B15003_005E, 
+                        Secondgrade_2015=B15003_006E, Thirdgrade_2015= B15003_007E,
+                       Fourthgrade_2015=B15003_008E, Fifthgrade_2015=B15003_009E,
+                       Sixthgrade_2015=B15003_010E, Seventhgrade_2015=B15003_011E,
+                       Eighthgrade_2015=B15003_012E, Ninthgrade_2015=B15003_013E,
+                       Tenthgrade_2015=B15003_014E, Eleventhgrade_2015=B15003_015E,
+                       Twelfthgrade_2015=B15003_016E, HSdiploma_2015=B15003_017E,
+                       GED_2015=B15003_018E,Somecollege_0yr_2015=B15003_019E,
+                       Somecollege_1yr_2015=B15003_020E, AA_2015=B15003_021E,
+                       Bachelors_2015=B15003_022E, Masters_2015=B15003_023E,
+                       ProfSchool_2015=B15003_024E, Doctoral_2015=B15003_025E)
+
+
+### Combine Categories as necessary to make meaningful categories
+
+educ.pop.2015 <- educ.pop.2015 %>%
+  mutate(LessThanNinth_2015 = coalesce(Prek_2015 + Kinder_2015 + Firstgrade_2015 + Secondgrade_2015 + Thirdgrade_2015 +  Fourthgrade_2015 + Fifthgrade_2015 + Sixthgrade_2015 + Seventhgrade_2015 + Eighthgrade_2015))
+
+educ.pop.2015 <- educ.pop.2015 %>% 
+  mutate(SomeCollege_2015 = coalesce(Somecollege_0yr_2015 + Somecollege_1yr_2015))
+
+
+### Add Percentages
+
+educ.pop.2015 <- educ.pop.2015 %>% group_by(tract) %>% 
+  mutate((No_school_Percent_2015 = No_school_2015 / Total_2015) * 100) %>%
+  mutate(( LessThanNinth_Percent_2015 = LessThanNinth_2015 / Total_2015) * 100) %>%
+mutate(( Ninthgrade_Percent_2015 = Ninthgrade_2015 / Total_2015) * 100) %>% 
+mutate(( Tenthgrade_Percent_2015 = Tenthgrade_2015 / Total_2015 ) * 100) %>%
+mutate(( Eleventhgrade_Percent_2015 = Eleventhgrade_2015 / Total_2015 ) * 100) %>%
+mutate(( Twelfthgrade_Percent_2015 = Twelfthgrade_2015 / Total_2015 ) * 100) %>%
+mutate(( HSDiploma_Percent_2015 = HSdiploma_2015 / Total_2015 ) * 100) %>%
+mutate(( GED_Percent_2015 = GED_2015 / Total_2015 ) * 100) %>%
+mutate(( SomeCollege_Percent_2015 = SomeCollege_2015  / Total_2015 ) * 100) %>%
+mutate(( AA_Percent_2015 = AA_2015 / Total_2015 ) * 100) %>%
+mutate(( Bachelors_Percent_2015 = Bachelors_2015 / Total_2015 ) * 100) %>%
+mutate(( Masters_Percent_2015 = Masters_2015 / Total_2015 ) * 100) %>%
+mutate(( ProfSchool_Percent_2015 = ProfSchool_2015 / Total_2015 ) * 100) %>%
+mutate(( Doctoral_Percent_2015 = Doctoral_2015 / Total_2015 ) * 100)
+
+###Geo id
+#Create GEOID of FIPS Code elements
+educ_geoid_2015 <- paste0( educ.pop.2015$state, educ.pop.2015$county, educ.pop.2015$tract)
+
+educ.pop.2015$geoid <- educ_geoid_2015
+
+# Income
+
+##2010 and 2015
+
+### Read csv file with only race variables. 
+income_2010_vars <- read.csv("./data/variable_lists/income_2010_vars.csv")
+
+### Create Variable list based off variables in the first column
+var.list.income.2010 <- income_2010_vars$name
+
+###Download the data
+income.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010, key=censuskey,
+                               vars = var.list.income.2010,
+                               region="tract:*", regionin="state:04&county:013" )
+
+##Rename the variables
+income.pop.2010 <- rename(income.pop.2010, Total_income_2010=B19001_001E,
+                        Lessthan10k_2010=B19001_002E, 
+                        TenkTo14k_2010=B19001_003E,
+                        Fifteenkto20k_2010=B19001_004E,
+                        TwentykTo25k_2010=B19001_005E, 
+                        TwentyfivekTo30k_2010=B19001_006E, 
+                        ThirtykTo35k_2010= B19001_007E,
+                       ThirtyfivekTo40k_2010=B19001_008E,
+                       FortykTo45k_2010=B19001_009E,
+                       FortyfivekTo50k_2010=B19001_010E,
+                       FiftykTo60k_2010=B19001_011E,
+                       SixtykTo75k_2010=B19001_012E, 
+                       SeventyfivekTo100k_2010=B19001_013E,
+                       OnehundredkTo125k_2010=B19001_014E, 
+                       OnetwentyfivekTo150k_2010=B19001_015E,
+                       OnefiftykTo200k_2010=B19001_016E, 
+                       TwohundredkPlus_2010=B19001_017E)
+
+###Combine variable categories as necessary.
+income.pop.2010 <- income.pop.2010 %>%
+  mutate(OnetwentyfivekPlus_2010 = coalesce(OnehundredkTo125k_2010 + OnefiftykTo200k_2010 + TwohundredkPlus_2010))
+
+###Create percentage variables of each educational category
+income.pop.2010 <- income.pop.2010 %>% group_by(tract) %>% 
+  mutate((Lessthan10k_Percent_2010 = Lessthan10k_2010 / Total_income_2010) * 100) %>%
+  mutate(( TenkTo14k_Percent_2010 = TenkTo14k_2010 / Total_income_2010) * 100) %>%
+mutate(( TenkTo14k_Percent_2010 = TenkTo14k_2010 / Total_income_2010) * 100) %>% 
+mutate(( Fifteenkto20k_Percent_2010 = Fifteenkto20k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( TwentykTo25k_Percent_2010 = TwentykTo25k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( TwentyfivekTo30k_Percent_2010 = TwentyfivekTo30k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( ThirtykTo35k_2010 = ThirtykTo35k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( ThirtyfivekTo40k_Percent_2010 = ThirtyfivekTo40k_2010  / Total_income_2010 ) * 100) %>%
+mutate(( FortykTo45k_Percent_2010 = FortykTo45k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( FortyfivekTo50k_Percent_2010 = FortyfivekTo50k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( FiftykTo60k_Percent_2010 = FiftykTo60k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( SixtykTo75k_Percent_2010 = SixtykTo75k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( SeventyfivekTo100k_Percent_2010 = SeventyfivekTo100k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( OnehundredkTo125k_Percent_2010 = OnehundredkTo125k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( OnetwentyfivekTo150k_Percent_2010 = OnetwentyfivekTo150k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( OnefiftykTo200k_Percent_2010 = OnefiftykTo200k_2010 / Total_income_2010 ) * 100) %>%
+mutate(( TwohundredkPlus_Percent_2010 = TwohundredkPlus_2010 / Total_income_2010 ) * 100)
+
+###Create GEOID of FIPS Code elements
+income_geoid_2010 <- paste0( income.pop.2010$state, income.pop.2010$county, income.pop.2010$tract)
+income.pop.2010$geoid <- income_geoid_2010
+
+###Read csv file with only income variables for 2015. 
+income_2015_vars <- read.csv("./data/variable_lists/income_2015_vars.csv")
+
+### Create Variable list based off variables in the first column
+var.list.income.2015 <- income_2015_vars$name
+
+### Pull Data using variable list only. Make sure the censusapi package is loaded.
+income.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = var.list.income.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+### Rename data
+income.pop.2015 <- rename(income.pop.2015,
+                      Total_income_2015=B19001_001E,
+                        Lessthan10k_2015=B19001_002E, 
+                        TenkTo14k_2015=B19001_003E,
+                        Fifteenkto20k_2015=B19001_004E,
+                        TwentykTo25k_2015=B19001_005E, 
+                        TwentyfivekTo30k_2015=B19001_006E, 
+                        ThirtykTo35k_2015= B19001_007E,
+                       ThirtyfivekTo40k_2015=B19001_008E,
+                       FortykTo45k_2015=B19001_009E,
+                       FortyfivekTo50k_2015=B19001_010E,
+                       FiftykTo60k_2015=B19001_011E,
+                       SixtykTo75k_2015=B19001_012E, 
+                       SeventyfivekTo100k_2015=B19001_013E,
+                       OnehundredkTo125k_2015=B19001_014E, 
+                       OnetwentyfivekTo150k_2015=B19001_015E,
+                       OnefiftykTo200k_2015=B19001_016E, 
+                       TwohundredkPlus_2015=B19001_017E)
+
+###Combine Categories
+income.pop.2015 <- income.pop.2015 %>%
+  mutate(OnetwentyfivekPlus_2015 = coalesce(OnehundredkTo125k_2015 + OnefiftykTo200k_2015 + TwohundredkPlus_2015))
+
+### Add Percentages
+income.pop.2015 <- income.pop.2015 %>% group_by(tract) %>% 
+  mutate((Lessthan10k_Percent_2015 = Lessthan10k_2015 / Total_income_2015) * 100) %>%
+  mutate(( TenkTo14k_Percent_2015 = TenkTo14k_2015 / Total_income_2015) * 100) %>%
+mutate(( TenkTo14k_Percent_2015 = TenkTo14k_2015 / Total_income_2015) * 100) %>% 
+mutate(( Fifteenkto20k_Percent_2015 = Fifteenkto20k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( TwentykTo25k_Percent_2015 = TwentykTo25k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( TwentyfivekTo30k_Percent_2015 = TwentyfivekTo30k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( ThirtykTo35k_Percent_2015 = ThirtykTo35k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( ThirtyfivekTo40k_Percent_2015 = ThirtyfivekTo40k_2015  / Total_income_2015 ) * 100) %>%
+mutate(( FortykTo45k_Percent_2015 = FortykTo45k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( FortyfivekTo50k_Percent_2015 = FortyfivekTo50k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( FiftykTo60k_Percent_2015 = FiftykTo60k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( SixtykTo75k_Percent_2015 = SixtykTo75k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( SeventyfivekTo100k_Percent_2015 = SeventyfivekTo100k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( OnehundredkTo125k_Percent_2015 = OnehundredkTo125k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( OnetwentyfivekTo150k_Percent_2015 = OnetwentyfivekTo150k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( OnefiftykTo200k_Percent_2015 = OnefiftykTo200k_2015 / Total_income_2015 ) * 100) %>%
+mutate(( TwohundredkPlus_Percent_2015 = TwohundredkPlus_2015 / Total_income_2015 ) * 100)
+
+###Create GEOID of FIPS Code elements
+income_geoid_2015 <- paste0( income.pop.2015$state, income.pop.2015$county, income.pop.2015$tract)
+
+income.pop.2015$geoid <- income_geoid_2015
+
+
+# Value
+
+##2010 and 2015
+
+###Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
+value_2010_vars <- read.csv(".data/variable_lists/value_vars_2010.csv")
+
+
+### Create Variable list based off variables in the first column
+var.list.value.2010 <- value_2010_vars$name
+
+##Download the data
+value.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010, key=censuskey,
+                               vars = var.list.value.2010,
+                               region="tract:*", regionin="state:04&county:013" )
+
+##Rename variables
+value.pop.2010 <- rename(value.pop.2010,
+                         Total_value_2010=B25075_001E,
+                        Lessthan10k_2010=B25075_002E, 
+                        TenkTo14k_2010=B25075_003E,
+                        Fifteenkto20k_2010=B25075_004E,
+                        TwentykTo25k_2010=B25075_005E, 
+                        TwentyfivekTo30k_2010=B25075_006E, 
+                        ThirtykTo35k_2010= B25075_007E,
+                       ThirtyfivekTo40k_2010=B25075_008E,
+                       FortykTo50k_2010=B25075_009E,
+                       FiftykTo60k_2010=B25075_010E,
+                       SixtykTo70k_2010=B25075_011E, 
+                       SeventykTo80k_2010=B25075_012E,
+                       Eightykto90k_2010=B25075_013E,
+                       Ninetykto100k_2010=B25075_014E,
+                       OnehundredkTo125k_2010=B25075_015E, 
+                       OnetwentyfivekTo150k_2010=B25075_016E,
+                       OnefiftykTo175k_2010=B25075_017E, 
+                       One75kTo200k_2010=B25075_018E, 
+                       Twohundredkto250k_2010=B25075_019E, 
+                       Twofiftykto300k_2010=B25075_020E, 
+                       Threehundredkto400k_2010=B25075_021E, 
+                       Fourhundredkto500k_2010=B25075_022E, 
+                       Fivehundredkto750k_2010=B25075_023E, 
+                       Sevenfiftykto1mil_2010=B25075_024E, 
+                       OnemilPlus_2010=B25075_025E)
+
+###Create percentage variables of each educational category
+value.pop.2010 <- value.pop.2010 %>% group_by(tract) %>% 
+  mutate((Lessthan10k_Percent_2010 = Lessthan10k_2010 / Total_value_2010) * 100) %>%
+  mutate(( TenkTo14k_Percent_2010 = TenkTo14k_2010 / Total_value_2010) * 100) %>%
+mutate(( TenkTo14k_Percent_2010 = TenkTo14k_2010 / Total_value_2010) * 100) %>% 
+mutate(( Fifteenkto20k_Percent_2010 = Fifteenkto20k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( TwentykTo25k_Percent_2010 = TwentykTo25k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( TwentyfivekTo30k_Percent_2010 = TwentyfivekTo30k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( ThirtykTo35k_2010 = ThirtykTo35k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( ThirtyfivekTo40k_Percent_2010 = ThirtyfivekTo40k_2010  / Total_value_2010 ) * 100) %>%
+mutate(( FortykTo50k_Percent_2010 = FortykTo50k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( FiftykTo60k_Percent_2010 = FiftykTo60k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( SixtykTo70k_Percent_2010 = SixtykTo70k_2010 / Total_value_2010 ) * 100) %>%
+mutate((  Eightykto90k_Percent_2010 =  Eightykto90k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( Ninetykto100k_Percent_2010 = Ninetykto100k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( OnehundredkTo125k_Percent_2010 = OnehundredkTo125k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( OnetwentyfivekTo150k_Percent_2010 = OnetwentyfivekTo150k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( OnefiftykTo175k_Percent_2010 = OnefiftykTo175k_2010 / Total_value_2010 ) * 100) %>%
+mutate((  One75kTo200k_Percent_2010 =  One75kTo200k_2010 / Total_value_2010 ) * 100) %>%
+mutate(( Twohundredkto250k_Percent_2010 = Twohundredkto250k_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( Twofiftykto300k_Percent_2010 = Twofiftykto300k_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( Threehundredkto400k_Percent_2010 = Threehundredkto400k_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( Fourhundredkto500k_Percent_2010 = Fourhundredkto500k_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( Fivehundredkto750k_Percent_2010 = Fivehundredkto750k_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( Sevenfiftykto1mil_Percent_2010 = Sevenfiftykto1mil_2010 / Total_value_2010 ) * 100) %>%
+  mutate(( OnemilPlus_Percent_2010 = OnemilPlus_2010 / Total_value_2010 ) * 100)
+
+### Create GEOID of FIPS Code elements
+value_geoid_2010 <- paste0( value.pop.2010$state, value.pop.2010$county, value.pop.2010$tract)
+value.pop.2010$geoid <- value_geoid_2010
+
+### Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
+value_2015_vars <- read.csv(".data/variable_lists/value_vars_2015.csv")
+
+### Create Variable list based off variables in the first column
+var.list.value.2015 <- value_2015_vars$name
+
+###Download data
+value.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = var.list.value.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+### Rename variables
+value.pop.2015 <- rename(value.pop.2015,
+                         Total_value_2015=B25075_001E,
+                        Lessthan10k_2015=B25075_002E, 
+                        TenkTo14k_2015=B25075_003E,
+                        Fifteenkto20k_2015=B25075_004E,
+                        TwentykTo25k_2015=B25075_005E, 
+                        TwentyfivekTo30k_2015=B25075_006E, 
+                        ThirtykTo35k_2015= B25075_007E,
+                       ThirtyfivekTo40k_2015=B25075_008E,
+                       FortykTo50k_2015=B25075_009E,
+                       FiftykTo60k_2015=B25075_010E,
+                       SixtykTo70k_2015=B25075_011E, 
+                       SeventykTo80k_2015=B25075_012E,
+                       Eightykto90k_2015=B25075_013E,
+                       Ninetykto100k_2015=B25075_014E,
+                       OnehundredkTo125k_2015=B25075_015E, 
+                     OnetwentyfivekTo150k_2015=B25075_016E,
+                       OnefiftykTo175k_2015=B25075_017E, 
+                       One75kTo200k_2015=B25075_018E, 
+                       Twohundredkto250k_2015=B25075_019E, 
+                       Twofiftykto300k_2015=B25075_020E, 
+                       Threehundredkto400k_2015=B25075_021E,
+                       Fourhundredkto500k_2015=B25075_022E, 
+                       Fivehundredkto750k_2015=B25075_023E, 
+                       Sevenfiftykto1mil_2015=B25075_024E, 
+                       OnemiltoOnemilhalf_2015=B25075_025E,
+                       Onemilhalfto2mil_2015=B25075_026E,
+                       Twomilplus_2015=B25075_027E)
+
+### Create percentage variables of each educational category
+value.pop.2015 <- value.pop.2015 %>% group_by(tract) %>% 
+  mutate((Lessthan10k_Percent_2015 = Lessthan10k_2015 / Total_value_2015) * 100) %>%
+  mutate(( TenkTo14k_Percent_2015 = TenkTo14k_2015 / Total_value_2015) * 100) %>%
+mutate(( TenkTo14k_Percent_2015 = TenkTo14k_2015 / Total_value_2015) * 100) %>% 
+mutate(( Fifteenkto20k_Percent_2015 = Fifteenkto20k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( TwentykTo25k_Percent_2015 = TwentykTo25k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( TwentyfivekTo30k_Percent_2015 = TwentyfivekTo30k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( ThirtykTo35k_2015 = ThirtykTo35k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( ThirtyfivekTo40k_Percent_2015 = ThirtyfivekTo40k_2015  / Total_value_2015 ) * 100) %>%
+mutate(( FortykTo50k_Percent_2015 = FortykTo50k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( FiftykTo60k_Percent_2015 = FiftykTo60k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( SixtykTo70k_Percent_2015 = SixtykTo70k_2015 / Total_value_2015 ) * 100) %>%
+mutate((  Eightykto90k_Percent_2015 =  Eightykto90k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( Ninetykto100k_Percent_2015 = Ninetykto100k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( OnehundredkTo125k_Percent_2015 = OnehundredkTo125k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( OnetwentyfivekTo150k_Percent_2015 = OnetwentyfivekTo150k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( OnefiftykTo175k_Percent_2015 = OnefiftykTo175k_2015 / Total_value_2015 ) * 100) %>%
+mutate((  One75kTo200k_Percent_2015 =  One75kTo200k_2015 / Total_value_2015 ) * 100) %>%
+mutate(( Twohundredkto250k_Percent_2015 = Twohundredkto250k_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Twofiftykto300k_Percent_2015 = Twofiftykto300k_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Threehundredkto400k_Percent_2015 = Threehundredkto400k_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Fourhundredkto500k_Percent_2015 = Fourhundredkto500k_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Fivehundredkto750k_Percent_2015 = Fivehundredkto750k_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Sevenfiftykto1mil_Percent_2015 = Sevenfiftykto1mil_2015 / Total_value_2015 ) * 100) %>%
+  mutate(( Sevenfiftykto1mil_Percent_2015 = Sevenfiftykto1mil_2015 / Total_value_2015 ) * 100) %>%
+   mutate(( OnemiltoOnemilhalf_Percent_2015 = OnemiltoOnemilhalf_2015 / Total_value_2015 ) * 100) %>%
+    mutate(( Onemilhalfto2mil_Percent_2015 = Onemilhalfto2mil_2015 / Total_value_2015 ) * 100) %>%
+     mutate(( Twomilplus_Percent_2015 = Twomilplus_2015 / Total_value_2015 ) * 100)
+
+##Geoid
+
+###Create GEOID of FIPS Code elements
+value_geoid_2015 <- paste0( value.pop.2015$state, value.pop.2015$county, value.pop.2015$tract)
+
+value.pop.2015$geoid <- value_geoid_2015
+
+# Number of units
+
+###1990, 2000, and 2010
+
+### Rename Number of Units Variables
+NHGIS_Data <- rename(NHGIS_Data, HousingUnits_1990=CM7AA1990, HousingUnits_2000=CM7AA2000, HousingUnits_2010=CM7AA2010)
+
+###Geoid
+
+### Create GEOID of FIPS Code elements
+county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
+
+county_st$geoid <- county_geo_id
+
+
+# Occupancy
+
+##1990, 2000, and 2010
+###Rename variables
+NHGIS_Data <- rename(NHGIS_Data, HousingUnits_Occupied_1990=CM9AA1990, HousingUnits_Occupied_2000=CM9AA2000, HousingUnits_Occupied_2010=CM9AA2010, HousingUnits_Vacant_1990=CM9AB1990, HousingUnits_Vacant_2000=CM9AB2000, HousingUnits_Vacant_2010=CM9AB2010)
+
+###Geoid
+
+#Create GEOID of FIPS Code elements
+county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
+county_st$geoid <- county_geo_id
+
+##2015
+### Read csv file with only occupancy variables.
+occupancy_vars_2015 <- read.csv("./data/variable_lists/occupancy_vars_2015.csv")
+
+### Create Variable list based off variables in the first column
+occupancy.list.age.2015 <- occupancy_vars_2015$name
+
+### Download the data
+occupancy.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = occupancy.list.age.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+### Rename the variables
+occupancy.pop.2015 <- rename(occupancy.pop.2015,
+                       Total_occupancy_2015= B25002_001E,
+                         occupied_2015= B25002_001E,
+                         vacant_2015= B25002_001E)
+
+### Create GEOID of FIPS Code elements
+occupancy_geoid_2015 <- paste0( occupancy.pop.2015$state, occupancy.pop.2015$county, occupancy.pop.2015$tract)
+
+occupancy.pop.2015$geoid <- occupancy_geoid_2015
+
+# Vacancy
+
+## 1990, 2000, and 2010
+
+### Rename the variables
+NHGIS_Data <- rename(NHGIS_Data, Vacant_ForRent_1990=CN0AA1990, Vacant_ForRent_2000=CN0AA2000, Vacant_ForRent_2010=CN0AA2010, Vacant_ForSale_1990=CN0AB1990, Vacant_ForSale_2000=CN0AB2000, Vacant_ForSale_2010=CN0AB2010, Vacant_RentedOrSold_1990=CN0AC1990, Vacant_RentedOrSold_2000=CN0AC2000, Vacant_RentedOrSold_2010=CN0AC2010, Vacant_OccasionalUse_1990=CN0AD1990, Vacant_OccasionalUse_2000=CN0AD2000, Vacant_OccasionalUse_2010=CN0AD2010, Vacant_MigrantWorkers_1990=CN0AE1990, Vacant_MigrantWorkers_2000=CN0AE2000, Vacant_MigrantWorkers_2010=CN0AE2010, Vacant_Other_1990=CN0AF1990, Vacant_Other_2000=CN0AF2000, Vacant_Other_2010=CN0AF2010)
+
+###Geoid
+county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
+county_st$geoid <- county_geo_id
+
+
+## 2015 
+
+### Read csv file with only vacancy variables. 
+vacancy_vars_2015 <- read.csv("./data/variable_lists/vacancy_vars_2015.csv")
+
+### Create Variable list based off variables in the first column
+var.list.vacancy.2015 <- vacancy_vars_2015$name
+
+### Download the data
+vacancy.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = var.list.vacancy.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+## #Rename the variables
+vacancy.pop.2015 <- rename(vacancy.pop.2015, Total_vacancy_2015=B25004_001E,
+                        For_rent_2015=B25004_002E, 
+                        Rented_unoccupied_2015=B25004_003E,
+                        Forsale_2015=B25004_004E,
+                        Sold_unoccupied_2015=B25004_005E, 
+                        Seasonaluse_2015=B25004_006E, 
+                        Migrant_workers_2015= B25004_007E,
+                       Other_vacant_2015=B25004_008E)
+
+### Create GEOID of FIPS Code elements
+vacancy_geoid_2015 <- paste0( vacancy.pop.2015$state, vacancy.pop.2015$county, vacancy.pop.2015$tract)
+vacancy.pop.2015$geoid <- vacancy_geoid_2015
+
+
+# Travel Time
+## 2010 
+
+### Read csv file with only travel time to work variables.
+traveltime_vars_2010 <- read.csv("./data/variable_lists/traveltime_vars_2010.csv")
+
+### Create Variable list based off variables in the first column
+var.list.travel.2010 <- traveltime_vars_2010$name
+
+### Download the data
+travel.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010, key=censuskey,
+                               vars = var.list.travel.2010,
+                               region="tract:*", regionin="state:04&county:013" )
+
+### Rename the data
+travel.pop.2010 <- rename(travel.pop.2010, Total_travel_2010=B08303_001E,
+                        Lessthan5_2010=B08303_002E, 
+                        Fiveto9_2010=B08303_003E,
+                        Tento14_2010=B08303_004E,
+                        Fifteento19_2010=B08303_005E, 
+                        Twentyto24_2010=B08303_006E, 
+                        Twentyfiveto29_2010=B08303_007E,
+                       Thirtyto34_2010=B08303_008E,
+                       Thirtyfiveto39_2010=B08303_009E,
+                       Fortyto44_2010=B08303_010E,
+                       Fortyfiveto59_2010=B08303_011E,
+                       Sixtyto89_2010=B08303_012E, 
+                       Ninetyplus_2010=B08303_013E)
+
+### Create GEOID of FIPS Code elements
+travel_geoid_2010 <- paste0( travel.pop.2010$state, travel.pop.2010$county, travel.pop.2010$tract)
+travel.pop.2010$geoid <- travel_geoid_2010
+
+##2015
+
+###Read csv file with only travel time to work variables. 
+traveltime_vars_2015 <- read.csv("./data/variable_lists /traveltime_vars_2015.csv")
+
+### Create Variable list based off variables in the first column
+var.list.travel.2015 <- traveltime_vars_2015$name
+
+### Download the data
+travel.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+                               vars = var.list.travel.2015,
+                               region="tract:*", regionin="state:04&county:013" )
+
+###Rename the variables
+travel.pop.2015 <- rename(travel.pop.2015, Total_travel_2015=B08303_001E,
+                        Lessthan5_2015=B08303_002E, 
+                        Fiveto9_2015=B08303_003E,
+                        Tento14_2015=B08303_004E,
+                        Fifteento19_2015=B08303_005E, 
+                        Twentyto24_2015=B08303_006E, 
+                        Twentyfiveto29_2015=B08303_007E,
+                       Thirtyto34_2015=B08303_008E,
+                       Thirtyfiveto39_2015=B08303_009E,
+                       Fortyto44_2015=B08303_010E,
+                       Fortyfiveto59_2015=B08303_011E,
+                       Sixtyto89_2015=B08303_012E, 
+                       Ninetyplus_2015=B08303_013E)
+
+### Geoid
+
+### Create GEOID of FIPS Code elements
+travel_geoid_2015 <- paste0( travel.pop.2015$state, travel.pop.2015$county, travel.pop.2015$tract)
+travel.pop.2015$geoid <- travel_geoid_2015
+
+
+#Load shapefiles
+
+## Import Shapefile
+county_shp <- " ./shapefiles/tl_2010_04013_tract10.shp"
+## Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+
+# Combine to match geoids
+##ACS5
+mcpa_race_2010 <- left_join(county_st, race.pop.2010, by=c("GEOID10"="geoid"))
+mcpa_educ_2010 <- left_join(county_st, educ.pop.2010, by=c("GEOID10"="geoid"))
+mcpa_income_2010 <- left_join(county_st, income.pop.2010, by=c("GEOID10"="geoid"))
+mcpa_value_2010 <- left_join(county_st, value.pop.2010, by=c("GEOID10"="geoid"))
+mcpa_travel_2010 <- left_join(county_st, travel.pop.2010, by=c("GEOID10"="geoid"))
+
+
+mcpa_2010 <- st_join(mcpa_2010, mcpa_educ_2010)
+mcpa_2010 <- st_join(mcpa_2010, mcpa_income_2010)
+mcpa_2010 <- st_join(mcpa_2010, mcpa_value_2010)
+mcpa_2010 <- st_join(mcpa_2010, mcpa_travel_2010)
+
+
+
+mcpa_race_2015 <- left_join(county_st, race.pop.2015, by=c("GEOID10"="geoid"))
+mcpa_age_2015 <- left_join(county_st, age.pop.2015, by=c("GEOID10"="geoid"))
+mcpa_educ_2015 <- left_join(county_st, educ.pop.2015, by=c("GEOID10"="geoid"))
+mcpa_income_2015 <- left_join(county_st, income.pop.2015, by=c("GEOID10"="geoid"))
+mcpa_occupancy_2015 <- left_join(county_st, occupancy.pop.2015, by=c("GEOID10"="geoid"))
+mcpa_sex_2015 <- left_join(county_st, sex.pop.2015, by=c("GEOID10"="geoid"))
+mcpa_vacancy_2015 <- left_join(county_st, vacancy.pop.2015, by=c("GEOID10"="geoid"))
+mcpa_value_2015 <- left_join(county_st, value.pop.2015, by=c("GEOID10"="geoid"))
+mcpa_hispanic_2015 <- left_join(county_st, hispanic.pop.2015, by=c("GEOID10"="geoid"))
+mcpa_travel_2015 <- left_join(county_st, travel.pop.2015, by=c("GEOID10"="geoid"))
+
+mcpa_2015 <- st_join(mcpa_race_2015, mcpa_age_2015)
+mcpa_2015 <- st_join(mcpa_2015, mcpa_educ_2015)
+mcpa_2015 <- st_join(mcpa_2015, mcpa_income_2015)
+mcpa_2015 <- st_join(mcpa_2015, mcpa_occupancy_2015)
+mcpa_2015 <- st_join(mcpa_2015, mcpa_sex_2015)
+mcpa_2015 <- st_join(mcpa_2015, mcpa_vacancy_2015)
+mcpa_2015 <- st_join(mcpa_2015, mcpa_value_2015)
+mcpa_2015 <- st_join(mcpa_2015, mcpa_hispanic_2015)
+mcpa_2015 <- st_join(mcpa_2015, mcpa_travel_2015)
+
+mcpa_2010_2015 <- st_join(mcpa_2010, mcpa_2015)
+
+
+
+##NHGIS
+NHGIS_Data_Rename1 <- left_join(county_st, NHGIS_Data_Rename1, by=c("geoid"="GISJOIN"))
+NHGIS_mapdata <- left_join(county_st, NHGIS_data, by=c("geoid"="GISJOIN"))
+
+
+
+
+#Convert to GeoJson
+
+phx <- readOGR("./shapefiles/tl_2010_04013_tract10/tl_2010_04013_tract10.shp")
+
+phx_json <- geojson_json( phx )
+
+geojson_write(phx_json, file="phx.geojson")
+
+#Convert to shapefile
+
+sp_mcpa <- fortify( phx )
+
+#Simplify the GeoJson
+
+phx_simplified <- ms_simplify( phx )
+```
