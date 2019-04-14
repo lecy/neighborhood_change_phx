@@ -32,13 +32,14 @@ censuskey <- "20f2773e863a33466e0fbace2116919a1c67e4a5"
 # Load Meta data
 
 ## Read csv file with all filtered variables. 
-Metadata_2010_ACS5 <- read.csv("./data/2010ACS5DataDictionary.csv")
-Metadata_2015_ACS5 <- read.csv("./data/2015ACS5DataDictionary.csv")
+Metadata_2010_ACS5 <- read.csv("2010ACS5DataDictionary.csv")
+Metadata_2015_ACS5 <- read.csv("2015ACS5DataDictionary.csv")
 
 #Load time series tables
-NHGIS_data <- read.csv("./data/NHGIS_geog_data.csv")
+NHGIS_data <- read.csv("NHGIS_geog_data.csv")
+```
 
-
+```{r}
 #Race 
 
 ##1990 to 2000
