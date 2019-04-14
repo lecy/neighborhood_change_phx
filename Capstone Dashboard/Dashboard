@@ -1,0 +1,214 @@
+---
+title: "Capstone Dashboard"
+author: "Kendelle Brown, Abby Henderson"
+date: "April 14, 2019"
+output: flexdashboard::flex_dashboard
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+library( leaflet, quietly=TRUE )
+library( sp, quietly=TRUE)
+
+Censuskey <- "9cb83c4560f4fbcc326ddd18ea31460fdd34546f"
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+
+```
+
+```{r, include=FALSE}
+# Data
+library(readr)
+NHGIS_Data_Rename1 <- read_csv("NHGIS Data Rename1.csv")
+
+```
+
+```{r, include=FALSE}
+# Import Shapefile
+
+county_shp <- "/Users/ksbrow15/Desktop/CAPSTONE PROJECT/CensusData/shapefiles/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+
+#Create GEOID of FIPS Code elements
+county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
+
+county_st$geoid <- county_geo_id
+```
+
+
+```{r, include=FALSE}
+# Join shapefile by tract
+NHGIS_Data_Rename1 <- left_join(county_st, NHGIS_Data_Rename1, by=c("geoid"="GISJOIN"))
+
+```
+
+```{r, include=FALSE}
+
+
+```
+Narrative
+=====================================  
+    
+Column {data-width=600}
+-------------------------------------
+
+### Narrative
+    
+```{r}
+```
+
+
+Analysis 1 {data-orientation=rows}
+=====================================     
+
+Inputs {.sidebar data-width=300}
+-----------------------------------------------------------------------
+
+```{r}
+# shiny inputs defined here
+```
+   
+Row {data-height=400}
+-------------------------------------
+
+### Map 1
+
+```{r}
+#filler
+
+ ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Asian_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+     labs(title="Asian1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+```
+
+### Map 2
+
+```{r}
+#filler
+
+ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Asian_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+     labs(title="Asian2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+
+```   
+
+Row {data-height=500}
+-------------------------------------  
+### Analysis
+
+```{r}
+```
+
+Analysis 2 {data-orientation=rows}
+=====================================     
+
+Inputs {.sidebar data-width=300}
+-------------------------------------
+
+```{r}
+# shiny inputs defined here
+```
+ 
+Row {data-height=400}
+-------------------------------------
+
+### Map 1
+
+```{r}
+```
+
+### Map 2
+
+```{r}
+```   
+
+Row {data-height=500}
+-------------------------------------  
+### Analysis
+
+```{r}
+```
+
+Analysis 3 {data-orientation=rows}
+=====================================     
+   
+Inputs {.sidebar data-width=300}
+-------------------------------------
+
+```{r}
+# shiny inputs defined here
+```
+ 
+Row {data-height=400}
+-------------------------------------
+
+### Map 1
+
+```{r}
+```
+
+### Map 2
+
+```{r}
+```   
+
+Row {data-height=500}
+-------------------------------------  
+### Analysis
+
+```{r}
+```
+
+Data Table {data-orientation=rows}
+=====================================     
+   
+Row {data-height=600}
+-------------------------------------
+
+### NHGIS 1990,2000,2010 & ACS 2010, 2015
+
+```{r}
+```
+
+Row {data-height=600}
+-------------------------------------
+
+### Data Table Explanation
+
+```{r}
+```
