@@ -1,11 +1,15 @@
-Link to Final Project - Shiny Dashboard
+(4/10/2019) Link to Final Project - Shiny Dashboard
 https://ds4ps.org/Data-Science-Class/LABS//lab-13-instructions.html
 
 
-Link to US Inflation Calculator
+(4/14/2019) Link to US Inflation Calculator
 https://www.usinflationcalculator.com/
 
-Link to Colors(ggplot2)
 
+(4/7/2019) Link to Colors(ggplot2)
 http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
+
+
+(4/14/2019) Intro to Data Science for the Social Sector Course Book
+https://ds4ps.org/Data-Science-Class/TEXTBOOK/docs/index.html
 
