@@ -13,3 +13,6 @@ http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
 (4/14/2019) Intro to Data Science for the Social Sector Course Book
 https://ds4ps.org/Data-Science-Class/TEXTBOOK/docs/index.html
 
+
+(4/14/2019) Ggplotly function to make maps interactive
+https://www.rdocumentation.org/packages/plotly/versions/4.8.0/topics/ggplotly
