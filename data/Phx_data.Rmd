@@ -36,12 +36,12 @@ Metadata_2010_ACS5 <- read.csv("./data/2010ACS5DataDictionary.csv")
 Metadata_2015_ACS5 <- read.csv("./data/2015ACS5DataDictionary.csv")
 
 #Load time series tables
-NHGIS_data <- read.csv(“./data/NHGIS_geog_data.csv”)
+NHGIS_data <- read.csv("./data/NHGIS_geog_data.csv")
 
 
 #Race 
 
-##1990 to 2010
+##1990 to 2000
 
 NHGIS_Data <- rename(NHGIS_Data, White_1990=CM1AA1990, White_2000=CM1AA2000, White_2010=CM1AA2010, Black_AA_1990=CM1AB1990, Black_AA_2000=CM1AB2000, Black_AA_2010=CM1AB2010, NativeAm_Alaskan1990=CM1AC1990, NativeAm_Alaskan2000=CM1AC2000,NativeAm_Alaskan2010=CM1AC2010, Asian_1990=CM1AD1990,Asian_2000=CM1AD2000, Asian_2010=CM1AD2010, NativeHawaiian.PacificIslander_1990=CM1AE1990,NativeHawaiian.PacificIslander_2000=CM1AE2000, NativeHawaiian.PacificIslander_2010=CM1AE2010, SomeOther_1990=CM1AF1990, SomeOther_2000=CM1AF2000, SomeOther_2010=CM1AF2010, Two.OrMore_1990=CM1AG1990, Two.OrMore_2000=CM1AG2000, Two.OrMore_2010=CM1AG2010 )
 
