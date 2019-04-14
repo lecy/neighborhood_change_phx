@@ -23,8 +23,6 @@ library(viridis, quietly=TRUE)
 library(gridExtra, quietly=TRUE)
 library(rmapshaper)
 
-setwd( ".." )
-
 #Load in census key
 ##Census Key
 censuskey <- "20f2773e863a33466e0fbace2116919a1c67e4a5"
@@ -44,7 +42,28 @@ NHGIS_data <- read.csv("NHGIS_geog_data.csv")
 
 ##1990 to 2000
 
-NHGIS_Data <- rename(NHGIS_Data, White_1990=CM1AA1990, White_2000=CM1AA2000, White_2010=CM1AA2010, Black_AA_1990=CM1AB1990, Black_AA_2000=CM1AB2000, Black_AA_2010=CM1AB2010, NativeAm_Alaskan1990=CM1AC1990, NativeAm_Alaskan2000=CM1AC2000,NativeAm_Alaskan2010=CM1AC2010, Asian_1990=CM1AD1990,Asian_2000=CM1AD2000, Asian_2010=CM1AD2010, NativeHawaiian.PacificIslander_1990=CM1AE1990,NativeHawaiian.PacificIslander_2000=CM1AE2000, NativeHawaiian.PacificIslander_2010=CM1AE2010, SomeOther_1990=CM1AF1990, SomeOther_2000=CM1AF2000, SomeOther_2010=CM1AF2010, Two.OrMore_1990=CM1AG1990, Two.OrMore_2000=CM1AG2000, Two.OrMore_2010=CM1AG2010 )
+NHGIS_Data <- rename(NHGIS_Data,
+                     White_1990=CM1AA1990,
+                     White_2000=CM1AA2000, 
+                     White_2010=CM1AA2010, 
+                     Black_AA_1990=CM1AB1990,
+                     Black_AA_2000=CM1AB2000, 
+                     Black_AA_2010=CM1AB2010,
+                     NativeAm_Alaskan1990=CM1AC1990,
+                  NativeAm_Alaskan2000=CM1AC2000,
+                  NativeAm_Alaskan2010=CM1AC2010,
+                  Asian_1990=CM1AD1990,
+                  Asian_2000=CM1AD2000,
+                  Asian_2010=CM1AD2010,
+                  NativeHawaiian.PacificIslander_1990=CM1AE1990,
+                  NativeHawaiian.PacificIslander_2000=CM1AE2000,
+                  NativeHawaiian.PacificIslander_2010=CM1AE2010,
+                  SomeOther_1990=CM1AF1990, 
+                  SomeOther_2000=CM1AF2000, 
+                  SomeOther_2010=CM1AF2010, 
+                  Two.OrMore_1990=CM1AG1990, 
+                  Two.OrMore_2000=CM1AG2000, 
+                  Two.OrMore_2010=CM1AG2010 )
 
 
 ##2015
@@ -64,7 +83,15 @@ race.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
 
 ## Rename variables
 ### Rename data
-race.pop.2015 <- rename(race.pop.2015, Total_2015=B25006_001E, White_2015=B02001_002E, Black_2015=B02001_003E, American_Indian_2015=B02001_004E, Asian_2015=B02001_005E , Pacific_Islander_2015=B02001_006E, Two_plus_races_2015= B02001_008E, Other_Race_2015=B02001_007E)
+race.pop.2015 <- rename(race.pop.2015, 
+                        Total_2015=B25006_001E, 
+                        White_2015=B02001_002E, 
+                        Black_2015=B02001_003E,
+                        American_Indian_2015=B02001_004E,
+                        Asian_2015=B02001_005E ,
+                        Pacific_Islander_2015=B02001_006E,
+                        Two_plus_races_2015= B02001_008E,
+                        Other_Race_2015=B02001_007E)
 
 ### Add Percentages
 
@@ -144,7 +171,13 @@ sex.pop.2015$geoid <- sex_geoid_2015
 ##1990, 2000, 2010
 
 ###Rename data
-NHGIS_Data <- rename(NHGIS_Data, NotHispanic.Latino_1990=CP4AA1990, NotHispanic.Latino_2000=CP4AA2000, NotHispanic.Latino_2010=CP4AA2010, Hispanic.Latino1990=CP4AB1990, Hispanic.Latino2000=CP4AB2000, Hispanic.Latino2010=CP4AB2010)
+NHGIS_Data <- rename(NHGIS_Data, 
+                     NotHispanic.Latino_1990=CP4AA1990,
+                     NotHispanic.Latino_2000=CP4AA2000,
+                     NotHispanic.Latino_2010=CP4AA2010,
+                     Hispanic.Latino1990=CP4AB1990,
+                     Hispanic.Latino2000=CP4AB2000,
+                     Hispanic.Latino2010=CP4AB2010)
 
 ###Create GEOID of FIPS Code elements
 county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
@@ -160,9 +193,11 @@ hispanic_vars_2015 <- read.csv("./data/variable_lists/hispanic_vars_2015.csv")
 hispanic.list. 2015 <- hispanic_vars_2015$name
 
 ###Download the data
-hispanic.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
-                               vars = hispanic.list. 2015,
-                               region="tract:*", regionin="state:04&county:013" )
+hispanic.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015,
+                                key=censuskey,
+                               vars = hispanic.list.2015,
+                               region="tract:*",
+                               regionin="state:04&county:013" )
 
 ###Rename the variables
 hipsanic.pop.2015 <- rename(hispanic.pop.2015,
@@ -186,28 +221,46 @@ educ_2010_vars <- read.csv("./data/variable_lists/educ_2010_vars.csv")
 ### Create Variable list based off variables in the first column
 var.list.educ.2010 <- educ_2010_vars$name
 
-educ.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010, key=censuskey,
+educ.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010,
+                            key=censuskey,
                                vars = var.list.educ.2010,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                            regionin="state:04&county:013" )
 
 
 educ.pop.2010 <- rename(educ.pop.2010, Total_2010=B15002_001E,
-                        No_school_2010_M=B15002_003E, Fourth_2010_M=B15002_004E,
-                        Sixth_2010_M=B15002_005E, Eighth_2010_M=B15002_006E, 
-                        Ninth_2010_M=B15002_007E, Tenth_2010_M= B15002_008E,
-                       Eleventh_2010_M=B15002_009E, Twelfth_NO_2010_M=B15002_010E,
-                       HSD_GED_2010_M=B15002_011E, SomeCollege_0yr_2010_M=B15002_012E,
-                       SomeCollege_1yr_2010_M=B15002_013E, AA_2010_M=B15002_014E,
-                       BA_2010_M=B15002_015E, Masters_2010_M=B15002_016E,
-                       ProfSchool_2010_M=B15002_017E, Doctoral_2010_M=B15002_018E,
-                        No_school_2010_F=B15002_020E, Fourth_2010_F=B15002_021E,
-                        Sixth_2010_F=B15002_022E, Eighth_2010_F=B15002_023E, 
-                        Ninth_2010_F=B15002_024E, Tenth_2010_F=B15002_025E,
-                       Eleventh_2010_F=B15002_026E, Twelfth_NO_2010_F=B15002_027E,
-                       HSD_GED_2010_F=B15002_028E, SomeCollege_0yr_2010_F=B15002_029E,
-                       SomeCollege_1yr_2010_F=B15002_030E, AA_2010_F=B15002_031E,
-                       BA_2010_F=B15002_032E, Masters_2010_F=B15002_033E,
-                       ProfSchool_2010_F=B15002_034E, Doctoral_2010_F=B15002_035E)
+                        No_school_2010_M=B15002_003E,
+                        Fourth_2010_M=B15002_004E,
+                         Sixth_2010_M=B15002_005E,
+                        Eighth_2010_M=B15002_006E, 
+                        Ninth_2010_M=B15002_007E,
+                        Tenth_2010_M= B15002_008E,
+                       Eleventh_2010_M=B15002_009E,
+                       Twelfth_NO_2010_M=B15002_010E,
+                       HSD_GED_2010_M=B15002_011E,
+                       SomeCollege_0yr_2010_M=B15002_012E,
+                       SomeCollege_1yr_2010_M=B15002_013E,
+                       AA_2010_M=B15002_014E,
+                       BA_2010_M=B15002_015E,
+                       Masters_2010_M=B15002_016E,
+                       ProfSchool_2010_M=B15002_017E,
+                       Doctoral_2010_M=B15002_018E,
+                        No_school_2010_F=B15002_020E,
+                       Fourth_2010_F=B15002_021E,
+                        Sixth_2010_F=B15002_022E,
+                       Eighth_2010_F=B15002_023E, 
+                        Ninth_2010_F=B15002_024E,
+                       Tenth_2010_F=B15002_025E,
+                       Eleventh_2010_F=B15002_026E,
+                       Twelfth_NO_2010_F=B15002_027E,
+                       HSD_GED_2010_F=B15002_028E,
+                       SomeCollege_0yr_2010_F=B15002_029E,
+                       SomeCollege_1yr_2010_F=B15002_030E,
+                       AA_2010_F=B15002_031E,
+                       BA_2010_F=B15002_032E,
+                       Masters_2010_F=B15002_033E,
+                       ProfSchool_2010_F=B15002_034E,
+                       Doctoral_2010_F=B15002_035E)
 
 
 ###Combine variable categories as necessary, including combining Male and Female to get a population count.
@@ -234,7 +287,10 @@ educ.pop.2010 <- educ.pop.2010 %>%
   mutate(HSDiploma_GED_2010 = coalesce(HSD_GED_2010_M + HSD_GED_2010_F))
 
 educ.pop.2010 <- educ.pop.2010 %>%
-  mutate(SomeCollege_2010 = coalesce(SomeCollege_0yr_2010_M + SomeCollege_1yr_2010_M + SomeCollege_0yr_2010_F + SomeCollege_1yr_2010_F))
+  mutate(SomeCollege_2010 = coalesce(SomeCollege_0yr_2010_M +
+                                       SomeCollege_1yr_2010_M +
+                                       SomeCollege_0yr_2010_F +
+                                       SomeCollege_1yr_2010_F))
 
 educ.pop.2010 <- educ.pop.2010 %>%
   mutate(AA_2010 = coalesce(AA_2010_M + AA_2010_F))
@@ -290,18 +346,31 @@ educ.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
 
 ### Rename data
 educ.pop.2015 <- rename(educ.pop.2015, Total_2015=B15003_001E,
-                        No_school_2015=B15003_002E, Prek_2015=B15003_003E,
-                        Kinder_2015=B15003_004E, Firstgrade_2015=B15003_005E, 
-                        Secondgrade_2015=B15003_006E, Thirdgrade_2015= B15003_007E,
-                       Fourthgrade_2015=B15003_008E, Fifthgrade_2015=B15003_009E,
-                       Sixthgrade_2015=B15003_010E, Seventhgrade_2015=B15003_011E,
-                       Eighthgrade_2015=B15003_012E, Ninthgrade_2015=B15003_013E,
-                       Tenthgrade_2015=B15003_014E, Eleventhgrade_2015=B15003_015E,
-                       Twelfthgrade_2015=B15003_016E, HSdiploma_2015=B15003_017E,
-                       GED_2015=B15003_018E,Somecollege_0yr_2015=B15003_019E,
-                       Somecollege_1yr_2015=B15003_020E, AA_2015=B15003_021E,
-                       Bachelors_2015=B15003_022E, Masters_2015=B15003_023E,
-                       ProfSchool_2015=B15003_024E, Doctoral_2015=B15003_025E)
+                        No_school_2015=B15003_002E,
+                        Prek_2015=B15003_003E,
+                        Kinder_2015=B15003_004E,
+                        Firstgrade_2015=B15003_005E, 
+                        Secondgrade_2015=B15003_006E, 
+                        Thirdgrade_2015= B15003_007E,
+                       Fourthgrade_2015=B15003_008E,
+                       Fifthgrade_2015=B15003_009E,
+                       Sixthgrade_2015=B15003_010E,
+                       Seventhgrade_2015=B15003_011E,
+                       Eighthgrade_2015=B15003_012E,
+                       Ninthgrade_2015=B15003_013E,
+                       Tenthgrade_2015=B15003_014E,
+                       Eleventhgrade_2015=B15003_015E,
+                       Twelfthgrade_2015=B15003_016E,
+                       HSdiploma_2015=B15003_017E,
+                
+                       GED_2015=B15003_018E,
+                       Somecollege_0yr_2015=B15003_019E,
+                       Somecollege_1yr_2015=B15003_020E,
+                       AA_2015=B15003_021E,
+                       Bachelors_2015=B15003_022E,
+                       Masters_2015=B15003_023E,
+                       ProfSchool_2015=B15003_024E,
+                       Doctoral_2015=B15003_025E)
 
 
 ### Combine Categories as necessary to make meaningful categories
@@ -712,9 +781,11 @@ traveltime_vars_2010 <- read.csv("./data/variable_lists/traveltime_vars_2010.csv
 var.list.travel.2010 <- traveltime_vars_2010$name
 
 ### Download the data
-travel.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010, key=censuskey,
+travel.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010,
+                              key=censuskey,
                                vars = var.list.travel.2010,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                              regionin="state:04&county:013" )
 
 ### Rename the data
 travel.pop.2010 <- rename(travel.pop.2010, Total_travel_2010=B08303_001E,
@@ -744,9 +815,11 @@ traveltime_vars_2015 <- read.csv("./data/variable_lists /traveltime_vars_2015.cs
 var.list.travel.2015 <- traveltime_vars_2015$name
 
 ### Download the data
-travel.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+travel.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015,
+                              key=censuskey,
                                vars = var.list.travel.2015,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                              regionin="state:04&county:013" )
 
 ###Rename the variables
 travel.pop.2015 <- rename(travel.pop.2015, Total_travel_2015=B08303_001E,
