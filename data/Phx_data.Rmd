@@ -42,7 +42,7 @@ NHGIS_data <- read.csv("NHGIS_geog_data.csv")
 
 ##1990 to 2000
 
-NHGIS_Data <- rename(NHGIS_Data,
+NHGIS_data <- rename(NHGIS_data,
                      White_1990=CM1AA1990,
                      White_2000=CM1AA2000, 
                      White_2010=CM1AA2010, 
@@ -70,16 +70,18 @@ NHGIS_Data <- rename(NHGIS_Data,
 
 ## Variable list
 
-race_2015_vars <- read.csv("./data/variable_lists/race_2015_ACS5.csv")
+race_2015_vars <- read.csv("variable_lists/race_2015_ACS5.csv")
 
 ## Download data
 ### Create Variable list based off variables in the first column
 var.list.race.2015 <- race_2015_vars$name
 
 ### Pull Data using variable list only. Make sure the censusapi package is loaded.
-race.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+race.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015,
+                            key=censuskey,
                                vars = var.list.race.2015,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                            regionin="state:04&county:013" )
 
 ## Rename variables
 ### Rename data
@@ -126,9 +128,6 @@ NHGIS_data <- rename(NHGIS_data,
 ###Make percentages
 NHGIS_data <- NHGIS_data %>%
   mutate(Total_Sex_1990 = coalesce(Male_1990 + Female_1990))
-  
-
-
 NHGIS_data <- NHGIS_data %>% mutate(Total_Sex_2000 = coalesce(Male_2000 + Female_2000))
 NHGIS_data <- NHGIS_data %>% mutate(Total_Sex_2010 = coalesce(Male_2010 + Female_2010))
 NHGIS_data <- NHGIS_data %>% group_by(GISJOIN) %>% 
@@ -139,23 +138,19 @@ NHGIS_data <- NHGIS_data %>% group_by(GISJOIN) %>%
   mutate((Male_Percent_2010 = Male_2010 / Total_Sex_2010 * 100)) %>%
   mutate((Female_Percent_2010 = Female_2010 / Total_Sex_2010 * 100))
 
-###GeoID
-
-
-county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
-county_st$geoid <- county_geo_id
-
 
 ##2015
 ###Read csv file with only age variables. I created this by selecting variables from the Metadata and putting them into a separate csv file. Unfortunately, there was no "Sex" alone variables, so I selected Total sex estimates from a different concept.
 
-sex_vars_2015 <- read.csv("./data/variable_lists/sex_vars_2015.csv")
+sex_vars_2015 <- read.csv("variable_lists/sex_vars_2015.csv")
 
 ### Create Variable list based off variables in the first column
 sex.list.2015 <- sex_vars_2015$name
-sex.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+sex.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015,
+                           key=censuskey,
                                vars = sex.list.2015,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                           regionin="state:04&county:013" )
 
 #Rename the variables
 sex.pop.2015 <- rename(sex.pop.2015,
@@ -164,6 +159,7 @@ sex.pop.2015 <- rename(sex.pop.2015,
                          Female_2015= B01001_026E)
 ###Create GEOID of FIPS Code elements
 sex_geoid_2015 <- paste0( sex.pop.2015$state, sex.pop.2015$county, sex.pop.2015$tract)
+
 sex.pop.2015$geoid <- sex_geoid_2015
 
 # Ethnicity
@@ -171,7 +167,7 @@ sex.pop.2015$geoid <- sex_geoid_2015
 ##1990, 2000, 2010
 
 ###Rename data
-NHGIS_Data <- rename(NHGIS_Data, 
+NHGIS_data <- rename(NHGIS_data, 
                      NotHispanic.Latino_1990=CP4AA1990,
                      NotHispanic.Latino_2000=CP4AA2000,
                      NotHispanic.Latino_2010=CP4AA2010,
@@ -179,18 +175,14 @@ NHGIS_Data <- rename(NHGIS_Data,
                      Hispanic.Latino2000=CP4AB2000,
                      Hispanic.Latino2010=CP4AB2010)
 
-###Create GEOID of FIPS Code elements
-county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
-county_st$geoid <- county_geo_id
-
 ##2015
 
 ##Variable list
 ###Read csv file with only age variables. I created this by selecting variables from the Metadata and putting them into a separate csv file. 
-hispanic_vars_2015 <- read.csv("./data/variable_lists/hispanic_vars_2015.csv")
+hispanic_vars_2015 <- read.csv("variable_lists/hispanic_vars_2015.csv")
 
 ### Create Variable list based off variables in the first column
-hispanic.list. 2015 <- hispanic_vars_2015$name
+hispanic.list.2015 <- hispanic_vars_2015$name
 
 ###Download the data
 hispanic.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015,
@@ -216,7 +208,7 @@ hispanic.pop.2015$geoid <- hispanic_geoid_2015
 ##2010 and 2015
 
 ###Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
-educ_2010_vars <- read.csv("./data/variable_lists/educ_2010_vars.csv")
+educ_2010_vars <- read.csv("variable_lists/educ_2010_vars.csv")
 
 ### Create Variable list based off variables in the first column
 var.list.educ.2010 <- educ_2010_vars$name
@@ -333,16 +325,18 @@ educ_geoid_2010 <- paste0( educ.pop.2010$state, educ.pop.2010$county, educ.pop.2
 educ.pop.2010$geoid <- educ_geoid_2010
 
 ###Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
-educ_2015_vars <- read.csv(".data/variable_lists/educ_2015_vars.csv")
+educ_2015_vars <- read.csv("variable_lists/educ_2015_vars.csv")
 
 ### Create Variable list based off variables in the first column
 var.list.educ.2015 <- educ_2015_vars$name
 
 
 ### Pull Data using variable list only. 
-educ.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+educ.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015,
+                            key=censuskey,
                                vars = var.list.educ.2015,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                            regionin="state:04&county:013" )
 
 ### Rename data
 educ.pop.2015 <- rename(educ.pop.2015, Total_2015=B15003_001E,
@@ -362,7 +356,6 @@ educ.pop.2015 <- rename(educ.pop.2015, Total_2015=B15003_001E,
                        Eleventhgrade_2015=B15003_015E,
                        Twelfthgrade_2015=B15003_016E,
                        HSdiploma_2015=B15003_017E,
-                
                        GED_2015=B15003_018E,
                        Somecollege_0yr_2015=B15003_019E,
                        Somecollege_1yr_2015=B15003_020E,
@@ -411,15 +404,17 @@ educ.pop.2015$geoid <- educ_geoid_2015
 ##2010 and 2015
 
 ### Read csv file with only race variables. 
-income_2010_vars <- read.csv("./data/variable_lists/income_2010_vars.csv")
+income_2010_vars <- read.csv("variable_lists/income_2010_vars.csv")
 
 ### Create Variable list based off variables in the first column
 var.list.income.2010 <- income_2010_vars$name
 
 ###Download the data
-income.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010, key=censuskey,
+income.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010,
+                              key=censuskey,
                                vars = var.list.income.2010,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                              regionin="state:04&county:013" )
 
 ##Rename the variables
 income.pop.2010 <- rename(income.pop.2010, Total_income_2010=B19001_001E,
@@ -469,15 +464,17 @@ income_geoid_2010 <- paste0( income.pop.2010$state, income.pop.2010$county, inco
 income.pop.2010$geoid <- income_geoid_2010
 
 ###Read csv file with only income variables for 2015. 
-income_2015_vars <- read.csv("./data/variable_lists/income_2015_vars.csv")
+income_2015_vars <- read.csv("variable_lists/income_2015_vars.csv")
 
 ### Create Variable list based off variables in the first column
 var.list.income.2015 <- income_2015_vars$name
 
 ### Pull Data using variable list only. Make sure the censusapi package is loaded.
-income.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+income.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015,
+                              key=censuskey,
                                vars = var.list.income.2015,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                              regionin="state:04&county:013" )
 ### Rename data
 income.pop.2015 <- rename(income.pop.2015,
                       Total_income_2015=B19001_001E,
@@ -533,16 +530,18 @@ income.pop.2015$geoid <- income_geoid_2015
 ##2010 and 2015
 
 ###Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
-value_2010_vars <- read.csv(".data/variable_lists/value_vars_2010.csv")
+value_2010_vars <- read.csv("variable_lists/value_vars_2010.csv")
 
 
 ### Create Variable list based off variables in the first column
 var.list.value.2010 <- value_2010_vars$name
 
 ##Download the data
-value.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010, key=censuskey,
+value.pop.2010 <- getCensus( name = "acs/acs5", vintage = 2010,
+                             key=censuskey,
                                vars = var.list.value.2010,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                             regionin="state:04&county:013" )
 
 ##Rename variables
 value.pop.2010 <- rename(value.pop.2010,
@@ -604,15 +603,17 @@ value_geoid_2010 <- paste0( value.pop.2010$state, value.pop.2010$county, value.p
 value.pop.2010$geoid <- value_geoid_2010
 
 ### Read csv file with only race variables. I manually created this by cutting and pasting the rows I wanted from the previous spreadsheet. 
-value_2015_vars <- read.csv(".data/variable_lists/value_vars_2015.csv")
+value_2015_vars <- read.csv("variable_lists/value_vars_2015.csv")
 
 ### Create Variable list based off variables in the first column
 var.list.value.2015 <- value_2015_vars$name
 
 ###Download data
-value.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+value.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015,
+                             key=censuskey,
                                vars = var.list.value.2015,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                             regionin="state:04&county:013" )
 
 ### Rename variables
 value.pop.2015 <- rename(value.pop.2015,
@@ -686,39 +687,28 @@ value.pop.2015$geoid <- value_geoid_2015
 ###1990, 2000, and 2010
 
 ### Rename Number of Units Variables
-NHGIS_Data <- rename(NHGIS_Data, HousingUnits_1990=CM7AA1990, HousingUnits_2000=CM7AA2000, HousingUnits_2010=CM7AA2010)
-
-###Geoid
-
-### Create GEOID of FIPS Code elements
-county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
-
-county_st$geoid <- county_geo_id
+NHGIS_data <- rename(NHGIS_data, HousingUnits_1990=CM7AA1990, HousingUnits_2000=CM7AA2000, HousingUnits_2010=CM7AA2010)
 
 
 # Occupancy
 
 ##1990, 2000, and 2010
 ###Rename variables
-NHGIS_Data <- rename(NHGIS_Data, HousingUnits_Occupied_1990=CM9AA1990, HousingUnits_Occupied_2000=CM9AA2000, HousingUnits_Occupied_2010=CM9AA2010, HousingUnits_Vacant_1990=CM9AB1990, HousingUnits_Vacant_2000=CM9AB2000, HousingUnits_Vacant_2010=CM9AB2010)
-
-###Geoid
-
-#Create GEOID of FIPS Code elements
-county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
-county_st$geoid <- county_geo_id
+NHGIS_data <- rename(NHGIS_data, HousingUnits_Occupied_1990=CM9AA1990, HousingUnits_Occupied_2000=CM9AA2000, HousingUnits_Occupied_2010=CM9AA2010, HousingUnits_Vacant_1990=CM9AB1990, HousingUnits_Vacant_2000=CM9AB2000, HousingUnits_Vacant_2010=CM9AB2010)
 
 ##2015
 ### Read csv file with only occupancy variables.
-occupancy_vars_2015 <- read.csv("./data/variable_lists/occupancy_vars_2015.csv")
+occupancy_vars_2015 <- read.csv("variable_lists/occupancy_vars_2015.csv")
 
 ### Create Variable list based off variables in the first column
 occupancy.list.age.2015 <- occupancy_vars_2015$name
 
 ### Download the data
-occupancy.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+occupancy.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015,
+                                 key=censuskey,
                                vars = occupancy.list.age.2015,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                               regionin="state:04&county:013" )
 
 ### Rename the variables
 occupancy.pop.2015 <- rename(occupancy.pop.2015,
@@ -736,25 +726,23 @@ occupancy.pop.2015$geoid <- occupancy_geoid_2015
 ## 1990, 2000, and 2010
 
 ### Rename the variables
-NHGIS_Data <- rename(NHGIS_Data, Vacant_ForRent_1990=CN0AA1990, Vacant_ForRent_2000=CN0AA2000, Vacant_ForRent_2010=CN0AA2010, Vacant_ForSale_1990=CN0AB1990, Vacant_ForSale_2000=CN0AB2000, Vacant_ForSale_2010=CN0AB2010, Vacant_RentedOrSold_1990=CN0AC1990, Vacant_RentedOrSold_2000=CN0AC2000, Vacant_RentedOrSold_2010=CN0AC2010, Vacant_OccasionalUse_1990=CN0AD1990, Vacant_OccasionalUse_2000=CN0AD2000, Vacant_OccasionalUse_2010=CN0AD2010, Vacant_MigrantWorkers_1990=CN0AE1990, Vacant_MigrantWorkers_2000=CN0AE2000, Vacant_MigrantWorkers_2010=CN0AE2010, Vacant_Other_1990=CN0AF1990, Vacant_Other_2000=CN0AF2000, Vacant_Other_2010=CN0AF2010)
-
-###Geoid
-county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
-county_st$geoid <- county_geo_id
+NHGIS_data <- rename(NHGIS_data, Vacant_ForRent_1990=CN0AA1990, Vacant_ForRent_2000=CN0AA2000, Vacant_ForRent_2010=CN0AA2010, Vacant_ForSale_1990=CN0AB1990, Vacant_ForSale_2000=CN0AB2000, Vacant_ForSale_2010=CN0AB2010, Vacant_RentedOrSold_1990=CN0AC1990, Vacant_RentedOrSold_2000=CN0AC2000, Vacant_RentedOrSold_2010=CN0AC2010, Vacant_OccasionalUse_1990=CN0AD1990, Vacant_OccasionalUse_2000=CN0AD2000, Vacant_OccasionalUse_2010=CN0AD2010, Vacant_MigrantWorkers_1990=CN0AE1990, Vacant_MigrantWorkers_2000=CN0AE2000, Vacant_MigrantWorkers_2010=CN0AE2010, Vacant_Other_1990=CN0AF1990, Vacant_Other_2000=CN0AF2000, Vacant_Other_2010=CN0AF2010)
 
 
 ## 2015 
 
 ### Read csv file with only vacancy variables. 
-vacancy_vars_2015 <- read.csv("./data/variable_lists/vacancy_vars_2015.csv")
+vacancy_vars_2015 <- read.csv("variable_lists/vacancy_vars_2015.csv")
 
 ### Create Variable list based off variables in the first column
 var.list.vacancy.2015 <- vacancy_vars_2015$name
 
 ### Download the data
-vacancy.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015, key=censuskey,
+vacancy.pop.2015 <- getCensus( name = "acs/acs5", vintage = 2015,
+                               key=censuskey,
                                vars = var.list.vacancy.2015,
-                               region="tract:*", regionin="state:04&county:013" )
+                               region="tract:*",
+                               regionin="state:04&county:013" )
 
 ## #Rename the variables
 vacancy.pop.2015 <- rename(vacancy.pop.2015, Total_vacancy_2015=B25004_001E,
@@ -775,7 +763,7 @@ vacancy.pop.2015$geoid <- vacancy_geoid_2015
 ## 2010 
 
 ### Read csv file with only travel time to work variables.
-traveltime_vars_2010 <- read.csv("./data/variable_lists/traveltime_vars_2010.csv")
+traveltime_vars_2010 <- read.csv("variable_lists/traveltime_vars_2010.csv")
 
 ### Create Variable list based off variables in the first column
 var.list.travel.2010 <- traveltime_vars_2010$name
@@ -809,7 +797,7 @@ travel.pop.2010$geoid <- travel_geoid_2010
 ##2015
 
 ###Read csv file with only travel time to work variables. 
-traveltime_vars_2015 <- read.csv("./data/variable_lists /traveltime_vars_2015.csv")
+traveltime_vars_2015 <- read.csv("variable_lists/traveltime_vars_2015.csv")
 
 ### Create Variable list based off variables in the first column
 var.list.travel.2015 <- traveltime_vars_2015$name
@@ -846,22 +834,19 @@ travel.pop.2015$geoid <- travel_geoid_2015
 #Load shapefiles
 
 ## Import Shapefile
-county_shp <- " ./shapefiles/tl_2010_04013_tract10.shp"
+county_shp <- "../shapefiles/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
 ## Read shape file and create and create variable for it
 county_st <- st_read(county_shp)
 
 
 # Combine to match geoids
 ##ACS5
-mcpa_race_2010 <- left_join(county_st, race.pop.2010, by=c("GEOID10"="geoid"))
 mcpa_educ_2010 <- left_join(county_st, educ.pop.2010, by=c("GEOID10"="geoid"))
 mcpa_income_2010 <- left_join(county_st, income.pop.2010, by=c("GEOID10"="geoid"))
 mcpa_value_2010 <- left_join(county_st, value.pop.2010, by=c("GEOID10"="geoid"))
 mcpa_travel_2010 <- left_join(county_st, travel.pop.2010, by=c("GEOID10"="geoid"))
 
-
-mcpa_2010 <- st_join(mcpa_2010, mcpa_educ_2010)
-mcpa_2010 <- st_join(mcpa_2010, mcpa_income_2010)
+mcpa_2010 <- st_join(mcpa_educ_2010, mcpa_income_2010)
 mcpa_2010 <- st_join(mcpa_2010, mcpa_value_2010)
 mcpa_2010 <- st_join(mcpa_2010, mcpa_travel_2010)
 
@@ -878,8 +863,7 @@ mcpa_value_2015 <- left_join(county_st, value.pop.2015, by=c("GEOID10"="geoid"))
 mcpa_hispanic_2015 <- left_join(county_st, hispanic.pop.2015, by=c("GEOID10"="geoid"))
 mcpa_travel_2015 <- left_join(county_st, travel.pop.2015, by=c("GEOID10"="geoid"))
 
-mcpa_2015 <- st_join(mcpa_race_2015, mcpa_age_2015)
-mcpa_2015 <- st_join(mcpa_2015, mcpa_educ_2015)
+mcpa_2015 <- st_join(mcpa_race_2015, mcpa_educ_2015)
 mcpa_2015 <- st_join(mcpa_2015, mcpa_income_2015)
 mcpa_2015 <- st_join(mcpa_2015, mcpa_occupancy_2015)
 mcpa_2015 <- st_join(mcpa_2015, mcpa_sex_2015)
