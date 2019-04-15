@@ -846,14 +846,8 @@ mcpa_income_2010 <- left_join(county_st, income.pop.2010, by=c("GEOID10"="geoid"
 mcpa_value_2010 <- left_join(county_st, value.pop.2010, by=c("GEOID10"="geoid"))
 mcpa_travel_2010 <- left_join(county_st, travel.pop.2010, by=c("GEOID10"="geoid"))
 
-mcpa_2010 <- st_join(mcpa_educ_2010, mcpa_income_2010)
-mcpa_2010 <- st_join(mcpa_2010, mcpa_value_2010)
-mcpa_2010 <- st_join(mcpa_2010, mcpa_travel_2010)
-
-
 
 mcpa_race_2015 <- left_join(county_st, race.pop.2015, by=c("GEOID10"="geoid"))
-mcpa_age_2015 <- left_join(county_st, age.pop.2015, by=c("GEOID10"="geoid"))
 mcpa_educ_2015 <- left_join(county_st, educ.pop.2015, by=c("GEOID10"="geoid"))
 mcpa_income_2015 <- left_join(county_st, income.pop.2015, by=c("GEOID10"="geoid"))
 mcpa_occupancy_2015 <- left_join(county_st, occupancy.pop.2015, by=c("GEOID10"="geoid"))
@@ -862,6 +856,14 @@ mcpa_vacancy_2015 <- left_join(county_st, vacancy.pop.2015, by=c("GEOID10"="geoi
 mcpa_value_2015 <- left_join(county_st, value.pop.2015, by=c("GEOID10"="geoid"))
 mcpa_hispanic_2015 <- left_join(county_st, hispanic.pop.2015, by=c("GEOID10"="geoid"))
 mcpa_travel_2015 <- left_join(county_st, travel.pop.2015, by=c("GEOID10"="geoid"))
+
+```
+
+
+####This code represets my attempt to combine all map data into one object- this attempt was unsuccessful as the object it created was too large.
+mcpa_2010 <- st_join(mcpa_educ_2010, mcpa_income_2010)
+mcpa_2010 <- st_join(mcpa_2010, mcpa_value_2010)
+mcpa_2010 <- st_join(mcpa_2010, mcpa_travel_2010)
 
 mcpa_2015 <- st_join(mcpa_race_2015, mcpa_educ_2015)
 mcpa_2015 <- st_join(mcpa_2015, mcpa_income_2015)
@@ -873,29 +875,3 @@ mcpa_2015 <- st_join(mcpa_2015, mcpa_hispanic_2015)
 mcpa_2015 <- st_join(mcpa_2015, mcpa_travel_2015)
 
 mcpa_2010_2015 <- st_join(mcpa_2010, mcpa_2015)
-
-
-
-##NHGIS
-NHGIS_Data_Rename1 <- left_join(county_st, NHGIS_Data_Rename1, by=c("geoid"="GISJOIN"))
-NHGIS_mapdata <- left_join(county_st, NHGIS_data, by=c("geoid"="GISJOIN"))
-
-
-
-
-#Convert to GeoJson
-
-phx <- readOGR("./shapefiles/tl_2010_04013_tract10/tl_2010_04013_tract10.shp")
-
-phx_json <- geojson_json( phx )
-
-geojson_write(phx_json, file="phx.geojson")
-
-#Convert to shapefile
-
-sp_mcpa <- fortify( phx )
-
-#Simplify the GeoJson
-
-phx_simplified <- ms_simplify( phx )
-```
