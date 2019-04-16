@@ -36,6 +36,10 @@ Metadata_2015_ACS5 <- read.csv("2015ACS5DataDictionary.csv")
 #Load time series tables
 NHGIS_data <- read.csv("NHGIS_geog_data.csv")
 ```
+library(readr)
+NHGIS_Data_Rename1 <- read_rmd("NHGIS_Data Rename.rmd")
+
+
 
 ```{r}
 #Race 
@@ -857,6 +861,9 @@ mcpa_value_2015 <- left_join(county_st, value.pop.2015, by=c("GEOID10"="geoid"))
 mcpa_hispanic_2015 <- left_join(county_st, hispanic.pop.2015, by=c("GEOID10"="geoid"))
 mcpa_travel_2015 <- left_join(county_st, travel.pop.2015, by=c("GEOID10"="geoid"))
 
+
+write.csv( NHGIS_data, "NHGIS_data_rename1", row.names=F)
+
 ```
 
 
@@ -875,3 +882,1688 @@ mcpa_2015 <- st_join(mcpa_2015, mcpa_hispanic_2015)
 mcpa_2015 <- st_join(mcpa_2015, mcpa_travel_2015)
 
 mcpa_2010_2015 <- st_join(mcpa_2010, mcpa_2015)
+
+```{r}
+##NHGIS
+
+#Create GEOID of FIPS Code elements
+county_geo_id <- paste0( "G", county_st$STATEFP10, "0", county_st$COUNTYFP10, "0", county_st$TRACTCE10)
+county_st$geoid <- county_geo_id
+
+NHGIS_Data_Rename1 <- left_join(county_st, NHGIS_data, by=c("geoid"="GISJOIN"))
+NHGIS_mapdata <- left_join(county_st, NHGIS_data, by=c("geoid"="GISJOIN"))
+
+```
+
+#This code represents my attempt at converting to a GeoJson, which was unsuccessful
+#Convert to GeoJson
+
+phx <- readOGR("./shapefiles/tl_2010_04013_tract10/tl_2010_04013_tract10.shp")
+
+phx_json <- geojson_json( phx )
+
+geojson_write(phx_json, file="phx.geojson")
+
+#Convert to shapefile
+
+sp_mcpa <- fortify( phx )
+
+#Simplify the GeoJson
+
+phx_simplified <- ms_simplify( phx )
+
+#Create one GeoJson
+
+
+
+
+```{r}
+# Import Shapefile
+county_shp <- "/Users/abigailhenderson/Desktop/Capstone/tl_2010_04013_tract10/tl_2010_04013_tract10.shp"
+
+# Read shape file and create and create variable for it
+county_st <- st_read(county_shp)
+```
+# Maps
+
+##Ethnicity
+
+
+```{r}
+hispanic_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Hispanic.Latino1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set3", direction=1, name="Population") +
+     labs(title="Hispanic/Latino1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+hispanic_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Hispanic.Latino2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set3", direction=1, name="Population") +
+     labs(title="Hispanic/Latino2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+hispanic_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Hispanic.Latino2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set3", direction=1, name="Population") +
+     labs(title="Hispanic/Latino2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+not_hispanic_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NotHispanic.Latino_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Accent", direction=1, name="Population") +
+     labs(title="Not Hispanic/Latino1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+ not_hispanic_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NotHispanic.Latino_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Accent", direction=1, name="Population") +
+     labs(title="Not Hispanic/Latino2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+not_hispanic_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NotHispanic.Latino_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Accent", direction=1, name="Population") +
+     labs(title="Not Hispanic/Latino2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+hispanic_2015 <- ggplot(mcpa_hispanic_2015) + 
+  geom_sf(aes(fill= Hispanic_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlGn", direction=1, name="Population") +
+  labs(title="Hispanic Population", title.cex=0.5, caption="2015 Source: US Census")
+
+not_hispanic_2015 <- ggplot(mcpa_hispanic_2015) + 
+  geom_sf(aes(fill= Not_hispanic_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="YlGn", direction=1, name="Population") +
+  labs(title="Adult Females", title.cex=0.5, caption="2015 Source: US Census")
+
+##Sex
+
+male_1990 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Male_1990), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Male Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+male_2000 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Male_2000), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Male Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+male_2010 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Male_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Male Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+female_1990 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Female_1990), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Female Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+female_2000 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Female_2000), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Female Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+female_2010 <- ggplot(NHGIS_mapdata) + 
+   geom_sf(aes(fill=Female_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Female Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+male_2015 <- ggplot(mcpa_sex_2015) + 
+  geom_sf(aes(fill= Male_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PiYG", direction=1, name="Population") +
+  labs(title="Adult Males", title.cex=0.5, caption="2015 Source: US Census")
+
+female_2015 <- ggplot(mcpa_sex_2015) + 
+  geom_sf(aes(fill= Female_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PiYG", direction=1, name="Population") +
+  labs(title="Adult Females", title.cex=0.5, caption="2015 Source: US Census")
+
+##Race
+
+
+#white
+white_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=White_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set1", direction=1, name="Population") +
+     labs(title="White 1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+white_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=White_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set1", direction=1, name="Population") +
+     labs(title="White 2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+white_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=White_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Set1", direction=1, name="Population") +
+     labs(title="White 2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+#Black.AA
+
+black_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Black_AA_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+     labs(title="Black/African American1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+black_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Black_AA_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+     labs(title="Black/African American2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+black_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Black_AA_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+     labs(title="Black/African American2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+# NativeAm_Alaskan Maps
+
+native_american_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeAm_Alaskan1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdGy", direction=1, name="Population") +
+     labs(title="NativeAm_Alaskan1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+native_american_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeAm_Alaskan2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdGy", direction=1, name="Population") +
+     labs(title="NativeAm_Alaskan2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+native_american_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeAm_Alaskan2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdGy", direction=1, name="Population") +
+     labs(title="NativeAm_Alaskan2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+# Asian
+
+asian_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Asian_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+     labs(title="Asian1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+asian_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Asian_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+     labs(title="Asian2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+asian_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Asian_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+     labs(title="Asian2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+# NativeHawaiian.PacificIslander
+
+pacific_islander_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeHawaiian.PacificIslander_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="BrBG", direction=1, name="Population") +
+     labs(title="NativeHawaiian.PacificIslander_1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+pacific_islander_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeHawaiian.PacificIslander_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="BrBG", direction=1, name="Population") +
+     labs(title="NativeHawaiian.PacificIslander_2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+pacific_islander_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=NativeHawaiian.PacificIslander_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="BrBG", direction=1, name="Population") +
+     labs(title="NativeHawaiian.PacificIslander_2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+# SomeOther Variable
+
+some_other_race_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=SomeOther_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PiYG", direction=1, name="Population") +
+     labs(title="SomeOther_1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+some_other_race_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=SomeOther_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PiYG", direction=1, name="Population") +
+     labs(title="SomeOther_2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+some_other_race_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=SomeOther_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="PiYG", direction=1, name="Population") +
+     labs(title="SomeOther_2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+# Two or More Races Variable
+
+# Data not available for 1990
+
+tworaces_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Two.OrMore_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdBu", direction=1, name="Population") +
+     labs(title="Two Or More Races 2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+tworaces_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Two.OrMore_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdBu", direction=1, name="Population") +
+     labs(title="Two Or More Races 2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+white_2015 <- ggplot(mcpa_race_2015) + 
+  geom_sf(aes(fill=White_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="White", caption="2015 Source: US Census")
+
+black_2015 <- ggplot(mcpa_race_2015) + 
+  geom_sf(aes(fill=Black_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Black", caption="2015 Source: US Census")
+
+native_american_2015 <- ggplot(mcpa_race_2015) + 
+  geom_sf(aes(fill=American_Indian_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Native American", caption="2015 Source: US Census")
+
+asian_2015 <- ggplot(mcpa_race_2015) + 
+  geom_sf(aes(fill=Asian_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Asian", caption="2015 Source: US Census")
+
+pacific_islander_2015 <- ggplot(mcpa_race_2015) + 
+  geom_sf(aes(fill=Pacific_Islander_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Hawaiian or Pacific Islander", caption="2015 Source: US Census")
+
+other_race_2015 <- ggplot(mcpa_race_2015) + 
+  geom_sf(aes(fill=Other_Race_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Other Race", caption="2015 Source: US Census")
+
+##Education
+
+
+###2010
+noschool_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=NoSchool_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="No School", caption="2015 Source: US Census")
+
+
+lessthanninth_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=LessThanNinth_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="Less than a Ninth Grade Education", caption="2015 Source: US Census")
+
+
+ninthgrade_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=Ninthgrade_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A 9th Grade Education", caption="2015 Source: US Census")
+
+tenthgrade_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=Tenthgrade_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A 10th Grade Education", caption="2015 Source: US Census")
+
+eleventhgrade_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=Eleventhgrade_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="An 11th Grade Education", caption="2015 Source: US Census")
+
+twelfthgrade_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=Twelfthgrade_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A 12th Grade Education- No Diploma", caption="2015 Source: US Census")
+
+
+hsdiploma_ged_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=HSDiploma_GED_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A High School Diploma or GED", caption="2015 Source: US Census")
+
+
+somecollege_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=SomeCollege_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="Some College but No Degree", caption="2015 Source: US Census")
+  
+aa_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=AA_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="An AA Degree", caption="2015 Source: US Census")
+
+
+ba_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=BA_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A Bachelor's Degree", caption="2015 Source: US Census")
+
+masters_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=Masters_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A Master's Degree", caption="2015 Source: US Census")
+
+
+profschool_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=ProfSchool_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A Professional Degree", caption="2015 Source: US Census")
+
+doctoral_2010 <- ggplot(mcpa_educ_2010) + 
+  geom_sf(aes(fill=Doctoral_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A Doctoral Degree", caption="2015 Source: US Census")
+
+###2015
+
+noschool_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=No_school_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="No Schooling", caption="2015 Source: US Census")
+
+lessthanninth_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=LessThanNinth_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="Less than a Ninth Grade Education", caption="2015 Source: US Census")
+
+ninthgrade_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=Ninthgrade_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A 9th Grade Education", caption="2015 Source: US Census")
+
+tenthgrade_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=Tenthgrade_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A 10th Grade Education", caption="2015 Source: US Census")
+
+eleventhgrade_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=Eleventhgrade_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="An 11th Grade Education", caption="2015 Source: US Census")
+
+twelfthgrade_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=Twelfthgrade_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A 12th Grade Education- No Diploma", caption="2015 Source: US Census")
+
+
+hsdiploma_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=HSdiploma_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A High School Diploma", caption="2015 Source: US Census")
+
+ged_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=GED_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A GED", caption="2015 Source: US Census")
+
+
+somecollege_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=SomeCollege_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="Some College but No Degree", caption="2015 Source: US Census")
+  
+aa_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=AA_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="An AA Degree", caption="2015 Source: US Census")
+
+
+ba_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=Bachelors_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A Bachelor's Degree", caption="2015 Source: US Census")
+
+masters_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=Masters_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A Master's Degree", caption="2015 Source: US Census")
+
+
+profschool_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=ProfSchool_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A Professional Degree", caption="2015 Source: US Census")
+
+doctoral_2015 <- ggplot(mcpa_educ_2015) + 
+  geom_sf(aes(fill=Doctoral_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A Doctoral Degree", caption="2015 Source: US Census")
+
+##Income
+
+###2010
+
+
+lessthan10k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill= Lessthan10k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Less than $10k", title.cex=0.5, caption="2010 Source: US Census")
+
+tenkto14k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=Tento14k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $10,000 and $14,999", title.cex=0.5, caption="2010 Source: US Census")
+
+fifteenkto20k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=Fifteenkto20k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $15,000 and $19,999", title.cex=0.5, caption="2010 Source: US Census")
+
+twentykto25k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=TwentykTo25k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $20,000 and $24,999", title.cex=0.5, caption="2010 Source: US Census")
+
+twentfivekto30k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=TwentyfivekTo30k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $25,000 and $29,999", title.cex=0.5, caption="2010 Source: US Census")
+
+thirtykto35k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=ThirtykTo35k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $30,000 and $34,999", title.cex=0.5, caption="2010 Source: US Census")
+
+thirtyfivekto40k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=ThirtyfivekTo40k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $35,000 and $39,999", title.cex=0.5, caption="2010 Source: US Census")
+
+fortyktofortyfivek_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=FortykTo45k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $40,000 and $44,999", title.cex=0.5, caption="2010 Source: US Census")
+
+fortyfivekto50k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill= FortyfivekTo50k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $45,000 and $49,999", title.cex=0.5, caption="2010 Source: US Census")
+
+fiftykto60k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=FiftykTo60k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $50,000 and $59,999", title.cex=0.5, caption="2010 Source: US Census")
+
+sixtykto75k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=SixtykTo75k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $60,000 and $74,999", title.cex=0.5, caption="2010 Source: US Census")
+
+seventyfivekto100k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=SeventyfivekTo100k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $75,000 and $99,999", title.cex=0.5, caption="2010 Source: US Census")
+
+
+onehundredkto125k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=OnehundredkTo125k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $100,000 and $124,999", title.cex=0.5, caption="2010 Source: US Census")
+
+
+onetwentyfivekto150k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=OnetwentyfivekTo150k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $125,000 and $149,999", title.cex=0.5, caption="2010 Source: US Census")
+  
+onefiftykto200k_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=OnefiftykTo200k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $150,000 and $199,999", title.cex=0.5, caption="2010 Source: US Census")
+
+
+twohundredkplus_income_2010 <- ggplot(mcpa_income_2010) + 
+  geom_sf(aes(fill=TwohundredkPlus_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="$200,000 and Above", title.cex=0.5, caption="2010 Source: US Census")
+
+###2015
+
+lessthan10k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill= Lessthan10k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Less than $10k", title.cex=0.5, caption="2015 Source: US Census")
+
+tenkto14k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=Tento14k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $10,000 and $14,999", title.cex=0.5, caption="2015 Source: US Census")
+
+fifteenkto20k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=Fifteenkto20k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $15,000 and $19,999", title.cex=0.5, caption="2015 Source: US Census")
+
+twentykto25k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=TwentykTo25k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $20,000 and $24,999", title.cex=0.5, caption="2015 Source: US Census")
+
+twentfivekto30k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=TwentyfivekTo30k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $25,000 and $29,999", title.cex=0.5, caption="2015 Source: US Census")
+
+thirtykto35k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=ThirtykTo35k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $30,000 and $34,999", title.cex=0.5, caption="2015 Source: US Census")
+
+thirtyfivekto40k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=ThirtyfivekTo40k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $35,000 and $39,999", title.cex=0.5, caption="2015 Source: US Census")
+
+fortyktofortyfivek_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=FortykTo45k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $40,000 and $44,999", title.cex=0.5, caption="2015 Source: US Census")
+
+fortyfivekto50k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill= FortyfivekTo50k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $45,000 and $49,999", title.cex=0.5, caption="2015 Source: US Census")
+
+fiftykto60k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=FiftykTo60k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $50,000 and $59,999", title.cex=0.5, caption="2015 Source: US Census")
+
+sixtykto75k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=SixtykTo75k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $60,000 and $74,999", title.cex=0.5, caption="2015 Source: US Census")
+
+seventyfivekto100k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=SeventyfivekTo100k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $75,000 and $99,999", title.cex=0.5, caption="2015 Source: US Census")
+
+
+onehundredkto125k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=OnehundredkTo125k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $100,000 and $124,999", title.cex=0.5, caption="2015 Source: US Census")
+
+
+onetwentyfivekto150k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=OnetwentyfivekTo150k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $125,000 and $149,999", title.cex=0.5, caption="2015 Source: US Census")
+  
+onefiftykto200k_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=OnefiftykTo200k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Between $150,000 and $199,999", title.cex=0.5, caption="2015 Source: US Census")
+
+
+twohundredkplus_income_2015 <- ggplot(mcpa_income_2015) + 
+  geom_sf(aes(fill=TwohundredkPlus_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="$200,000 and Above", title.cex=0.5, caption="2015 Source: US Census")
+
+##Value
+
+lessthan10k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill= Lessthan10k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Less than $10k", title.cex=0.5, caption="2010 Source: US Census")
+
+tenkto14k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=TenkTo14k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $10,000 and $14,000", title.cex=0.5, caption="2010 Source: US Census")
+
+fifteenkto20k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Fifteenkto20k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $15,000 and $20,000", title.cex=0.5, caption="2010 Source: US Census")
+
+twentykto25k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=TwentykTo25k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $20,000 and $25,000", title.cex=0.5, caption="2010 Source: US Census")
+
+twentyfivekto30k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=TwentyfivekTo30k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $25,000 and $30,000", title.cex=0.5, caption="2010 Source: US Census")
+
+thirtykto35k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=ThirtykTo35k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $30,000 and $35,000", title.cex=0.5, caption="2010 Source: US Census")
+
+thirtyfivekto40k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=ThirtyfivekTo40k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $35,000 and $40,000", title.cex=0.5, caption="2010 Source: US Census")
+
+fortykto50k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=FortykTo50k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $40,000 and $50,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+fiftykto60k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=FiftykTo60k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $50,000 and $60,000", title.cex=0.5, caption="2010 Source: US Census")
+
+sixtykto70k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=SixtykTo70k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $60,000 and $70,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+seventykto80k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=SeventykTo80k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $70,000 and $80,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+eightykto90k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Eightykto90k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $80,000 and $90,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+ninetykto100k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Ninetykto100k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $90,000 and $100,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+onehundredkto125k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=OnehundredkTo125k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $100,000 and $125,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+onetwentyfivekto150k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=OnetwentyfivekTo150k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $125,000 and $150,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+onefiftykto175k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=OnefiftykTo175k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $150,000 and $175,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+oneseventyfivekto200k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=One75kTo200k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $175,000 and $200,000", title.cex=0.5, caption="2010 Source: US Census")
+ 
+twohundredkto250k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Twohundredkto250k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $200,000 and $250,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+twofiftykto300k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Twofiftykto300k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $250,000 and $300,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+threehundredkto400k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Threehundredkto400k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $300,000 and $400,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+fourhundredkto500k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Fourhundredkto500k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $400,000 and $500,000", title.cex=0.5, caption="2010 Source: US Census")
+  
+fivehundredkto750k_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Fivehundredkto750k_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $500,000 and $750,000", title.cex=0.5, caption="2010 Source: US Census")
+
+seventyfiftykto1mil_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=Sevenfiftykto1mil_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $750,000 and $1,000,000", title.cex=0.5, caption="2010 Source: US Census")
+
+onemilplus_value_2010 <- ggplot(mcpa_value_2010) + 
+  geom_sf(aes(fill=OnemilPlus_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Over $1,000,000", title.cex=0.5, caption="2010 Source: US Census")
+
+
+
+lessthan10k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill= Lessthan10k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Less than $10k", title.cex=0.5, caption="2015 Source: US Census")
+
+tenkto14k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=TenkTo14k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $10,000 and $14,000", title.cex=0.5, caption="2015 Source: US Census")
+
+fifteenkto20k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Fifteenkto20k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $15,000 and $20,000", title.cex=0.5, caption="2015 Source: US Census")
+
+twentykto25k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=TwentykTo25k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $20,000 and $25,000", title.cex=0.5, caption="2015 Source: US Census")
+
+twentyfivekto30k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=TwentyfivekTo30k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $25,000 and $30,000", title.cex=0.5, caption="2015 Source: US Census")
+
+thirtykto35k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=ThirtykTo35k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $30,000 and $35,000", title.cex=0.5, caption="2015 Source: US Census")
+
+thirtyfivekto40k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=ThirtyfivekTo40k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $35,000 and $40,000", title.cex=0.5, caption="2015 Source: US Census")
+
+fortykto50k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=FortykTo50k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $40,000 and $50,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+fiftykto60k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=FiftykTo60k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $50,000 and $60,000", title.cex=0.5, caption="2015 Source: US Census")
+
+sixtykto70k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=SixtykTo70k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $60,000 and $70,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+seventykto80k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=SeventykTo80k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $70,000 and $80,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+eightykto90k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Eightykto90k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $80,000 and $90,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+ninetykto100k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Ninetykto100k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $90,000 and $100,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+onehundredkto125k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=OnehundredkTo125k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $100,000 and $125,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+onetwentyfivekto150k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=OnetwentyfivekTo150k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $125,000 and $150,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+onefiftykto175k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=OnefiftykTo175k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $150,000 and $175,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+oneseventyfivekto200k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=One75kTo200k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $175,000 and $200,000", title.cex=0.5, caption="2015 Source: US Census")
+ 
+twohundredkto150k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Twohundredkto250k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $200,000 and $250,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+twofiftykto300k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Twofiftykto300k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $250,000 and $300,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+threehundredkto400k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Threehundredkto400k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $300,000 and $400,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+fourhundredkto500k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Fourhundredkto500k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $400,000 and $500,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+fivehundredkto750k_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Fivehundredkto750k_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $500,000 and $750,000", title.cex=0.5, caption="2015 Source: US Census")
+
+sevenfiftykto1mil_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Sevenfiftykto1mil_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $750,000 and $1,000,000", title.cex=0.5, caption="2015 Source: US Census")
+
+onemilto1.5mil_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=OnemiltoOnemilhalf_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $1,000,000 and $1,500,000", title.cex=0.5, caption="2015 Source: US Census")
+
+oneandahalfmilto2mil_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Onemilhalfto2mil_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $1,500,000 and $2,000,000", title.cex=0.5, caption="2015 Source: US Census")
+  
+twomilplus_value_2015 <- ggplot(mcpa_value_2015) + 
+  geom_sf(aes(fill=Twomilplus_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Over $2,000,000", title.cex=0.5, caption="2015 Source: US Census")
+
+##Units
+
+housingunits_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdBu", direction=1, name="Population") +
+     labs(title="Housing Units 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+housingunits_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdBu", direction=1, name="Population") +
+     labs(title="Housing Units 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+housingunits_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="RdBu", direction=1, name="Population") +
+     labs(title="Housing Units 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+##Occupancy
+
+occupied_units_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Occupied_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel2", direction=1, name="Population") +
+     labs(title="Occupied Housing Units 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+occupied_units_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Occupied_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel2", direction=1, name="Population") +
+     labs(title="Occupied Housing Units 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+occupied_units_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Occupied_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel2", direction=1, name="Population") +
+     labs(title="Occupied Housing Units 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+vacant_units_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Vacant_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel1", direction=1, name="Population") +
+     labs(title="Vacant Housing Units 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+vacant_units_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Vacant_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel1", direction=1, name="Population") +
+     labs(title="Vacant Housing Units 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+vacant_units_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Vacant_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel1", direction=1, name="Population") +
+     labs(title="Vacant Housing Units 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+vacant_units_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=HousingUnits_Vacant_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Pastel1", direction=1, name="Population") +
+     labs(title="Vacant Housing Units 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+occupied_units_2015 <- ggplot(mcpa_occupancy_2015) + 
+  geom_sf(aes(fill= occupied_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="RdYlBu", direction=1, name="Population") +
+  labs(title="Occupied Homes", title.cex=0.5, caption="2015 Source: US Census")
+
+vacant_units_2015 <- ggplot(mcpa_occupancy_2015) + 
+  geom_sf(aes(fill= vacant_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="RdYlBu", direction=1, name="Population") +
+  labs(title="Vacant Homes", title.cex=0.5, caption="2015 Source: US Census")
+
+##Vacancy
+
+forrent_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForRent_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Rent Housing Unit 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+forrent_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForRent_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Rent Housing Unit 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+forrent_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForRent_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Rent Housing Unit 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+forsale_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForSale_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Sale Housing Unit 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+forsale_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForSale_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Sale Housing Unit 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+forsale_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_ForSale_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Sale Housing Unit 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+rentedorsold_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_RentedOrSold_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Rented Or Sold 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+rentedorsold_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_RentedOrSold_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Rented Or Sold 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+rentedorsold_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_RentedOrSold_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Rented Or Sold 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+occasionaluse_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_OccasionalUse_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Occasional Use 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+occasionaluse_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_OccasionalUse_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Occasional Use 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+occasionaluse_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_OccasionalUse_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Occasional Use 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+migrantworkers_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_MigrantWorkers_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Migrant Workers 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+migrantworkers_2000 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_MigrantWorkers_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Migrant Workers 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+migrantworkers_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_MigrantWorkers_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Migrant Workers 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+vacant_other_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_Other_1990), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Other 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+vacant_other_1990 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_Other_2000), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Other 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+vacant_other_2010 <- ggplot(NHGIS_Data_Rename1) + 
+     geom_sf(aes(fill=Vacant_Other_2010), color="white") +
+     theme_void() +
+     theme(panel.grid.major = element_line(colour = 'transparent')) +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant Other 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+
+forrent_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= For_rent_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="For Rent", title.cex=0.5, caption="2015 Source: US Census")
+
+rented_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Rented_unoccupied_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Rented but Unoccupied", title.cex=0.5, caption="2015 Source: US Census")
+
+forsale_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Forsale_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="For Sale", title.cex=0.5, caption="2015 Source: US Census")
+
+sold_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Sold_unoccupied_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Sold but Unoccupied", title.cex=0.5, caption="2015 Source: US Census")
+
+seasonal_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Seasonaluse_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Reserved for seasonal or recreational use", title.cex=0.5, caption="2015 Source: US Census")
+
+migrantworkers_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Migrant_workers_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Housing reserved for migrant workers", title.cex=0.5, caption="2015 Source: US Census")
+
+vacant_other_2015 <- ggplot(mcpa_vacancy_2015) + 
+  geom_sf(aes(fill= Other_vacant_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  labs(title="Vacant for some other reason", title.cex=0.5, caption="2015 Source: US Census")
+
+##Travel Time
+
+###2010
+
+travel_lessthan5_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Lessthan5_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Less than 5 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_5to9_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Fiveto9_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 5 and 9 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_10to14_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Tento14_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 10 and 14 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_15to19_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Fifteento19_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 15 and 19 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_20to24_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Twentyto24_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 20 and 24 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_25to29_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Twentyfiveto29_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 25 and 29 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_30to34_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Thirtyto34_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 30 and 34 minutes", title.cex=0.5, caption="2010 Source: US Census")
+travel_35to39_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Thirtyfiveto39_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 35 and 39 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_40to44_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Fortyto44_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 40 and 44 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+travel_45to59_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Fortyfiveto59_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 45 to 59 minutes", title.cex=0.5, caption="2010 Source: US Census")
+  
+  travel_60to89_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Sixtyto89_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 60 and 89 minutes", title.cex=0.5, caption="2010 Source: US Census")
+  
+  travel_90plus_2010 <- ggplot(mcpa_travel_2010) + 
+  geom_sf(aes(fill= Ninetyplus_2010), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Over 90 minutes", title.cex=0.5, caption="2010 Source: US Census")
+
+
+###2015 
+
+travel_lessthan5_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Lessthan5_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Less than 5 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_5to9_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Fiveto9_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 5 and 9 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_10to14_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Tento14_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 10 and 14 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_15to19_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Fifteento19_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 15 and 19 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_20to24_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Twentyto24_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 20 and 24 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_25to29_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Twentyfiveto29_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 25 and 29 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_30to34_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Thirtyto34_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 30 and 34 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_35to39_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Thirtyfiveto39_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 35 and 39 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_40to44_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Fortyto44_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 40 and 44 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+travel_45to59_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Fortyfiveto59_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 45 to 59 minutes", title.cex=0.5, caption="2015 Source: US Census")
+  
+  travel_60to89_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Sixtyto89_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Between 60 and 89 minutes", title.cex=0.5, caption="2015 Source: US Census")
+
+  
+  travel_90plus_2015 <- ggplot(mcpa_travel_2015) + 
+  geom_sf(aes(fill= Ninetyplus_2015), color="white") +
+  theme_void() +
+  theme(panel.grid.major = element_line(colour = 'transparent')) +
+  scale_fill_distiller(palette="PuOr", direction=1, name="Population") +
+  labs(title="Over 90 minutes", title.cex=0.5, caption="2015 Source: US Census")
+```
+
+
+```{r}
+
+##Print all maps
+hispanic_1990 
+
+hispanic_2000 
+
+hispanic_2010 
+
+not_hispanic_1990 
+
+not_hispanic_2000 
+
+not_hispanic_2010 
+
+male_1990 
+
+male_2000 
+
+male_2010 
+
+female_1990 
+
+female_2000 
+
+female_2010 
+
+white_1990 
+
+white_2000 
+
+white_2010 
+
+black_1990 
+
+black_2000 
+
+black_2010 
+
+native_american_1990 
+
+native_american_2000 
+
+native_american_2010 
+
+asian_1990 
+
+asian_2000 
+
+asian_2010 
+
+pacific_islander_1990 
+
+pacific_islander_2000 
+
+pacific_islander_2010 
+
+
+some_other_race_1990 
+
+
+some_other_race_2000 
+
+some_other_race_2010 
+
+tworaces_2000 
+
+tworaces_2010 
+
+white_2015 
+
+black_2015 
+
+native_american_2015 
+
+asian_2015 
+
+pacific_islander_2015 
+
+other_race_2015 
+
+```
+
+
