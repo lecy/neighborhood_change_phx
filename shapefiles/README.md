@@ -57,7 +57,7 @@ proj4string( phx )
 
 ```r
 library(geojsonio)
-geojson_write( phx, file = "phx.tracts.geojson" )
+geojson_write( phx, file = "phx.2010.tracts.geojson" )
 ```
 
 
