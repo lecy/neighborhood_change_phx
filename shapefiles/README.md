@@ -1,11 +1,11 @@
 
-## Load GeoJson From GitHub
+## Load GeoJSON Shapefile From GitHub
 
 Once GeoJson files are created, they can be loaded directly from GitHub:
 
 ```r
-library(geojsonio)
-url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/shapefiles/phx_tracts2.geojson"
+library( geojsonio )
+url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/shapefiles/phx.2010.tracts.geojson"
 phx <- geojson_read( url, method="web", what="sp" )
 
 library( sp )
