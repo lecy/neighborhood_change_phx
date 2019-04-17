@@ -19,3 +19,7 @@ Raw- all raw data files, excluding shapefiles
 Crosswalk- all crosswalk data
 
 Variable_lists- lists of variable names saved as .csv files to allow for Census API data downloads
+
+The files in this folder include:
+
+Phx_data- this is the R Markdown that includes all necessary data renames, combinations, altercations, and static map build outs using ACS 5 and NHGIS time series data
