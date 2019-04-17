@@ -16,4 +16,6 @@ Archive- all data files and R Markdown files that were not used in the final pro
 
 Raw- all raw data files, excluding shapefiles
 
+Crosswalk- all crosswalk data
 
+Variable_lists- lists of variable names saved as .csv files to allow for Census API data downloads
