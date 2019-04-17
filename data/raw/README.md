@@ -10,6 +10,6 @@ ACS 5 Meta data 2010
 
 ACS 5 Meta data 2015
 
-NHGIS time series tables 1990-2010
+NHGIS time series tables 1990-2010 downloaded 4/5/19
 
-NHGIS relative data file (not used in this project as could not be consistently maintained over time)
+NHGIS nominal data file (not used in this project as could not be consistently maintained over time) downloaded 4/5/19
