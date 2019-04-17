@@ -1,5 +1,5 @@
 ---
-title: "NHGIS Data Rename1"
+title: "NHGIS Data Rename"
 author: "Kendelle Brown, Abby Henderson"
 date: "April 7, 2019"
 output: html_document
@@ -186,13 +186,90 @@ NHGIS_Data <- NHGIS_Data %>%
 
 ```
 
+# Occupancy and Vacancy 
+```{r}
+# Create percentage variables of each Occupancy category
+
+NHGIS_Data <- NHGIS_Data %>% group_by(TRACTA) %>% 
+  mutate((OccupiedHousingUnits_Percent_1990 = HousingUnits_Occupied_1990
+ / HousingUnits_1990) * 100) %>%
+  mutate(( OccupiedHousingUnits_Percent_2000 = HousingUnits_Occupied_2000
+ / HousingUnits_2000) * 100) %>%
+mutate(( OccupiedHousingUnits_Percent_2010 = HousingUnits_Occupied_2010
+ / HousingUnits_2010) * 100) %>% 
+mutate(( VacantHousingUnits_Percent_1990 = HousingUnits_Vacant_1990
+ / HousingUnits_1990 ) * 100) %>%
+mutate(( VacantHousingUnits_Percent_2000 = HousingUnits_Vacant_2000
+ / HousingUnits_2000 ) * 100) %>%
+mutate(( VacantHousingUnits_Percent_2010 = HousingUnits_Vacant_2010
+ / HousingUnits_2010 ) * 100)
+
+```
+
+# Ethnicity 
+```{r}
+#Combine Hispanic and Not Hispanic to get an Ethnicity population count
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalEthnicityCount_1990 = coalesce(NotHispanic.Latino_1990 + Hispanic.Latino1990))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalEthnicityCount_2000 = coalesce(NotHispanic.Latino_2000 + Hispanic.Latino2000))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalEthnicityCount_2010 = coalesce(NotHispanic.Latino_2010 + Hispanic.Latino2010))
+
+# Create percentage variables of Ethnicity category
+
+NHGIS_Data <- NHGIS_Data %>% group_by(TRACTA) %>% 
+  mutate((Hispanic.Latino_Percent_1990 = Hispanic.Latino1990
+ / TotalEthnicityCount_1990) * 100) %>%
+  mutate(( NotHispanic.Latino_Percent_1990 = NotHispanic.Latino_1990
+ / TotalEthnicityCount_1990) * 100) %>%
+mutate(( Hispanic.Latino_Percent_2000 = Hispanic.Latino2000 
+ / TotalEthnicityCount_2000) * 100) %>% 
+mutate(( NotHispanic.Latino_Percent_2000 = NotHispanic.Latino_2000
+ / TotalEthnicityCount_2000 ) * 100) %>%
+mutate(( Hispanic.Latino_Percent_2010 = Hispanic.Latino2010 
+ / TotalEthnicityCount_2010 ) * 100) %>%
+mutate(( NotHispanic.Latino_Percent_2010 = NotHispanic.Latino_2010 
+ / TotalEthnicityCount_2010 ) * 100)
+
+```
+
+# Sex
+```{r}
+#Combine Male and Female to get a population count
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalSexPopulation_1990 = coalesce(Male_1990 + Female_1990))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalSexPopulation_2000 = coalesce(Male_2000 + Female_2000))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalSexPopulation_2010 = coalesce(Male_2010 + Female_2010))
+
+# Create percentage variables of Sex category
+
+NHGIS_Data <- NHGIS_Data %>% group_by(TRACTA) %>% 
+  mutate((Male_Percent_1990 = Male_1990
+ / TotalSexPopulation_1990) * 100) %>%
+  mutate(( Female_Percent_1990 = Female_1990 / TotalSexPopulation_1990) * 100) %>%
+mutate(( Male_Percent_2000 = Male_2000 / TotalSexPopulation_2000) * 100) %>% 
+mutate(( Female_Percent_2000 = Female_2000 / TotalSexPopulation_2000 ) * 100) %>%
+mutate(( Male_Percent_2010 = Male_2010 
+ / TotalSexPopulation_2010 ) * 100) %>%
+mutate(( Female_Percent_2010 = Female_2010 / TotalSexPopulation_2010 ) * 100)
+
+```
+
 # Write new CSV File
 ```{r}
 
 write.csv( NHGIS_Data, "NHGIS Data Rename.csv", row.names=F)
 
 ```
-
 
 
 
