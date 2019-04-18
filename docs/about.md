@@ -1,5 +1,5 @@
 ---
-Title: About Our Team
+title: About Our Team
 ---
 
 
