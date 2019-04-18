@@ -13,6 +13,8 @@ It is running HTML, but it is written in markdown, so it understands things like
 
 Some more text. 
 
+About us [link](about.html)
+
 And here is a [LINK](data-steps.html) to an HTML file.
 
 Here is an iframe example:
