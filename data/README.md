@@ -23,3 +23,10 @@ Variable_lists- lists of variable names saved as .csv files to allow for Census 
 The files in this folder include:
 
 Phx_data- this is the R Markdown that includes all necessary data renames, combinations, altercations, and static map build outs using ACS 5 and NHGIS time series data
+
+## Build Project Database
+
+The file named "Phx_data.Rmd" contains all of the data steps to combine raw files into the file named "". 
+
+[Data Steps](Phx_data.html)  
+
