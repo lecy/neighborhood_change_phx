@@ -1,4 +1,7 @@
-# My Website
+---
+Title: My Website
+---
+
 
 Here is some text.
 
