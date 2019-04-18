@@ -21,7 +21,11 @@ And here is a shiny app embedded as an iframe:
 <iframe src="http://walkerke.shinyapps.io/tigris-zip-income" width = "100%" height = "500" scrolling="no" frameborder="0"></iframe>
 
 
-<iframe id="example1" src="https://walkerke.shinyapps.io/tigris-zip-income/" style="border: none; width: 100%; height: 850px" frameborder="0"></iframe>
+  
+
+<iframe src="https://walkerke.shinyapps.io/tigris-zip-income/" style="border: none; width: 100%; height: 850px" frameborder="0"></iframe>
+
+  
 
 
 
