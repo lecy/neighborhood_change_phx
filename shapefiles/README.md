@@ -52,6 +52,23 @@ phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
 proj4string( phx )
 ```
 
+
+## Add Data
+
+```r
+url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/raw/NHGIS_geog_data.csv"
+dat <- read.csv( url, stringsAsFactors=F )
+
+#Create GEOID of FIPS Code elements
+phx$geoid <- paste0( "G", phx$STATEFP10, "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
+
+# > head( phx$geoid )
+# [1] "G0400130422644" "G0400130422643" "G0400130422642" "G0400130422641"
+
+phx <- merge( phx, dat, by.x="geoid", by.y="GISJOIN", all.x=T )
+```
+
+
 ## Convert SP to GeoJson
 
 ```r
