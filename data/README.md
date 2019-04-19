@@ -28,5 +28,5 @@ Phx_data- this is the R Markdown that includes all necessary data renames, combi
 
 The file named "Phx_data.Rmd" contains all of the data steps to combine raw files into the file named "". 
 
-[Data Steps](Phx_data.html)  
+[Data Steps](https://lecy.github.io/neighborhood_change_phx/data-steps.html)  
 
