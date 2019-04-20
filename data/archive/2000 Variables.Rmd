@@ -1,0 +1,61 @@
+---
+title: "2000 Variables"
+author: "Kendelle Brown"
+date: "February 12, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library( censusapi )
+library( devtools )
+library( dplyr )
+
+devtools::install_github("hrecht/censusapi")
+
+Censuskey <- "9cb83c4560f4fbcc326ddd18ea31460fdd34546f"
+
+#sf1
+vars2000sf1 <- listCensusMetadata(name= "sf1", vintage=2000, "v")
+write.csv( vars2000sf1, "DataProfile2000sf1.csv", row.names=F)
+
+#sf3
+vars2000sf3 <- listCensusMetadata(name= "sf3", vintage=2000, "v")
+write.csv( vars2000sf3, "DataProfile2000sf3.csv", row.names=F)
+
+```
+
+# 2000sf1 Variables
+
+```{r}
+
+sf1vars.2000 <- read.csv("C:/Users/ksbrow15/Desktop/Census Data/DataProfile2000sf1.csv" ) 
+
+sf1vars.2000.list <- `sf1vars.2000`$name
+
+```
+
+# 2000sf3 Variables
+
+```{r}
+
+sf3vars.2000 <- read.csv("C:/Users/ksbrow15/Desktop/Census Data/DataProfile2000sf1.csv" ) 
+
+sf3vars.2000.list <- `sf3vars.2000`$name
+
+```
+
+# Testing 2000 Variables Pull 
+
+```{r}
+
+testing.sf1vars2000 <- getCensus( name = "sf1", vintage = 2000, key=Censuskey,
+                                     vars = sf1vars.2000.list ,
+                                     region="tract:*", regionin="state:04&county:13" )
+
+testing.sf3vars2000 <- getCensus( name = "sf3", vintage = 2000, key=Censuskey,
+                                     vars = sf3vars.2000.list,
+                                     region="tract:*", regionin="state:04&county:13" )
+
+```

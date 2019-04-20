@@ -1,5 +1,5 @@
 ---
-title: "NHGIS Data Rename1"
+title: "NHGIS Data Rename"
 author: "Kendelle Brown, Abby Henderson"
 date: "April 7, 2019"
 output: html_document
@@ -83,13 +83,193 @@ NHGIS_Data <- rename(NHGIS_Data, Vacant_ForRent_1990=CN0AA1990, Vacant_ForRent_2
 
 ```
 
-# Write new CSV File
+# Rename Sex Variables 
 ```{r}
 
-write.csv( NHGIS_Data, "NHGIS Data Rename1", row.names=F)
+NHGIS_Data <- rename(NHGIS_Data, Male_1990=CM0AA1990, 
+Male_2000=CM0AA2000,
+Male_2010=CM0AA2010, 
+Female_1990=CM0AB1990,
+Female_2000=CM0AB2000,
+Female_2010=CM0AB2010)
 
 ```
 
+# Rename Age Variables 
+```{r}
+
+NHGIS_Data <- rename(NHGIS_Data, Under5years_1990=CW3AA1990, 
+Under5years_2000=CW3AA2000,
+Under5years_2010=CW3AA2010, 
+Ages5to9_1990=CW3AB1990,
+Ages5to9_2000=CW3AB2000,
+Ages5to9_2010=CW3AB2010,
+Ages10to14_1990=CW3AC1990,
+Ages10to14_2000=CW3AC2000,
+Ages10to14_2010=CW3AC2010,
+Ages15to17_1990=CW3AD1990,
+Ages15to17_2000=CW3AD2000,
+Ages15to17_2010=CW3AD2010,
+Ages25to29_1990=CW3AI1990,
+Ages25to29_2000=CW3AI2000,
+Ages25to29_2010=CW3AI2010)
+
+# Combine ages 18&19, 20, 21, 22-24. Rename "College Age"
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(CollegeAge_1990 = coalesce(CW3AE1990 + CW3AF1990 + CW3AG1990 + CW3AH1990))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(CollegeAge_2000 = coalesce(CW3AE2000 + CW3AF2000 + CW3AG2000 + CW3AH2000))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(CollegeAge_2010 = coalesce(CW3AE2010 + CW3AF2010 + CW3AG2010 + CW3AH2010))
+
+#Combine 30s, rename Age30s
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age30s_1990 = coalesce(CW3AJ1990 + CW3AK1990))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age30s_2000 = coalesce(CW3AJ2000 + CW3AK2000))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age30s_2010 = coalesce(CW3AJ2010 + CW3AK2010))
+
+#Combine 40s, rename Age40s
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age40s_1990 = coalesce(CW3AL1990 + CW3AM1990))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age40s_2000 = coalesce(CW3AL2000 + CW3AM2000))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age40s_2010 = coalesce(CW3AL2010 + CW3AM2010))
+
+#Combine 50s, rename Age50s
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age50s_1990 = coalesce(CW3AN1990 + CW3AO1990))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age50s_2000 = coalesce(CW3AN2000 + CW3AO2000))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age50s_2010 = coalesce(CW3AN2010 + CW3AO2010))
+
+#Combine 60s, rename Age60s
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age60s_1990 = coalesce(CW3AP1990 + CW3AQ1990 + CW3AR1990))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age60s_2000 = coalesce(CW3AP2000 + CW3AQ2000 + CW3AR2000))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age60s_2010 = coalesce(CW3AP2010 + CW3AQ2010 + CW3AR2010))
+
+#Combine 70s, rename Age70s
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age70s_1990 = coalesce(CW3AS1990 + CW3AT1990))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age70s_2000 = coalesce(CW3AS2000 + CW3AT2000))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age70s_2010 = coalesce(CW3AS2010 + CW3AT2010))
+
+#Combine 80s, rename Age80andOver
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age80sandOver_1990 = coalesce(CW3AU1990 + CW3AV1990))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age80sandOver_2000 = coalesce(CW3AU2000 + CW3AV2000))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(Age80sandOver_2010 = coalesce(CW3AU2010 + CW3AV2010))
+
+```
+
+# Occupancy and Vacancy 
+```{r}
+# Create percentage variables of each Occupancy category
+
+NHGIS_Data <- NHGIS_Data %>% group_by(TRACTA) %>% 
+  mutate((OccupiedHousingUnits_Percent_1990 = HousingUnits_Occupied_1990
+ / HousingUnits_1990) * 100) %>%
+  mutate(( OccupiedHousingUnits_Percent_2000 = HousingUnits_Occupied_2000
+ / HousingUnits_2000) * 100) %>%
+mutate(( OccupiedHousingUnits_Percent_2010 = HousingUnits_Occupied_2010
+ / HousingUnits_2010) * 100) %>% 
+mutate(( VacantHousingUnits_Percent_1990 = HousingUnits_Vacant_1990
+ / HousingUnits_1990 ) * 100) %>%
+mutate(( VacantHousingUnits_Percent_2000 = HousingUnits_Vacant_2000
+ / HousingUnits_2000 ) * 100) %>%
+mutate(( VacantHousingUnits_Percent_2010 = HousingUnits_Vacant_2010
+ / HousingUnits_2010 ) * 100)
+
+```
+
+# Ethnicity 
+```{r}
+#Combine Hispanic and Not Hispanic to get an Ethnicity population count
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalEthnicityCount_1990 = coalesce(NotHispanic.Latino_1990 + Hispanic.Latino1990))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalEthnicityCount_2000 = coalesce(NotHispanic.Latino_2000 + Hispanic.Latino2000))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalEthnicityCount_2010 = coalesce(NotHispanic.Latino_2010 + Hispanic.Latino2010))
+
+# Create percentage variables of Ethnicity category
+
+NHGIS_Data <- NHGIS_Data %>% group_by(TRACTA) %>% 
+  mutate((Hispanic.Latino_Percent_1990 = Hispanic.Latino1990
+ / TotalEthnicityCount_1990) * 100) %>%
+  mutate(( NotHispanic.Latino_Percent_1990 = NotHispanic.Latino_1990
+ / TotalEthnicityCount_1990) * 100) %>%
+mutate(( Hispanic.Latino_Percent_2000 = Hispanic.Latino2000 
+ / TotalEthnicityCount_2000) * 100) %>% 
+mutate(( NotHispanic.Latino_Percent_2000 = NotHispanic.Latino_2000
+ / TotalEthnicityCount_2000 ) * 100) %>%
+mutate(( Hispanic.Latino_Percent_2010 = Hispanic.Latino2010 
+ / TotalEthnicityCount_2010 ) * 100) %>%
+mutate(( NotHispanic.Latino_Percent_2010 = NotHispanic.Latino_2010 
+ / TotalEthnicityCount_2010 ) * 100)
+
+```
+
+# Sex
+```{r}
+#Combine Male and Female to get a population count
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalSexPopulation_1990 = coalesce(Male_1990 + Female_1990))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalSexPopulation_2000 = coalesce(Male_2000 + Female_2000))
+
+NHGIS_Data <- NHGIS_Data %>%
+  mutate(TotalSexPopulation_2010 = coalesce(Male_2010 + Female_2010))
+
+# Create percentage variables of Sex category
+
+NHGIS_Data <- NHGIS_Data %>% group_by(TRACTA) %>% 
+  mutate((Male_Percent_1990 = Male_1990
+ / TotalSexPopulation_1990) * 100) %>%
+  mutate(( Female_Percent_1990 = Female_1990 / TotalSexPopulation_1990) * 100) %>%
+mutate(( Male_Percent_2000 = Male_2000 / TotalSexPopulation_2000) * 100) %>% 
+mutate(( Female_Percent_2000 = Female_2000 / TotalSexPopulation_2000 ) * 100) %>%
+mutate(( Male_Percent_2010 = Male_2010 
+ / TotalSexPopulation_2010 ) * 100) %>%
+mutate(( Female_Percent_2010 = Female_2010 / TotalSexPopulation_2010 ) * 100)
+
+```
+
+# Write new CSV File
+```{r}
+
+write.csv( NHGIS_Data, "NHGIS Data Rename.csv", row.names=F)
+
+```
 
 
 
