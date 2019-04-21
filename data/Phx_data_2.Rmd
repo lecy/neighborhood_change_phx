@@ -1105,10 +1105,9 @@ phx <- fortify(phx, region="geoid2")
 ```{r}
 phx.data <- merge(phx, phx.dat, by.x="geoid2", by.y="GISJOIN", all.x=F, all.y=F)
 
-
+```
 phx.data <- geo_join(phx, phx.dat, by_sp="GISJOIN", by_df="geoid2", how="left")
 
-```
 final.phx <- phx.dat[order(phx.dat$order),]
 ```{r}
 #Convert large data file into GeoJson & write as GeoJson in shapefiles folder
@@ -1143,8 +1142,6 @@ ggplot() +
                aes(x = long, y = lat, group = group, fill = phx.data$Total_2010), 
                color = "black", size = 0.25) + 
   coord_map()
-
-
 
 
 
