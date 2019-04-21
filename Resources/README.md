@@ -16,3 +16,10 @@ https://ds4ps.org/Data-Science-Class/TEXTBOOK/docs/index.html
 
 (4/14/2019) Ggplotly function to make maps interactive
 https://www.rdocumentation.org/packages/plotly/versions/4.8.0/topics/ggplotly
+
+
+(4/21/2019) R Shiny Tutorial video 
+https://shiny.rstudio.com/tutorial/
+
+(4/21/2019) R Shiny Widget Gallery
+https://shiny.rstudio.com/gallery/widget-gallery.html
