@@ -1031,32 +1031,55 @@ write.csv( NHGIS_data, "NHGIS_data_rename1", row.names=F)
 
 phx.dat.2010.1 <- merge(educ.pop.2010, income.pop.2010, by.x="geoid", by.y="geoid", all.x=T)
 
+###Checked: nrow 916 consistent, length 23 + 61 = 84
+
 phx.dat.2010.2 <- merge(travel.pop.2010, value.pop.2010, by.x="geoid", by.y="geoid", all.x=T)
 
+###Checked: nrow 916 consistent, length 17 + 30 = 46
+
 phx.dat.2010 <- merge(phx.dat.2010.1, phx.dat.2010.2, by.x="geoid", by.y="geoid", all.x=T)
+
+###Checked: nrow 916 consistent, length 46 + 84 = 128
 
 ###2015
 phx.dat.2015.1 <- merge(race.pop.2015, educ.pop.2015, by.x="geoid", by.y="geoid", all.x=T)
 
+###Checked: nrow 916 consistent, length 21 + 43 = 63
+
 phx.dat.2015.2 <- merge(occupancy.pop.2015, income.pop.2015, by.x="geoid", by.y="geoid", all.x=T)
 
-phx.dat.2015.3 <- merge(occupancy.pop.2015, income.pop.2015, by.x="geoid", by.y="geoid", all.x=T)
+###Checked: nrow 916 consistent, length 7 + 23 = 29
+
+phx.dat.2015.3 <- merge(sex.pop.2015, vacancy.pop.2015, by.x="geoid", by.y="geoid", all.x=T)
+
+###Checked: nrow 916 consistent, length 7 + 12 = 18
+
 
 phx.dat.2015.4 <- merge(hispanic.pop.2015, value.pop.2015, by.x="geoid", by.y="geoid", all.x=T)
 
+###Checked: nrow 916 consistent, length 7 + 32 = 38
+
 phx.dat.2015.5 <- merge(phx.dat.2015.1, phx.dat.2015.2, by.x="geoid", by.y="geoid", all.x=T)
+
+###Checked: nrow 916 consistent, length 63 + 29 = 91
 
 phx.dat.2015.6 <- merge(phx.dat.2015.3, phx.dat.2015.4, by.x="geoid", by.y="geoid", all.x=T)
 
+###Checked: nrow 916 consistent, length 18 + 38 = 55
+
 phx.dat.2015.7 <- merge(phx.dat.2015.5, travel.pop.2015, by.x="geoid", by.y="geoid", all.x=T)
 
-phx.dat.2015.8 <- merge(phx.dat.2015.5, phx.dat.2015.6, by.x="geoid", by.y="geoid", all.x=T)
+###Checked: nrow 916 consistent, length 17 + 91 = 107
 
-phx.dat.2015 <- merge(phx.dat.2015.7, phx.dat.2015.8, by.x="geoid", by.y="geoid", all.x=T, all.y=F)
+phx.dat.2015 <- merge(phx.dat.2015.7, phx.dat.2015.6, by.x="geoid", by.y="geoid", all.x=T, all.y=F)
+
+###Checked: nrow 916 consistent, length 55 + 107 = 162
 
 #Combine datasets for 2010 and 2015
 
 phx.dat <- merge(phx.dat.2010, phx.dat.2015, by.x="geoid", by.y="geoid", all.x=T, all.y=F)
+
+###Checked: nrow 916 consistent, length 128 + 161 = 288
 
 #Combine ACS 5 datasets with NHGIS data
 
@@ -1066,23 +1089,31 @@ phx.dat$geoid3 <- paste0( "G", phx$STATEFP10,
 
 phx.dat <- merge(NHGIS_data, phx.dat, by.x="GISJOIN", by.y="geoid3", all.x=T, all.y=F)
 
+write.csv( phx.dat, "phx.dat", row.names=F)
+
+###Checked: nrow 916 consistent, length 330 + 288 = 618
+
 ```
 
-```{r}
+
 #Combine dataset with shapefile
 
 phx <- fortify(phx, region="geoid2")
+
+
+
+```{r}
+phx.data <- merge(phx, phx.dat, by.x="geoid2", by.y="GISJOIN", all.x=F, all.y=F)
+
+
+phx.data <- geo_join(phx, phx.dat, by_sp="GISJOIN", by_df="geoid2", how="left")
+
 ```
-
-
-
-phx.dat <- merge(phx, phx.dat, by.x="id", by.y="GISJOIN", all.x=F, all.y=F)
-
 final.phx <- phx.dat[order(phx.dat$order),]
-
+```{r}
 #Convert large data file into GeoJson & write as GeoJson in shapefiles folder
 
-geojson_write( phx.dat, file = "../shapefiles/phx.geojson" )
+geojson_write( phx.data, file = "../shapefiles/phx.geojson" )
 
 
 ```
@@ -1108,8 +1139,8 @@ library(RColorBrewer)
 
 
 ggplot() +
-  geom_polygon(data = phx.dat, 
-               aes(x = long, y = lat, group = group, fill = phx.dat$Total_2010), 
+  geom_polygon(data = phx.data, 
+               aes(x = long, y = lat, group = group, fill = phx.data$Total_2010), 
                color = "black", size = 0.25) + 
   coord_map()
 
