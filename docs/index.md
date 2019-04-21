@@ -1,5 +1,5 @@
 ---
-Title: Phoenix Neighborhood Change
+title: Phoenix Neighborhood Change
 ---
 
 
