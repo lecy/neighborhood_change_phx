@@ -994,7 +994,9 @@ file.remove( "maricopa-az-census_tract10.zip" )
 library( rgdal )
 phx <- readOGR("tl_2010_04013_tract10.shp")
 
-phx$geoid <- paste0( "G", phx$STATEFP10, 
+phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
+
+phx$geoid2 <- paste0( "G", phx$STATEFP10, 
                      "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
 
 ```
@@ -1018,7 +1020,7 @@ mcpa_value_2015 <- merge(phx, value.pop.2015, by.x="GEOID10", by.y="geoid", all.
 mcpa_hispanic_2015 <- merge(phx, hispanic.pop.2015, by.x="GEOID10", by.y="geoid", all.x=T)
 mcpa_travel_2015 <- merge(phx, travel.pop.2015, by.x="GEOID10", by.y="geoid", all.x=T)
 
-NHGIS_data_map <- merge(NHGIS_data, phx, by.x="GISJOIN", by.y="geoid", all.x=T)
+NHGIS_data_map <- merge(NHGIS_data, phx, by.x="GISJOIN", by.y="geoid2", all.x=T)
 
 
 
@@ -1038,7 +1040,7 @@ phx.dat.2015.1 <- merge(race.pop.2015, educ.pop.2015, by.x="geoid", by.y="geoid"
 
 phx.dat.2015.2 <- merge(occupancy.pop.2015, income.pop.2015, by.x="geoid", by.y="geoid", all.x=T)
 
-phx.dat.2015.3 <- merge(vacancy.pop.2015, sex.pop.2015, by.x="geoid", by.y="geoid", all.x=T)
+phx.dat.2015.3 <- merge(occupancy.pop.2015, income.pop.2015, by.x="geoid", by.y="geoid", all.x=T)
 
 phx.dat.2015.4 <- merge(hispanic.pop.2015, value.pop.2015, by.x="geoid", by.y="geoid", all.x=T)
 
@@ -1050,24 +1052,33 @@ phx.dat.2015.7 <- merge(phx.dat.2015.5, travel.pop.2015, by.x="geoid", by.y="geo
 
 phx.dat.2015.8 <- merge(phx.dat.2015.5, phx.dat.2015.6, by.x="geoid", by.y="geoid", all.x=T)
 
-phx.dat.2015 <- merge(phx.dat.2015.7, phx.dat.2015.8, by.x="geoid", by.y="geoid", all.x=T)
+phx.dat.2015 <- merge(phx.dat.2015.7, phx.dat.2015.8, by.x="geoid", by.y="geoid", all.x=T, all.y=F)
 
 #Combine datasets for 2010 and 2015
 
-phx.dat <- merge(phx.dat.2010, phx.dat.2015, by.x="geoid", by.y="geoid", all.x=T)
+phx.dat <- merge(phx.dat.2010, phx.dat.2015, by.x="geoid", by.y="geoid", all.x=T, all.y=F)
 
 #Combine ACS 5 datasets with NHGIS data
 
-phx.dat$geoid2 <- paste0( "G", phx$STATEFP10, 
+phx.dat$geoid3 <- paste0( "G", phx$STATEFP10, 
                      "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
 
 
-phx.dat <- merge(NHGIS_data, phx.dat, by.x="GISJOIN", by.y="geoid2", all.x=T)
+phx.dat <- merge(NHGIS_data, phx.dat, by.x="GISJOIN", by.y="geoid3", all.x=T, all.y=F)
 
+```
+
+```{r}
 #Combine dataset with shapefile
 
-phx.dat <- merge(phx, phx.dat, by.x="geoid", by.y="GISJOIN", all.x=T)
+phx <- fortify(phx, region="geoid2")
+```
 
+
+
+phx.dat <- merge(phx, phx.dat, by.x="id", by.y="GISJOIN", all.x=F, all.y=F)
+
+final.phx <- phx.dat[order(phx.dat$order),]
 
 #Convert large data file into GeoJson & write as GeoJson in shapefiles folder
 
@@ -1084,6 +1095,29 @@ NHGIS_Data_Rename1 <- merge(phx, NHGIS_data, by.x="geoid", by.y="GISJOIN")
 NHGIS_mapdata <- merge(phx, NHGIS_data, by.x="geoid", by.y="GISJOIN")
 ```
 
+
+```{r}
+
+library(ggplot2)
+library(maptools)
+library(rgeos)
+library(mapproj)
+library(ggmap)
+library(scales)
+library(RColorBrewer)
+
+
+ggplot() +
+  geom_polygon(data = phx.dat, 
+               aes(x = long, y = lat, group = group, fill = phx.dat$Total_2010), 
+               color = "black", size = 0.25) + 
+  coord_map()
+
+
+
+
+
+```
 
 
 ```{r}
