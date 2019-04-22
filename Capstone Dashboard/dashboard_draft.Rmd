@@ -1,0 +1,296 @@
+---
+title: "Capstone Dashboard"
+author: "Kendelle Brown, Abby Henderson"
+date: "April 14, 2019"
+output: flexdashboard::flex_dashboard
+runtime: shiny
+---
+
+```{r setup, chunk-1, include=FALSE, cache=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(flexdashboard)
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+library( leaflet, quietly=TRUE )
+library( sp, quietly=TRUE)
+library(broom, quietly=TRUE)
+
+Censuskey <- "9cb83c4560f4fbcc326ddd18ea31460fdd34546f"
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+
+```
+
+```{r, chunk-2, include=FALSE, cache=FALSE}
+# Import Shapefile
+
+download.file( "https://github.com/lecy/neighborhood_change_phx/raw/master/shapefiles/tl_2010_04013_tract10.zip", 
+"maricopa-az-census_tract10.zip" )
+unzip( "maricopa-az-census_tract10.zip" )
+file.remove( "maricopa-az-census_tract10.zip" )
+dir()
+
+library( rgdal )
+phx <- readOGR("tl_2010_04013_tract10.shp")
+head( phx@data, 10)
+plot( phx )
+
+phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
+
+url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.combined.data.csv"
+dat <- read.csv( url, stringsAsFactors=F )
+
+
+phx$geoid2 <- paste0( "G", phx$STATEFP10, 
+                     "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
+
+phx.shape.data <- merge(phx, dat, by.x="geoid2", by.y="GISJOIN", all.x=T)
+
+phx_fortified <- tidy( phx, region = "geoid2")
+
+phx.tidy <- merge( phx_fortified, dat, by.x="id", by.y="GISJOIN", all.x=T)
+
+
+asian_1990 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=
+Asian_1990)) +
+  geom_polygon() +  coord_map() +
+     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+     labs(title="Asian Population in 1990", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+
+asian_2000 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, group = group, fill = Asian_2000 ) ) + 
+  geom_polygon() + coord_map()+
+  scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+  labs(title="Asian Population in 2000", caption="2000 Source: NHGIS IPUMS data")
+
+
+asian_2010 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=
+Asian_2010)) +
+  geom_polygon() +  coord_map() +
+     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+     labs(title="Asian Population in 2010", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+asian_2015 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=Asian_2015)) +
+  geom_polygon() +  coord_map() +
+  scale_fill_distiller(palette="Paired", direction=1, name="Population") +
+  labs(title="Asian Population in 2015", caption="2015 Source: US Census")
+
+
+
+
+hsdiploma_ged_2010 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=
+HSDiploma_GED_2010)) +
+  geom_polygon() +  coord_map() +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A High School Diploma or GED", caption="2015 Source: US Census")
+
+
+hsdiploma_2015 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=
+HSdiploma_2015)) + geom_polygon() +  coord_map() +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A High School Diploma", caption="2015 Source: US Census")
+
+```
+
+Narrative
+=====================================  
+    
+Column {data-width=600}
+-------------------------------------
+
+### Narrative
+    
+### The narrative will go here
+
+
+Analysis 1 {data-orientation=rows}
+=====================================     
+
+Inputs {.sidebar data-width=300}
+-----------------------------------------------------------------------
+
+```{r, chunk-3, include=TRUE, cache=FALSE}
+
+ui <- fluidPage(
+    
+  selectInput(inputId= "select", label = h3("Select Year"), 
+    choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), 
+    selected = 2000),
+  
+  hr(),
+  fluidRow(column(3, verbatimTextOutput("value")))
+  
+)
+
+server <- function(input,output)
+{
+
+  
+  output$value <- renderPrint({ input$select })
+
+}
+
+shinyApp(ui = ui, server=server)
+```
+   
+Row {data-height=400}
+-------------------------------------
+
+### Map 1
+
+```{r, chunk-4}
+#filler
+
+asian_1990
+
+```
+
+### Map 2
+
+```{r, chunk-5}
+#filler
+
+asian_2015
+
+
+```   
+
+Row {data-height=500}
+-------------------------------------  
+### Analysis
+
+
+
+Analysis 2 {data-orientation=rows}
+=====================================     
+
+Inputs {.sidebar data-width=300}
+-------------------------------------
+
+```{r, chunk-6, cache=FALSE}
+# shiny inputs defined here
+
+
+ui <- fluidPage(
+
+radioButtons(inputId = "radio", label = h3("Select a year"), choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected=2000 ),
+  
+hr(),
+fluidRow(column(3, verbatimTextOutput("value")))
+)
+
+server <- function(input, output) { 
+
+  output$value <- renderPrint({input$radio })
+  }
+
+shinyApp(ui = ui, server=server)
+
+
+```
+ 
+Row {data-height=400}
+-------------------------------------
+
+### Map 1
+
+```{r, chunk-7}
+
+hsdiploma_ged_2010
+```
+
+### Map 2
+
+```{r, chunk-8}
+
+hsdiploma_2015
+```   
+
+Row {data-height=500}
+-------------------------------------  
+### Analysis
+
+```{r, chunk-9}
+```
+
+Analysis 3 {data-orientation=rows}
+=====================================     
+   
+Inputs {.sidebar data-width=300}
+-------------------------------------
+
+```{r, chunk-10}
+# shiny inputs defined here
+```
+ 
+Row {data-height=400}
+-------------------------------------
+
+### Map 1
+
+```{r, chunk-11}
+```
+
+### Map 2
+
+```{r, chunk-12}
+```   
+
+Row {data-height=500}
+-------------------------------------  
+### Analysis
+
+```{r, chunk-13}
+```
+
+Data Table {data-orientation=rows}
+=====================================     
+   
+Row {data-height=600}
+-------------------------------------
+
+### NHGIS 1990,2000,2010 & ACS 2010, 2015
+
+```{r, chunk-14}
+```
+
+Row {data-height=600}
+-------------------------------------
+
+### Data Table Explanation
+
+```{r, chunk-15}
+```
+
