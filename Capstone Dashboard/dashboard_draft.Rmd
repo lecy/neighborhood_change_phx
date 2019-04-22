@@ -122,6 +122,22 @@ HSdiploma_2015)) + geom_polygon() +  coord_map() +
   scale_fill_distiller(palette="Greens", direction=1, name="Population") +
   labs(title="A High School Diploma", caption="2015 Source: US Census")
 
+twohundredkto250k_value_2010 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill= 
+                      Twohundredkto250k_value_2010)) + geom_polygon() +  coord_map() +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $200,000 and $250,000", title.cex=0.5, caption="2010 Source: US Census")
+
+twohundredkto250k_value_2015 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=
+                      Twohundredkto250k_value_2015)) + geom_polygon() +  coord_map() +
+  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
+  labs(title="Between $200,000 and $250,000", title.cex=0.5, caption="2015 Source: US Census")
+
+
+
 ```
 
 Narrative
@@ -251,8 +267,29 @@ Analysis 3 {data-orientation=rows}
 Inputs {.sidebar data-width=300}
 -------------------------------------
 
-```{r, chunk-10}
+```{r, chunk-10, include=FALSE, cache=FALSE}
 # shiny inputs defined here
+
+
+
+ui <- fluidPage(
+
+radioButtons(inputId = "radio", label = h3("Select a year"), choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected=2000 ),
+  
+hr(),
+fluidRow(column(3, verbatimTextOutput("value")))
+)
+
+server <- function(input, output) { 
+
+  output$value <- renderPrint({input$radio })
+}
+
+shinyApp(ui = ui, server=server)
+```
+
+```{r, cache=FALSE, include=TRUE}
+shinyApp(ui = ui, server=server)
 ```
  
 Row {data-height=400}
@@ -261,11 +298,17 @@ Row {data-height=400}
 ### Map 1
 
 ```{r, chunk-11}
+
+twohundredkto250k_value_2010 
+
 ```
 
 ### Map 2
 
 ```{r, chunk-12}
+
+twohundredkto250k_value_2015
+
 ```   
 
 Row {data-height=500}
