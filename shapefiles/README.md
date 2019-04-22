@@ -56,7 +56,7 @@ proj4string( phx )
 ## Add Data
 
 ```r
-url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/raw/NHGIS_geog_data.csv"
+url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.combined.data"
 dat <- read.csv( url, stringsAsFactors=F )
 
 #Create GEOID of FIPS Code elements
