@@ -89,12 +89,6 @@ phx_fortified <- tidy( phx, region = "geoid2")
 ```r
 phx.tidy <- merge( phx_fortified, phx.combined.data, by.x="id", by.y="GISJOIN", all.x=T)
 ```
-
-## Write this dataframe to a csv to save it for the future
-```r
-write.csv( phx.tidy, "phx.tidy", row.names=F)
-```
-
 ## Use this dataframe for ggplot() maps
 
 ```r
