@@ -1085,7 +1085,7 @@ phx.dat$geoid3 <- paste0( "G", phx$STATEFP10,
 
 phx.combined.data <- merge(NHGIS_data, phx.dat, by.x="GISJOIN", by.y="geoid3", all.x=T, all.y=F)
 
-write.csv( phx.combined.data, "phx.combined.data", row.names=F)
+write.csv( phx.combined.data, "phx.combined.data.csv", row.names=F)
 
 ###Checked: nrow 916 consistent, length 330 + 288 = 618
 
@@ -1137,7 +1137,7 @@ ggplot( data = phx.tidy,
   geom_polygon() +
   coord_map()
 
-write.csv( phx.tidy, "phx.tidy", row.names=F)
+write.csv( phx.tidy, "phx.tidy.csv", row.names=F)
 
 ```
 
