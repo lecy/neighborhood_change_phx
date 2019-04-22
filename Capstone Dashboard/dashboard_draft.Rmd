@@ -334,8 +334,8 @@ This data table is a sample of the full dataset, including only those variables 
 dat.selected <- select(dat, GISJOIN, STATE, COUNTY, TRACTA, Asian_1990, Asian_2000, Asian_2010, Asian_2015, HSDiploma_GED_2010, HSdiploma_2015, Twohundredkto250k_value_2010, Twohundredkto250k_value_2015, Male_1990, Female_1990, Male_2000, Female_2000, Male_2010, Female_2010, Male_2015, Female_2015 )
 ```
 
-```{r}
-datatable(data = dat.selected, options = list(), class = "display",
+```{r, include=FALSE}
+selected.datatable <- datatable(data = dat.selected, options = list(), class = "display",
     callback = JS("return table;"),
     caption = NULL, escape = TRUE, style = "default", elementId = NULL,
     fillContainer = getOption("DT.fillContainer", NULL),
@@ -343,6 +343,12 @@ datatable(data = dat.selected, options = list(), class = "display",
     plugins = NULL, editable = FALSE)
 
 
+
+```
+
+```{r}
+
+selected.datatable
 
 ```
 
@@ -353,13 +359,14 @@ Row {data-height=600}
 
 This data table includes the names of the different variables from 1990-2015. Notes that 1990, 2000, and 2010 are the variable names from the NHGIS time series data tables downloaded at ("link goes here"). The 2015 variable names are those used to download data from the ACS 5 using the censusapi() package ("link goes here").
 
-```{r, chunk-15}
+```{r, chunk-15, include=FALSE}
 
-url2 <- "https://github.com/lecy/neighborhood_change_phx/blob/master/data/variable_lists/phx.variable.name.crosswalk.csv"
+url2 <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.variable.name.crosswalk.csv"
 
-phx.var.crosswalk <- read.csv( url2, sep=",", stringsAsFactors = F)
+phx.var.crosswalk <- read.csv( url2, stringsAsFactors = F)
 
-datatable(data = phx.var.crosswalk, options = list(), class = "display",
+phx.var.datatable <- datatable(data = phx.var.crosswalk, 
+                               options = list(), class = "display",
     callback = JS("return table;"),
     caption = NULL, escape = TRUE, style = "default", elementId = NULL,
     fillContainer = getOption("DT.fillContainer", NULL),
@@ -368,3 +375,6 @@ datatable(data = phx.var.crosswalk, options = list(), class = "display",
 
 ```
 
+```{r}
+phx.var.datatable
+```
