@@ -322,7 +322,7 @@ Row {data-height=500}
 Data Table {data-orientation=rows}
 =====================================     
    
-Row {data-height=600}
+Row {data-height=1000}
 -------------------------------------
 
 ### NHGIS 1990,2000,2010 & ACS 2010, 2015
@@ -352,7 +352,7 @@ selected.datatable
 
 ```
 
-Row {data-height=600}
+Row {data-height=1000}
 -------------------------------------
 
 ### Data Table Variable Names
