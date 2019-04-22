@@ -27,6 +27,7 @@ library(gridExtra, quietly=TRUE)
 library( leaflet, quietly=TRUE )
 library( sp, quietly=TRUE)
 library(broom, quietly=TRUE)
+library(DT, quietly=TRUE)
 
 Censuskey <- "9cb83c4560f4fbcc326ddd18ea31460fdd34546f"
 
