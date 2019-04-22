@@ -60,12 +60,16 @@ url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/da
 dat <- read.csv( url, stringsAsFactors=F )
 
 #Create GEOID of FIPS Code elements
-phx$geoid <- paste0( "G", phx$STATEFP10, "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
+phx$geoid2 <- paste0( "G", phx$STATEFP10, 
+                     "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
 
-# > head( phx$geoid )
+# > head( phx$geoid2 )
 # [1] "G0400130422644" "G0400130422643" "G0400130422642" "G0400130422641"
 
-phx <- merge( phx, dat, by.x="geoid", by.y="GISJOIN", all.x=T )
+
+phx.shape.data <- merge(phx, phx.combined.data, by.x="geoid2", by.y="GISJOIN", all.x=T)
+
+
 ```
 
 
@@ -73,13 +77,45 @@ phx <- merge( phx, dat, by.x="geoid", by.y="GISJOIN", all.x=T )
 
 ```r
 library(geojsonio)
-geojson_write( phx, file = "phx.2010.tracts.geojson" )
+geojson_write( phx.shape.data, file = "../shapefiles/phx.geojson" )
 ```
 
+## Convert the shapefile to a data frame
+```r
+phx_fortified <- tidy( phx, region = "geoid2")
+```
+
+## Merge the data frame of the shapefile with the combined dataset
+```r
+phx.tidy <- merge( phx_fortified, phx.combined.data, by.x="id", by.y="GISJOIN", all.x=T)
+```
+
+## Write this dataframe to a csv to save it for the future
+```r
+write.csv( phx.tidy, "phx.tidy", row.names=F)
+```
+
+## Use this dataframe for ggplot() maps
+
+```r
+asian_2000 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, group = group, fill = Asian_2000 ) ) + 
+  geom_polygon() +
+  coord_map()
 
 
-
-
+hispanic_1990 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, 
+                    fill = Hispanic.Latino1990 ) ) + 
+                geom_polygon() +
+               coord_map() +
+               scale_fill_distiller(palette="Set3", direction=1,
+                                    name="Population") +
+     labs(title="Hispanic/Latino1990 
+     Population in Maricopa County", title.cex=.75, 
+     caption="1990 Source: US Census, NHGIS")
+  ```
 
 ## The resource that I used for this.
 
