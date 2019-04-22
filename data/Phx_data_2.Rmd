@@ -1020,10 +1020,6 @@ mcpa_value_2015 <- merge(phx, value.pop.2015, by.x="GEOID10", by.y="geoid", all.
 mcpa_hispanic_2015 <- merge(phx, hispanic.pop.2015, by.x="GEOID10", by.y="geoid", all.x=T)
 mcpa_travel_2015 <- merge(phx, travel.pop.2015, by.x="GEOID10", by.y="geoid", all.x=T)
 
-NHGIS_data_map <- merge(NHGIS_data, phx, by.x="GISJOIN", by.y="geoid2", all.x=T)
-
-
-
 write.csv( NHGIS_data, "NHGIS_data_rename1", row.names=F)
 
 #Combine above datasets by year
@@ -1087,9 +1083,9 @@ phx.dat$geoid3 <- paste0( "G", phx$STATEFP10,
                      "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
 
 
-phx.dat <- merge(NHGIS_data, phx.dat, by.x="GISJOIN", by.y="geoid3", all.x=T, all.y=F)
+phx.combined.data <- merge(NHGIS_data, phx.dat, by.x="GISJOIN", by.y="geoid3", all.x=T, all.y=F)
 
-write.csv( phx.dat, "phx.dat", row.names=F)
+write.csv( phx.combined.data, "phx.combined.data", row.names=F)
 
 ###Checked: nrow 916 consistent, length 330 + 288 = 618
 
@@ -1100,29 +1096,58 @@ write.csv( phx.dat, "phx.dat", row.names=F)
 
 phx <- fortify(phx, region="geoid2")
 
-
-
-```{r}
 phx.data <- merge(phx, phx.dat, by.x="geoid2", by.y="GISJOIN", all.x=F, all.y=F)
+NHGIS_data_map <- merge(NHGIS_data, phx, by.x="GISJOIN", by.y="geoid2", all.x=T)
 
-```
-phx.data <- geo_join(phx, phx.dat, by_sp="GISJOIN", by_df="geoid2", how="left")
 
-final.phx <- phx.dat[order(phx.dat$order),]
 ```{r}
+#Merge the combined dataset with the shapefile
+phx.shape.data <- merge(phx, phx.combined.data, by.x="geoid2", by.y="GISJOIN", all.x=T)
+
 #Convert large data file into GeoJson & write as GeoJson in shapefiles folder
 
-geojson_write( phx.data, file = "../shapefiles/phx.geojson" )
+geojson_write( phx.shape.data, file = "../shapefiles/phx.geojson" )
+```
 
+
+
+```{r}
+
+#Convert shapefile to a dataframe for ggplot maps
+
+library(broom)
+phx_fortified <- tidy( phx, region = "geoid2")
+
+library(ggplot2)
+
+library(mapproj)
+
+ggplot() +
+  geom_polygon( data = phx_fortified, aes( x = long, y = lat, group = group ), col="gray" ) +
+  theme_void() +
+  coord_map()
+
+library( dplyr)
+
+
+phx.tidy <- merge( phx_fortified, phx.combined.data, by.x="id", by.y="GISJOIN", all.x=T)
+
+ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, group = group, fill = Asian_2000 ) ) + 
+  geom_polygon() +
+  coord_map()
+
+write.csv( phx.tidy, "phx.tidy", row.names=F)
 
 ```
+
 
 ##NHGIS
 ```{r}
 #Create GEOID of FIPS Code elements
 
-NHGIS_Data_Rename1 <- merge(phx, NHGIS_data, by.x="geoid", by.y="GISJOIN")
-NHGIS_mapdata <- merge(phx, NHGIS_data, by.x="geoid", by.y="GISJOIN")
+NHGIS_Data_Rename1 <- merge(phx, NHGIS_data, by.x="geoid2", by.y="GISJOIN")
+NHGIS_mapdata <- merge(phx, NHGIS_data, by.x="geoid2", by.y="GISJOIN")
 ```
 
 
@@ -1135,16 +1160,6 @@ library(mapproj)
 library(ggmap)
 library(scales)
 library(RColorBrewer)
-
-
-ggplot() +
-  geom_polygon(data = phx.data, 
-               aes(x = long, y = lat, group = group, fill = phx.data$Total_2010), 
-               color = "black", size = 0.25) + 
-  coord_map()
-
-
-
 ```
 
 
@@ -1154,30 +1169,37 @@ ggplot() +
 
 proj4string( NHGIS_mapdata )
 NHGIS_mapdata <- spTransform( NHGIS_mapdata, CRS("+proj=longlat +datum=WGS84") )
-proj4string( NHGIS_data_map )
+proj4string( NHGIS_mapdata )
 
 
 ##Ethnicity
-hispanic_1990 <- ggplot(NHGIS_mapdata) + 
-     geom_sf(aes(fill=NHGIS_mapdata$Hispanic.Latino1990), color="white") +
-     theme_void() +
-     theme(panel.grid.major = element_line(colour = 'transparent')) +
-     scale_fill_distiller(palette="Set3", direction=1, name="Population") +
+hispanic_1990 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, 
+                    fill = Hispanic.Latino1990 ) ) + 
+                geom_polygon() +
+               coord_map() +
+               scale_fill_distiller(palette="Set3", direction=1,
+                                    name="Population") +
      labs(title="Hispanic/Latino1990 Population in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
 
-hispanic_2000 <- ggplot(NHGIS_Data_Rename1) + 
-     geom_sf(aes(fill=Hispanic.Latino2000), color="white") +
-     theme_void() +
-     theme(panel.grid.major = element_line(colour = 'transparent')) +
+hispanic_2000 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=Hispanic.Latino2000)) +
+  geom_polygon() +
+               coord_map() +
      scale_fill_distiller(palette="Set3", direction=1, name="Population") +
      labs(title="Hispanic/Latino2000 Population in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
 
-hispanic_2010 <- ggplot(NHGIS_Data_Rename1) + 
-     geom_sf(aes(fill=Hispanic.Latino2010), color="white") +
-     theme_void() +
-     theme(panel.grid.major = element_line(colour = 'transparent')) +
+hispanic_2010 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=Hispanic.Latino2010)) +
+  geom_polygon() +
+               coord_map() +
      scale_fill_distiller(palette="Set3", direction=1, name="Population") +
      labs(title="Hispanic/Latino2010 Population in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+```
+
 
 not_hispanic_1990 <- ggplot(NHGIS_Data_Rename1) + 
      geom_sf(aes(fill=NotHispanic.Latino_1990), color="white") +
