@@ -56,7 +56,7 @@ proj4string( phx )
 ## Add Data
 
 ```r
-url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.combined.data"
+url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.combined.data.csv"
 dat <- read.csv( url, stringsAsFactors=F )
 
 #Create GEOID of FIPS Code elements
@@ -82,6 +82,7 @@ geojson_write( phx.shape.data, file = "../shapefiles/phx.geojson" )
 
 ## Convert the shapefile to a data frame
 ```r
+library(broom)
 phx_fortified <- tidy( phx, region = "geoid2")
 ```
 
