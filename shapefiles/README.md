@@ -56,7 +56,7 @@ proj4string( phx )
 ## Add Data
 
 ```r
-url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/raw/NHGIS_geog_data.csv"
+url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.combined.data"
 dat <- read.csv( url, stringsAsFactors=F )
 
 #Create GEOID of FIPS Code elements
@@ -89,12 +89,6 @@ phx_fortified <- tidy( phx, region = "geoid2")
 ```r
 phx.tidy <- merge( phx_fortified, phx.combined.data, by.x="id", by.y="GISJOIN", all.x=T)
 ```
-
-## Write this dataframe to a csv to save it for the future
-```r
-write.csv( phx.tidy, "phx.tidy", row.names=F)
-```
-
 ## Use this dataframe for ggplot() maps
 
 ```r
