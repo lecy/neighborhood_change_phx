@@ -106,22 +106,33 @@ asian_2015 <- ggplot( data = phx.tidy,
 
 
 
-
-hsdiploma_ged_2010 <- ggplot( data = phx.tidy, 
+forsale_1990 <- ggplot( data = phx.tidy, 
                aes( x = long, y = lat, 
                     group = group, fill=
-HSDiploma_GED_2010)) +
-  geom_polygon() +  coord_map() +
-  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
-  labs(title="A High School Diploma or GED", caption="2015 Source: US Census")
+Vacant_ForSale_1990)) + geom_polygon() +  coord_map() +
+     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     labs(title="Vacant For Sale Housing Unit 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
 
-
-hsdiploma_2015 <- ggplot( data = phx.tidy, 
+forsale_2000 <- ggplot( data = phx.tidy, 
                aes( x = long, y = lat, 
                     group = group, fill=
-HSdiploma_2015)) + geom_polygon() +  coord_map() +
-  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
-  labs(title="A High School Diploma", caption="2015 Source: US Census")
+Vacant_ForSale_2000)) + geom_polygon() +  coord_map() +
+     scale_fill_distiller(palette="RdYlGn", direction=1, name="Population") +
+     labs(title="Vacant For Sale Housing Unit 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
+
+forsale_2010 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=
+Vacant_ForSale_2010)) + geom_polygon() +  coord_map() +
+     scale_fill_distiller(palette="RdYlGn", direction=1, name="Population") +
+     labs(title="Vacant For Sale Housing Unit 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
+
+forsale_2015 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=
+Forsale_2015)) + geom_polygon() +  coord_map() +
+  scale_fill_distiller(palette="RdYlGn", direction=1, name="Population") +
+  labs(title="For Sale", title.cex=0.5, caption="2015 Source: US Census")
 
 twohundredkto250k_value_2010 <- ggplot( data = phx.tidy, 
                aes( x = long, y = lat, 
@@ -245,14 +256,14 @@ Row {data-height=400}
 
 ```{r, chunk-7}
 
-hsdiploma_ged_2010
+forsale_2000
 ```
 
 ### Map 2
 
 ```{r, chunk-8}
 
-hsdiploma_2015
+forsale_2010
 ```   
 
 Row {data-height=500}
@@ -321,9 +332,6 @@ Row {data-height=500}
 
 Data Table {data-orientation=rows}
 =====================================     
-   
-Row {data-height=1000}
--------------------------------------
 
 ### NHGIS 1990,2000,2010 & ACS 2010, 2015
 
@@ -352,8 +360,9 @@ selected.datatable
 
 ```
 
-Row {data-height=1000}
--------------------------------------
+Data Table {data-orientation=rows}
+=====================================     
+   
 
 ### Data Table Variable Names
 
