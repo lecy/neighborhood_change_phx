@@ -1,0 +1,99 @@
+---
+title: "Asian Dot Map"
+author: "Kendelle Brown, Abby Henderson"
+date: "April 14, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+library( leaflet, quietly=TRUE )
+library( sp, quietly=TRUE)
+library( tigris, quietly =TRUE)
+library(formatR, quietly=TRUE)
+
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+
+```
+
+```{r, include=FALSE}
+# Data
+
+URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.combined.data.csv"
+phx_data <- read.csv( URL, stringsAsFactors=FALSE )
+
+
+```
+
+
+```{r, include=FALSE}
+# Import Shapefile
+
+url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/shapefiles/phx.2010.tracts.geojson"
+phx <- geojson_read( url, method="web", what="sp" )
+plot( phx )
+
+phx <- readOGR("tl_2010_04013_tract10.shp")
+head( phx@data, 10)
+plot( phx )
+
+
+proj4string( phx )
+phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
+proj4string( phx )
+
+phx$geoid <- paste0( "G", phx$STATEFP10, "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
+
+# Join 
+phx2 <- geo_join( phx, phx_data, by_sp="geoid", by_df="GISJOIN", how="left" )
+
+# Write Geojson
+geojson_write( phx2, file = "phx.2010.tracts.geojson" )
+
+```
+
+
+# Asian Dot Plot Map
+```{r}
+
+Asian1990 <- dotsInPolys( phx2 , phx_data$Asian_1990/50, f = "random", offset, compatible = FALSE)
+
+Asian2000 <- dotsInPolys( phx2 , phx_data$Asian_2000/50, f = "random", offset, compatible = FALSE)
+
+Asian2010 <- dotsInPolys( phx2 , phx_data$Asian_2010/50, f = "random", offset, compatible = FALSE)
+
+Asian2015 <- dotsInPolys( phx2 , phx_data$Asian_2015/50, f = "random", offset, compatible = FALSE)
+
+par( mar=c(0,0,0,0) )
+plot( phx2, border="black", xlim=NULL, ylim=NULL )
+points( Asian1990, col=adjustcolor("burlywood", alpha.f=0.2), pch=19, cex=0.7 )
+points( Asian2000, col=adjustcolor("darkgoldenrod2", alpha.f=0.2), pch=19, cex=0.7 )
+points( Asian2010, col=adjustcolor("darkorange", alpha.f=0.2), pch=19, cex=0.7 )
+points( Asian2015, col=adjustcolor("chocolate4", alpha.f=0.2), pch=19, cex=0.7 )
+
+```
