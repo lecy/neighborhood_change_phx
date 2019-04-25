@@ -338,14 +338,15 @@ Dataset {data-orientation=rows}
 This data table is a sample of the full dataset, including only those variables used in the narratives of this dashboard. For a full dataset, please visit ("link here"). 
 
 ```{r, chunk-14, include=FALSE}
+dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.dashboard.dat.csv"
+table.dat <- read.csv( dat.url, stringsAsFactors=F )
 
-dat.selected <- select(dat, GISJOIN, STATE, COUNTY, TRACTA, Asian_1990, Asian_2000, Asian_2010, Asian_2015, HSDiploma_GED_2010, HSdiploma_2015, Twohundredkto250k_value_2010, Twohundredkto250k_value_2015, Male_1990, Female_1990, Male_2000, Female_2000, Male_2010, Female_2010, Male_2015, Female_2015 )
 ```
 
 ```{r, include=FALSE}
 these.buttons <- c( 'copy', 'csv', 'excel' )
 
-dat.selected.table <- datatable( dat.selected,
+dat.selected.table <- datatable( table.dat,
            filter='top', rownames=FALSE, 
            #options=list( pageLength=50, autoWidth=TRUE ),
            fillContainer=TRUE, 
