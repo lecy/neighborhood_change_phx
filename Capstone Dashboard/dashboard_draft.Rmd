@@ -343,12 +343,18 @@ dat.selected <- select(dat, GISJOIN, STATE, COUNTY, TRACTA, Asian_1990, Asian_20
 ```
 
 ```{r, include=FALSE}
-selected.datatable <- datatable(data = dat.selected, options = list(), class = "display",
-    callback = JS("return table;"),
-    caption = NULL, escape = TRUE, style = "default", elementId = NULL,
-    fillContainer = getOption("DT.fillContainer", NULL),
-    autoHideNavigation = getOption("DT.autoHideNavigation", NULL), extensions = list(),
-    plugins = NULL, editable = FALSE)
+these.buttons <- c( 'copy', 'csv', 'excel' )
+
+dat.selected.table <- datatable( dat.selected,
+           filter='top', rownames=FALSE, 
+           #options=list( pageLength=50, autoWidth=TRUE ),
+           fillContainer=TRUE, 
+           style="default",
+           class='table-condensed table-striped',
+           extensions = 'Buttons', 
+           options=list( dom='Bfrtip', 
+                         buttons=these.buttons  )) %>%
+  formatStyle( "GISJOIN", "white-space"="nowrap" )
 
 
 
