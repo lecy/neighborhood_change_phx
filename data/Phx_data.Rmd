@@ -1046,6 +1046,8 @@ phx.dat.2015 <- merge(phx.dat.2015.5, phx.dat.2015.6, by.x="geoid", by.y="geoid"
 
 phx.dat <- merge(phx.dat.2010, phx.dat.2015, by.x="geoid", by.y="geoid", all.x=T, all.y=F)
 
+write.csv( phx.dat, "phx.dat.csv", row.names=F)
+
 ###Checked: nrow 916 consistent, length 128 + 161 = 288
 
 #Combine ACS 5 datasets with NHGIS data
