@@ -1,28 +1,242 @@
-﻿Years or Categories,Sex,Categories,Years,Years,Years,Years,Race,Categories,Years,Years,Years,Years,Ethnicity,Categories,Years,Years,Years,Years,Education,Categories,Years,Years,Categories,Years,Home Value,Categories,Years,Categories,Years,Income,Categories,Years,Years,Occupancy,Categories,Years,Years,Years,Years,Vacancy,Categories,Years,Years,Years,Categories,Years,Housing Units,Categories,Years,Years,Years,Travel Time to Work,Categories,Years,Years
-Variable Names,Sex,Categories,1990,2000,2010,2015,Race,Categories,1990,2000,2010,2015,Ethnicity,Categories,1990,2000,2010,2015,Education,Categories,2010 M,2010 F,Categories,2015,Home Value,Categories,2010,Categories,2015,Income,Categories,2010,2015,Occupancy,Categories,1990,2000,2010,2015,Vacancy,Categories,1990,2000,2010,Categories,2015,Housing Units,Categories,1990,2000,2010,Travel Time to Work,Categories,2010,2015
-Variable Names,Sex,Male,CM0AA1990,CM0AA2000,CM0AA2010,B01001_002E,Race,White,CM1AA1990,CM1AA2000,CM1AA2010,B02001_002E,Ethnicity,Not Hispanic or Latino,CP4AA1990,CP4AA2000,CP4AA2010,B03003_002E,Education,No School,B15002_003E,B15002_020E,No School,B15003_002E,Home Value,"Less than $10,000",B25075_002E,"Less than $10,000",B25075_002E,Income,"Less than $10,000",B19001_002E,B19001_002E,Occupancy,Occupied,CM9AA1990,CM9AA2000,CM9AA2010,B25002_001E,Vacancy,Vacant- for rent,CN0AA1990,CN0AA2000,CN0AA2010,Vacant- for rent,B25004_002E,Housing Units,Total Housing Units,CM7AA1990,CM7AA2000,CM7AA2010,Travel Time to Work,Less than 5 minutes,B08303_002E,B08303_002E
-Variable Names,Sex,Female,CM0AB1990,CM0AB2000,CM0AB2010,B01001_026E,Race,Black or African American,CM1AB1990,CM1AB2000,CM1AB2010,B02001_003E,Ethnicity,Hispanic or Latino,CP4AB1990,CP4AB2000,CP4AB2010,B03003_003E,Education,Fourth Grade ,B15002_004E,B15002_021E,Pre-k,B15003_003E,Home Value,"$10,000 to $14,999",B25075_003E,"$10,000 to $14,999",B25075_003E,Income,"$10,000 to $14,999",B19001_003E,B19001_003E,Occupancy,Vacant,CM9AB1990,CM9AB2000,CM9AB2010,B25002_001E,Vacancy,"Vacant- rented, not occupied",CN0AB1990,CN0AB2000,CN0AB2010,"Vacant- rented, not occupied",B25004_003E,,,,,,Travel Time to Work,Five to 9 minutes,B08303_003E,B08303_003E
-Variable Names,,,,,,,Race,American Indian and Alaska Native,CM1AC1990,CM1AC2000,CM1AC2010,B02001_004E,,,,,,,Education,Sixth grade,B15002_005E,B15002_022E,Kindergarten,B15003_004E,Home Value,"$15,000 to $19,999",B25075_004E,"$15,000 to $19,999",B25075_004E,Income,"$15,000 to $19,999",B19001_004E,B19001_004E,,,,,,,Vacancy,Vacant- for sale,CN0AC1990,CN0AC2000,CN0AC2010,Vacant- for sale,B25004_004E,,,,,,Travel Time to Work,10 to 14 minutes,B08303_004E,B08303_004E
-Variable Names,,,,,,,Race,Asian,CM1AD1990,CM1AD2000,CM1AD2010,B02001_005E,,,,,,,Education,Eighth grade ,B15002_006E,B15002_023E,First grade,B15003_005E,Home Value,"$20,000 to $24,999",B25075_005E,"$20,000 to $24,999",B25075_005E,Income,"$20,000 to $24,999",B19001_005E,B19001_005E,,,,,,,Vacancy,"Vacant- sold, not occupied",CN0AD1990,CN0AD2000,CN0AD2010,"Vacant- sold, not occupied",B25004_005E,,,,,,Travel Time to Work,15 to 19 minutes,B08303_005E,B08303_005E
-Variable Names,,,,,,,Race,Native Hawaiian and other Pacific Islander,CM1AE1990,CM1AE2000,CM1AE2010,B02001_006E,,,,,,,Education,Ninth grade,B15002_007E,B15002_024E,Second grade,B15003_006E,Home Value,"$25,000 to $29,999",B25075_006E,"$25,000 to $29,999",B25075_006E,Income,"$25,000 to $29,999",B19001_006E,B19001_006E,,,,,,,Vacancy,"Vacant- seasonal, recreational, or occasional use",CN0AE1990,CN0AE2000,CN0AE2010,"Vacant- seasonal, recreational, or occasional use",B25004_006E,,,,,,Travel Time to Work,20 to 24 minutes,B08303_006E,B08303_006E
-Variable Names,,,,,,,Race,Some Other Race,CM1AF1990,CM1AF2000,CM1AF2010,B02001_007E,,,,,,,Education,Tenth grade,B15002_008E,B15002_025E,Third grade,B15003_007E,Home Value,"$30,000 to $34,999",B25075_007E,"$30,000 to $34,999",B25075_007E,Income,"$30,000 to $34,999",B19001_007E,B19001_007E,,,,,,,Vacancy,Vacant- for migrant workers,CN0AF1990,CN0AF2000,CN0AF2010,Vacant- for migrant workers,B25004_007E,,,,,,Travel Time to Work,25 to 29 minutes,B08303_007E,B08303_007E
-Variable Names,,,,,,,Race,Two or more races,CM1AG1990,CM1AG2000,CM1AG2010,B02001_008E,,,,,,,Education,Eleventh grade,B15002_009E,B15002_026E,Fourth Grade ,B15003_008E,Home Value,"$35,000 to $39,999",B25075_008E,"$35,000 to $39,999",B25075_008E,Income,"$35,000 to $39,999",B19001_008E,B19001_008E,,,,,,,,,,,,Vacant- some other reason,B25004_008E,,,,,,Travel Time to Work,30 to 34 minutes,B08303_008E,B08303_008E
-Variable Names,,,,,,,,,,,,,,,,,,,Education,Twelfth grade,B15002_010E,B15002_027E,Fifth grade,B15003_009E,Home Value,"$40,000 to $49,999",B25075_009E,"$40,000 to $49,999",B25075_009E,Income,"$40,000 to $44,999",B19001_009E,B19001_009E,,,,,,,,,,,,,,,,,,,Travel Time to Work,35 to 39 minutes,B08303_009E,B08303_009E
-Variable Names,,,,,,,,,,,,,,,,,,,Education,High school diploma or GED,B15002_011E,B15002_028E,Sixth grade,B15003_010E,Home Value,"$50,000 to $59,999",B25075_010E,"$50,000 to $59,999",B25075_010E,Income,"$45,000 to $49,999",B19001_010E,B19001_010E,,,,,,,,,,,,,,,,,,,Travel Time to Work,40 to 44 minutes,B08303_010E,B08303_010E
-Variable Names,,,,,,,,,,,,,,,,,,,Education,some college- less than 1 year,B15002_012E,B15002_029E,Seventh grade,B15003_011E,Home Value,"$60,000 to $69,999",B25075_011E,"$60,000 to $69,999",B25075_011E,Income,"$50,000 to $59,999",B19001_011E,B19001_011E,,,,,,,,,,,,,,,,,,,Travel Time to Work,45 to 59 minutes,B08303_011E,B08303_011E
-Variable Names,,,,,,,,,,,,,,,,,,,Education,some college- 1 year,B15002_013E,B15002_030E,Eighth grade ,B15003_012E,Home Value,"$70,000 to $79,999",B25075_012E,"$70,000 to $79,999",B25075_012E,Income,"$60,000 to $74,999",B19001_012E,B19001_012E,,,,,,,,,,,,,,,,,,,Travel Time to Work,60 to 89 minutes,B08303_012E,B08303_012E
-Variable Names,,,,,,,,,,,,,,,,,,,Education,Associate's Degree,B15002_014E,B15002_031E,Ninth grade,B15003_013E,Home Value,"$80,000 to $89,999",B25075_013E,"$80,000 to $89,999",B25075_013E,Income,"$75,000 to $99,999",B19001_013E,B19001_013E,,,,,,,,,,,,,,,,,,,Travel Time to Work,90 minutes +,B08303_013E,B08303_013E
-Variable Names,,,,,,,,,,,,,,,,,,,Education,Bachelor's degree,B15002_015E,B15002_032E,Tenth grade,B15003_014E,Home Value,"$90,000 to $99,999",B25075_014E,"$90,000 to $99,999",B25075_014E,Income,"$100,000 to $124,999",B19001_014E,B19001_014E,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,Education,Master's degree,B15002_016E,B15002_033E,Eleventh grade,B15003_015E,Home Value,"$100,000 to $124,999",B25075_015E,"$100,000 to $124,999",B25075_015E,Income,"$125,000 to $149,999",B19001_015E,B19001_015E,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,Education,Professional school,B15002_017E,B15002_034E,Twelfth grade,B15003_016E,Home Value,"$125,000 to $149,999",B25075_016E,"$125,000 to $149,999",B25075_016E,Income,"$150,000 to $199,999",B19001_016E,B19001_016E,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,Education,Doctoral degree,B15002_018E,B15002_035E,High school diploma,B15003_017E,Home Value,"$150,000 to $174,999",B25075_017E,"$150,000 to $174,999",B25075_017E,Income,"$200,000 +",B19001_017E,B19001_017E,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,Education,,,,GED,B15003_018E,Home Value,"$175,000 to $199,999",B25075_018E,"$175,000 to $199,999",B25075_018E,,,,,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,Education,,,,some college- less than 1 year,B15003_019E,Home Value,"$200,000 to $249,999",B25075_019E,"$200,000 to $249,999",B25075_019E,,,,,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,Education,,,,some college- 1 year,B15003_020E,Home Value,"$250,000 to $299,999",B25075_020E,"$250,000 to $299,999",B25075_020E,,,,,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,Education,,,,Associate's Degree,B15003_021E,Home Value,"$300,000 to $399,999",B25075_021E,"$300,000 to $399,999",B25075_021E,,,,,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,Education,,,,Bachelor's degree,B15003_022E,Home Value,"$400,000 to $499,999",B25075_022E,"$400,000 to $499,999",B25075_022E,,,,,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,Education,,,,Master's degree,B15003_023E,Home Value,"$500,000 to $749,999",B25075_023E,"$500,000 to $749,999",B25075_023E,,,,,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,Education,,,,Professional school,B15003_024E,Home Value,"$750,000 to $999,999",B25075_024E,"$750,000 to $999,999",B25075_024E,,,,,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,Education,,,,Doctoral degree,B15003_025E,Home Value,"$1,000,000 +",B25075_025E,"$1,000,000 to $1,499,999",B25075_025E,,,,,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,,,,,,,Home Value,,,"$1,500,000 to $1,999,999",B25075_026E,,,,,,,,,,,,,,,,,,,,,,,,,,
-Variable Names,,,,,,,,,,,,,,,,,,,,,,,,,Home Value,,,"$2,000,000 +",B25075_027E,,,,,,,,,,,,,,,,,,,,,,,,,,
+﻿construct,year,table (acs or sf3),level,variableid
+Sex,1990,sf3,Male,CM0AA1990
+Sex,2000,sf3,Male,CM0AA2000
+Sex,2010,sf3,Male,CM0AA2010
+Sex,2015,acs5,Male,B01001_002E
+Sex,1990,sf3,Female,CM0AB1990
+Sex,2000,sf3,Female,CM0AB2000
+Sex,2010,sf3,Female,CM0AB2010
+Sex,2015,acs5,Female,B01001_026E
+Race,1990,sf3,White,CM1AA1990
+Race,1990,sf3,Black or African American,CM1AB1990
+Race,1990,sf3,American Indian and Alaska Native,CM1AC1990
+Race,1990,sf3,Asian,CM1AD1990
+Race,1990,sf3,Native Hawaiian and other Pacific Islander,CM1AE1990
+Race,1990,sf3,Some Other Race,CM1AF1990
+Race,2000,sf3,White,CM1AA2000
+Race,2000,sf3,Black or African American,CM1AB2000
+Race,2000,sf3,American Indian and Alaska Native,CM1AC2000
+Race,2000,sf3,Asian,CM1AD2000
+Race,2000,sf3,Native Hawaiian and other Pacific Islander,CM1AE2000
+Race,2000,sf3,Some Other Race,CM1AF2000
+Race,2000,sf3,Two or more races,CM1AG2000
+Race,2010,sf3,White,CM1AA2010
+Race,2010,sf3,Black or African American,CM1AB2010
+Race,2010,sf3,American Indian and Alaska Native,CM1AC2010
+Race,2010,sf3,Asian,CM1AD2010
+Race,2010,sf3,Native Hawaiian and other Pacific Islander,CM1AE2010
+Race,2010,sf3,Some Other Race,CM1AF2010
+Race,2010,sf3,Two or more races,CM1AG2010
+Race,2015,acs5,White,B02001_002E
+Race,2015,acs5,Black or African American,B02001_003E
+Race,2015,acs5,American Indian and Alaska Native,B02001_004E
+Race,2015,acs5,Asian,B02001_005E
+Race,2015,acs5,Native Hawaiian and other Pacific Islander,B02001_006E
+Race,2015,acs5,Some Other Race,B02001_007E
+Race,2015,acs5,Two or more races,B02001_008E
+Ethnicity,1990,sf3,Hispanic,CP4AB1990
+Ethnicity,2000,sf3,Hispanic,CP4AB2000
+Ethnicity,2010,sf3,Hispanic,CP4AB2010
+Ethnicity,2015,acs5,Hispanic,B03003_003E
+Ethnicity,1990,sf3,Not hispanic,CP4AA1990
+Ethnicity,2000,sf3,Not hispanic,CP4AA2000
+Ethnicity,2010,sf3,Not hispanic,CP4AA2010
+Ethnicity,2015,acs5,Not hispanic,B03003_002E
+Education,2010,acs5,No SchoolM,B15002_003E
+Education,2010,acs5,Fourth Grade M,B15002_004E
+Education,2010,acs5,Sixth gradeM,B15002_005E
+Education,2010,acs5,Eighth grade M,B15002_006E
+Education,2010,acs5,Ninth gradeM,B15002_007E
+Education,2010,acs5,Tenth gradeM,B15002_008E
+Education,2010,acs5,Eleventh gradeM,B15002_009E
+Education,2010,acs5,Twelfth gradeM,B15002_010E
+Education,2010,acs5,High school diploma or GEDM,B15002_011E
+Education,2010,acs5,some college- less than 1 yearM,B15002_012E
+Education,2010,acs5,some college- 1 yearM,B15002_013E
+Education,2010,acs5,Associate's DegreeM,B15002_014E
+Education,2010,acs5,Bachelor's degreeM,B15002_015E
+Education,2010,acs5,Master's degreeM,B15002_016E
+Education,2010,acs5,Professional schoolM,B15002_017E
+Education,2010,acs5,Doctoral degreeM,B15002_018E
+Education,2010,acs5,No SchoolF,B15002_020E
+Education,2010,acs5,Fourth Grade F,B15002_021E
+Education,2010,acs5,Sixth gradeF,B15002_022E
+Education,2010,acs5,Eighth grade F,B15002_023E
+Education,2010,acs5,Ninth gradeF,B15002_024E
+Education,2010,acs5,Tenth gradeF,B15002_025E
+Education,2010,acs5,Eleventh gradeF,B15002_026E
+Education,2010,acs5,Twelfth gradeF,B15002_027E
+Education,2010,acs5,High school diploma or GEDF,B15002_028E
+Education,2010,acs5,some college- less than 1 yearF,B15002_029E
+Education,2010,acs5,some college- 1 yearF,B15002_030E
+Education,2010,acs5,Associate's DegreeF,B15002_031E
+Education,2010,acs5,Bachelor's degreeF,B15002_032E
+Education,2010,acs5,Master's degreeF,B15002_033E
+Education,2010,acs5,Professional schoolF,B15002_034E
+Education,2010,acs5,Doctoral degreeF,B15002_035E
+Education,2015,acs5,No School,B15003_002E
+Education,2015,acs5,Pre-k,B15003_003E
+Education,2015,acs5,Kindergarten,B15003_004E
+Education,2015,acs5,First grade,B15003_005E
+Education,2015,acs5,Second grade,B15003_006E
+Education,2015,acs5,Third grade,B15003_007E
+Education,2015,acs5,Fourth Grade ,B15003_008E
+Education,2015,acs5,Fifth grade,B15003_009E
+Education,2015,acs5,Sixth grade,B15003_010E
+Education,2015,acs5,Seventh grade,B15003_011E
+Education,2015,acs5,Eighth grade ,B15003_012E
+Education,2015,acs5,Ninth grade,B15003_013E
+Education,2015,acs5,Tenth grade,B15003_014E
+Education,2015,acs5,Eleventh grade,B15003_015E
+Education,2015,acs5,Twelfth grade,B15003_016E
+Education,2015,acs5,High school diploma,B15003_017E
+Education,2015,acs5,GED,B15003_018E
+Education,2015,acs5,some college- less than 1 year,B15003_019E
+Education,2015,acs5,some college- 1 year,B15003_020E
+Education,2015,acs5,Associate's Degree,B15003_021E
+Education,2015,acs5,Bachelor's degree,B15003_022E
+Education,2015,acs5,Master's degree,B15003_023E
+Education,2015,acs5,Professional school,B15003_024E
+Education,2015,acs5,Doctoral degree,B15003_025E
+Home Value,2010,acs5,"Less than $10,000",B25075_002E
+Home Value,2010,acs5,"$10,000 to $14,999",B25075_003E
+Home Value,2010,acs5,"$15,000 to $19,999",B25075_004E
+Home Value,2010,acs5,"$20,000 to $24,999",B25075_005E
+Home Value,2010,acs5,"$25,000 to $29,999",B25075_006E
+Home Value,2010,acs5,"$30,000 to $34,999",B25075_007E
+Home Value,2010,acs5,"$35,000 to $39,999",B25075_008E
+Home Value,2010,acs5,"$40,000 to $49,999",B25075_009E
+Home Value,2010,acs5,"$50,000 to $59,999",B25075_010E
+Home Value,2010,acs5,"$60,000 to $69,999",B25075_011E
+Home Value,2010,acs5,"$70,000 to $79,999",B25075_012E
+Home Value,2010,acs5,"$80,000 to $89,999",B25075_013E
+Home Value,2010,acs5,"$90,000 to $99,999",B25075_014E
+Home Value,2010,acs5,"$100,000 to $124,999",B25075_015E
+Home Value,2010,acs5,"$125,000 to $149,999",B25075_016E
+Home Value,2010,acs5,"$150,000 to $174,999",B25075_017E
+Home Value,2010,acs5,"$175,000 to $199,999",B25075_018E
+Home Value,2010,acs5,"$200,000 to $249,999",B25075_019E
+Home Value,2010,acs5,"$250,000 to $299,999",B25075_020E
+Home Value,2010,acs5,"$300,000 to $399,999",B25075_021E
+Home Value,2010,acs5,"$400,000 to $499,999",B25075_022E
+Home Value,2010,acs5,"$500,000 to $749,999",B25075_023E
+Home Value,2010,acs5,"$750,000 to $999,999",B25075_024E
+Home Value,2010,acs5,"$1,000,000 +",B25075_025E
+Home Value,2015,acs5,"Less than $10,000",B25075_002E
+Home Value,2015,acs5,"$10,000 to $14,999",B25075_003E
+Home Value,2015,acs5,"$15,000 to $19,999",B25075_004E
+Home Value,2015,acs5,"$20,000 to $24,999",B25075_005E
+Home Value,2015,acs5,"$25,000 to $29,999",B25075_006E
+Home Value,2015,acs5,"$30,000 to $34,999",B25075_007E
+Home Value,2015,acs5,"$35,000 to $39,999",B25075_008E
+Home Value,2015,acs5,"$40,000 to $49,999",B25075_009E
+Home Value,2015,acs5,"$50,000 to $59,999",B25075_010E
+Home Value,2015,acs5,"$60,000 to $69,999",B25075_011E
+Home Value,2015,acs5,"$70,000 to $79,999",B25075_012E
+Home Value,2015,acs5,"$80,000 to $89,999",B25075_013E
+Home Value,2015,acs5,"$90,000 to $99,999",B25075_014E
+Home Value,2015,acs5,"$100,000 to $124,999",B25075_015E
+Home Value,2015,acs5,"$125,000 to $149,999",B25075_016E
+Home Value,2015,acs5,"$150,000 to $174,999",B25075_017E
+Home Value,2015,acs5,"$175,000 to $199,999",B25075_018E
+Home Value,2015,acs5,"$200,000 to $249,999",B25075_019E
+Home Value,2015,acs5,"$250,000 to $299,999",B25075_020E
+Home Value,2015,acs5,"$300,000 to $399,999",B25075_021E
+Home Value,2015,acs5,"$400,000 to $499,999",B25075_022E
+Home Value,2015,acs5,"$500,000 to $749,999",B25075_023E
+Home Value,2015,acs5,"$750,000 to $999,999",B25075_024E
+Home Value,2015,acs5,"$1,000,000 to $1,499,999",B25075_025E
+Home Value,2015,acs5,"$1,500,000 to $1,999,999",B25075_026E
+Home Value,2015,acs5,"$2,000,000 +",B25075_027E
+Income,2010,acs5,"Less than $10,000",B19001_002E
+Income,2010,acs5,"$10,000 to $14,999",B19001_003E
+Income,2010,acs5,"$15,000 to $19,999",B19001_004E
+Income,2010,acs5,"$20,000 to $24,999",B19001_005E
+Income,2010,acs5,"$25,000 to $29,999",B19001_006E
+Income,2010,acs5,"$30,000 to $34,999",B19001_007E
+Income,2010,acs5,"$35,000 to $39,999",B19001_008E
+Income,2010,acs5,"$40,000 to $44,999",B19001_009E
+Income,2010,acs5,"$45,000 to $49,999",B19001_010E
+Income,2010,acs5,"$50,000 to $59,999",B19001_011E
+Income,2010,acs5,"$60,000 to $74,999",B19001_012E
+Income,2010,acs5,"$75,000 to $99,999",B19001_013E
+Income,2010,acs5,"$100,000 to $124,999",B19001_014E
+Income,2010,acs5,"$125,000 to $149,999",B19001_015E
+Income,2010,acs5,"$150,000 to $199,999",B19001_016E
+Income,2010,acs5,"$200,000 +",B19001_017E
+Income,2015,acs5,"Less than $10,000",B19001_002E
+Income,2015,acs5,"$10,000 to $14,999",B19001_003E
+Income,2015,acs5,"$15,000 to $19,999",B19001_004E
+Income,2015,acs5,"$20,000 to $24,999",B19001_005E
+Income,2015,acs5,"$25,000 to $29,999",B19001_006E
+Income,2015,acs5,"$30,000 to $34,999",B19001_007E
+Income,2015,acs5,"$35,000 to $39,999",B19001_008E
+Income,2015,acs5,"$40,000 to $44,999",B19001_009E
+Income,2015,acs5,"$45,000 to $49,999",B19001_010E
+Income,2015,acs5,"$50,000 to $59,999",B19001_011E
+Income,2015,acs5,"$60,000 to $74,999",B19001_012E
+Income,2015,acs5,"$75,000 to $99,999",B19001_013E
+Income,2015,acs5,"$100,000 to $124,999",B19001_014E
+Income,2015,acs5,"$125,000 to $149,999",B19001_015E
+Income,2015,acs5,"$150,000 to $199,999",B19001_016E
+Income,2015,acs5,"$200,000 +",B19001_017E
+Occupancy,1990,sf3,Occupied,CM9AA1990
+Occupancy,2000,sf3,Occupied,CM9AA2000
+Occupancy,2010,sf3,Occupied,CM9AA2010
+Occupancy,2015,acs5,Occupied,B25002_001E
+Occupancy,1990,sf3,Vacant,CM9AB1990
+Occupancy,2000,sf3,Vacant,CM9AB2000
+Occupancy,2010,sf3,Vacant,CM9AB2010
+Occupancy,2015,acs5,Vacant,B25002_001E
+Vacancy,1990,sf3,Vacant- for rent,CN0AA1990
+Vacancy,1990,sf3,"Vacant- rented, not occupied",CN0AB1990
+Vacancy,1990,sf3,Vacant- for sale,CN0AC1990
+Vacancy,1990,sf3,"Vacant- sold, not occupied",CN0AD1990
+Vacancy,1990,sf3,"Vacant- seasonal, recreational, or occasional use",CN0AE1990
+Vacancy,1990,sf3,Vacant- for migrant workers,CN0AF1990
+Vacancy,2000,sf3,Vacant- for rent,CN0AA2000
+Vacancy,2000,sf3,"Vacant- rented, not occupied",CN0AB2000
+Vacancy,2000,sf3,Vacant- for sale,CN0AC2000
+Vacancy,2000,sf3,"Vacant- sold, not occupied",CN0AD2000
+Vacancy,2000,sf3,"Vacant- seasonal, recreational, or occasional use",CN0AE2000
+Vacancy,2000,sf3,Vacant- for migrant workers,CN0AF2000
+Vacancy,2010,sf3,Vacant- for rent,CN0AA2010
+Vacancy,2010,sf3,"Vacant- rented, not occupied",CN0AB2010
+Vacancy,2010,sf3,Vacant- for sale,CN0AC2010
+Vacancy,2010,sf3,"Vacant- sold, not occupied",CN0AD2010
+Vacancy,2010,sf3,"Vacant- seasonal, recreational, or occasional use",CN0AE2010
+Vacancy,2010,sf3,Vacant- for migrant workers,CN0AF2010
+Vacancy,2015,acs5,Vacant- for rent,B25004_002E
+Vacancy,2015,acs5,"Vacant- rented, not occupied",B25004_003E
+Vacancy,2015,acs5,Vacant- for sale,B25004_004E
+Vacancy,2015,acs5,"Vacant- sold, not occupied",B25004_005E
+Vacancy,2015,acs5,"Vacant- seasonal, recreational, or occasional use",B25004_006E
+Vacancy,2015,acs5,Vacant- for migrant workers,B25004_007E
+Vacancy,2015,acs5,Vacant- some other reason,B25004_008E
+Housing Units,1990,sf3,Number of housing units,CM7AA1990
+Housing Units,2000,sf3,Number of housing units,CM7AA2000
+Housing Units,2010,sf3,Number of housing units,CM7AA2010
+Travel Time to Work,2010,acs5,Less than 5 minutes,B08303_002E
+Travel Time to Work,2010,acs5,Five to 9 minutes,B08303_003E
+Travel Time to Work,2010,acs5,10 to 14 minutes,B08303_004E
+Travel Time to Work,2010,acs5,15 to 19 minutes,B08303_005E
+Travel Time to Work,2010,acs5,20 to 24 minutes,B08303_006E
+Travel Time to Work,2010,acs5,25 to 29 minutes,B08303_007E
+Travel Time to Work,2010,acs5,30 to 34 minutes,B08303_008E
+Travel Time to Work,2010,acs5,35 to 39 minutes,B08303_009E
+Travel Time to Work,2010,acs5,40 to 44 minutes,B08303_010E
+Travel Time to Work,2010,acs5,45 to 59 minutes,B08303_011E
+Travel Time to Work,2010,acs5,60 to 89 minutes,B08303_012E
+Travel Time to Work,2010,acs5,90 minutes +,B08303_013E
+Travel Time to Work,2015,acs5,Less than 5 minutes,B08303_002E
+Travel Time to Work,2015,acs5,Five to 9 minutes,B08303_003E
+Travel Time to Work,2015,acs5,10 to 14 minutes,B08303_004E
+Travel Time to Work,2015,acs5,15 to 19 minutes,B08303_005E
+Travel Time to Work,2015,acs5,20 to 24 minutes,B08303_006E
+Travel Time to Work,2015,acs5,25 to 29 minutes,B08303_007E
+Travel Time to Work,2015,acs5,30 to 34 minutes,B08303_008E
+Travel Time to Work,2015,acs5,35 to 39 minutes,B08303_009E
+Travel Time to Work,2015,acs5,40 to 44 minutes,B08303_010E
+Travel Time to Work,2015,acs5,45 to 59 minutes,B08303_011E
+Travel Time to Work,2015,acs5,60 to 89 minutes,B08303_012E
+Travel Time to Work,2015,acs5,90 minutes +,B08303_013E
