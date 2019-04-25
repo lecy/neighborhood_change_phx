@@ -23,3 +23,6 @@ https://shiny.rstudio.com/tutorial/
 
 (4/21/2019) R Shiny Widget Gallery
 https://shiny.rstudio.com/gallery/widget-gallery.html
+
+(4/24/2019) Census Tables used to calculate poverty rates
+https://www.census.gov/data/tables/time-series/demo/income-poverty/historical-poverty-thresholds.html
