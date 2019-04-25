@@ -163,7 +163,7 @@ Column {data-width=600}
 ### The narrative will go here
 
 
-Analysis 1 {data-orientation=rows}
+Race {data-orientation=rows}
 =====================================     
 
 Inputs {.sidebar data-width=300}
@@ -221,7 +221,7 @@ Row {data-height=500}
 
 
 
-Analysis 2 {data-orientation=rows}
+Ethnicity {data-orientation=rows}
 =====================================     
 
 Inputs {.sidebar data-width=300}
@@ -273,7 +273,7 @@ Row {data-height=500}
 ```{r, chunk-9}
 ```
 
-Analysis 3 {data-orientation=rows}
+Homes for Sale {data-orientation=rows}
 =====================================     
    
 Inputs {.sidebar data-width=300}
@@ -330,7 +330,7 @@ Row {data-height=500}
 ```{r, chunk-13}
 ```
 
-Data Table {data-orientation=rows}
+Dataset {data-orientation=rows}
 =====================================     
 
 ### NHGIS 1990,2000,2010 & ACS 2010, 2015
@@ -360,7 +360,7 @@ selected.datatable
 
 ```
 
-Data Table {data-orientation=rows}
+Variable Crosswalk {data-orientation=rows}
 =====================================     
    
 
