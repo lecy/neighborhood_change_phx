@@ -374,13 +374,18 @@ url2 <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/d
 
 phx.var.crosswalk <- read.csv( url2, stringsAsFactors = F)
 
-phx.var.datatable <- datatable(data = phx.var.crosswalk, 
-                               options = list(), class = "display",
-    callback = JS("return table;"),
-    caption = NULL, escape = TRUE, style = "default", elementId = NULL,
-    fillContainer = getOption("DT.fillContainer", NULL),
-    autoHideNavigation = getOption("DT.autoHideNavigation", NULL), extensions = list(),
-    plugins = NULL, editable = FALSE)
+these.buttons <- c( 'copy', 'csv', 'excel' )
+
+phx.var.datatable <- datatable( phx.var.crosswalk,
+           filter='top', rownames=FALSE, 
+           #options=list( pageLength=50, autoWidth=TRUE ),
+           fillContainer=TRUE, 
+           style="default",
+           class='table-condensed table-striped',
+           extensions = 'Buttons', 
+           options=list( dom='Bfrtip', 
+                         buttons=these.buttons  )) %>%
+  formatStyle( "construct", "white-space"="nowrap" )
 
 ```
 
