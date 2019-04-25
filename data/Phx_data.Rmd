@@ -1098,10 +1098,10 @@ ggplot( data = phx.tidy,
                aes( x = long, y = lat, group = group, fill = Asian_2000 ) ) + 
   geom_polygon() +
   coord_map()
-
+```
 write_rds( phx.tidy, "../data/raw/phx.tidy.rds", compress= "none")
 
-```
+
 
 
 
