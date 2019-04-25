@@ -38,8 +38,8 @@ setwd("../data")
 # Load Meta data
 
 ## Read csv file with all filtered variables. 
-Metadata_2010_ACS5 <- read.csv("2010ACS5DataDictionary.csv")
-Metadata_2015_ACS5 <- read.csv("2015ACS5DataDictionary.csv")
+Metadata_2010_ACS5 <- read.csv("./raw/2010ACS5DataDictionary.csv")
+Metadata_2015_ACS5 <- read.csv("./raw/2015ACS5DataDictionary.csv")
 
 #Load time series tables
 NHGIS_data <- read.csv("./raw/NHGIS_geog_data.csv")
@@ -471,6 +471,9 @@ educ.pop.2010 <- educ.pop.2010 %>%
 educ.pop.2010 <- educ.pop.2010 %>%
   mutate(Doctoral_2010 = coalesce(Doctoral_2010_M + Doctoral_2010_F))
 
+educ.pop.2010 <- educ.pop.2010 %>%
+  mutate(hs_above_2010 = coalesce(HSD_GED_2010_M + HSD_GED_2010_F +  SomeCollege_0yr_2010_M + SomeCollege_0yr_2010_F + SomeCollege_1yr_2010_M + AA_2010_M +  AA_2010_F + BA_2010_M + BA_2010_F +  Masters_2010_M + Masters_2010_F + ProfSchool_2010_M + ProfSchool_2010_F + Doctoral_2010_M + Doctoral_2010_F))
+
 
 ###Create percentage variables of each educational category
 
@@ -487,7 +490,8 @@ mutate(( AA_Percent_2010 = AA_2010 / Total_2010 ) * 100) %>%
 mutate(( BA_Percent_2010 = BA_2010 / Total_2010 ) * 100) %>%
 mutate(( Masters_Percent_2010 = Masters_2010 / Total_2010 ) * 100) %>%
 mutate(( ProfSchool_Percent_2010 = ProfSchool_2010 / Total_2010 ) * 100) %>%
-mutate(( Doctoral_Percent_2010 = Doctoral_2010 / Total_2010 ) * 100)
+mutate(( Doctoral_Percent_2010 = Doctoral_2010 / Total_2010 ) * 100) %>%
+  mutate(( hs_above_Percent_2010 = hs_above_2010 / Total_2010))
 
 ### Geoid
 
@@ -546,6 +550,8 @@ educ.pop.2015 <- educ.pop.2015 %>%
 educ.pop.2015 <- educ.pop.2015 %>% 
   mutate(SomeCollege_2015 = coalesce(Somecollege_0yr_2015 + Somecollege_1yr_2015))
 
+educ.pop.2015 <- educ.pop.2015 %>%
+  mutate(hs_above_2015 = coalesce(HSdiploma_2015 + GED_2015 + Somecollege_0yr_2015 + Somecollege_1yr_2015 + AA_2015 +  Bachelors_2015 + Masters_2015 + ProfSchool_2015 + Doctoral_2015))
 
 ### Add Percentages
 
@@ -563,7 +569,8 @@ mutate(( AA_Percent_2015 = AA_2015 / Total_2015 ) * 100) %>%
 mutate(( Bachelors_Percent_2015 = Bachelors_2015 / Total_2015 ) * 100) %>%
 mutate(( Masters_Percent_2015 = Masters_2015 / Total_2015 ) * 100) %>%
 mutate(( ProfSchool_Percent_2015 = ProfSchool_2015 / Total_2015 ) * 100) %>%
-mutate(( Doctoral_Percent_2015 = Doctoral_2015 / Total_2015 ) * 100)
+mutate(( Doctoral_Percent_2015 = Doctoral_2015 / Total_2015 ) * 100) %>%
+mutate(( hs_above_percent_2015 = hs_above_2015 / Total_2015))
 
 ###Geo id
 #Create GEOID of FIPS Code elements
@@ -1617,10 +1624,19 @@ ProfSchool_2010)) + geom_polygon() +  coord_map() +
   scale_fill_distiller(palette="Greens", direction=1, name="Population") +
   labs(title="A Professional Degree", caption="2015 Source: US Census")
 
-doctoral_2010 <- ggplot(mcpa_educ_2010) + 
-  geom_sf(aes(fill=Doctoral_2010)) + geom_polygon() +  coord_map() +
+doctoral_2010 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill= Doctoral_2010)) + 
+                geom_polygon() +  coord_map() +
   scale_fill_distiller(palette="Greens", direction=1, name="Population") +
   labs(title="A Doctoral Degree", caption="2015 Source: US Census")
+
+hs_above_2010 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=
+hs_above_2010)) + geom_polygon() +  coord_map() +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A Professional Degree", caption="2015 Source: US Census")
 
 ###2015
 
@@ -1665,6 +1681,13 @@ twelfthgrade_2015 <- ggplot( data = phx.tidy,
 Twelfthgrade_2015)) + geom_polygon() +  coord_map() +
   scale_fill_distiller(palette="Greens", direction=1, name="Population") +
   labs(title="A 12th Grade Education- No Diploma", caption="2015 Source: US Census")
+
+hs_above_2015 <- ggplot( data = phx.tidy, 
+               aes( x = long, y = lat, 
+                    group = group, fill=
+hs_above_2015)) + geom_polygon() +  coord_map() +
+  scale_fill_distiller(palette="Greens", direction=1, name="Population") +
+  labs(title="A High School Diploma or Above", caption="2015 Source: US Census")
 
 
 hsdiploma_2015 <- ggplot( data = phx.tidy, 
@@ -2085,8 +2108,8 @@ One75kTo200k_2010)) + geom_polygon() +  coord_map() +
  
 twohundredkto250k_value_2010 <- ggplot( data = phx.tidy, 
                aes( x = long, y = lat, 
-                    group = group, fill=
-Twohundredkto250k_2010)) + geom_polygon() +  coord_map() +
+                    group = group, fill= 
+                      Twohundredkto250k_value_2010)) + geom_polygon() +  coord_map() +
   scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
   labs(title="Between $200,000 and $250,000", title.cex=0.5, caption="2010 Source: US Census")
   
@@ -2253,10 +2276,10 @@ One75kTo200k_2015)) + geom_polygon() +  coord_map() +
   scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
   labs(title="Between $175,000 and $200,000", title.cex=0.5, caption="2015 Source: US Census")
  
-twohundredkto150k_value_2015 <- ggplot( data = phx.tidy, 
+twohundredkto250k_value_2015 <- ggplot( data = phx.tidy, 
                aes( x = long, y = lat, 
                     group = group, fill=
-Twohundredkto250k_2015)) + geom_polygon() +  coord_map() +
+                      Twohundredkto250k_value_2015)) + geom_polygon() +  coord_map() +
   scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
   labs(title="Between $200,000 and $250,000", title.cex=0.5, caption="2015 Source: US Census")
   
@@ -2438,14 +2461,14 @@ forsale_2000 <- ggplot( data = phx.tidy,
                aes( x = long, y = lat, 
                     group = group, fill=
 Vacant_ForSale_2000)) + geom_polygon() +  coord_map() +
-     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     scale_fill_distiller(palette="RdYlGn", direction=1, name="Population") +
      labs(title="Vacant For Sale Housing Unit 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
 
 forsale_2010 <- ggplot( data = phx.tidy, 
                aes( x = long, y = lat, 
                     group = group, fill=
 Vacant_ForSale_2010)) + geom_polygon() +  coord_map() +
-     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
+     scale_fill_distiller(palette="RdYlGn", direction=1, name="Population") +
      labs(title="Vacant For Sale Housing Unit 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
 
 rentedorsold_1990 <- ggplot( data = phx.tidy, 
@@ -2551,7 +2574,7 @@ forsale_2015 <- ggplot( data = phx.tidy,
                aes( x = long, y = lat, 
                     group = group, fill=
 Forsale_2015)) + geom_polygon() +  coord_map() +
-  scale_fill_distiller(palette="Oranges", direction=1, name="Population") +
+  scale_fill_distiller(palette="RdYlGn", direction=1, name="Population") +
   labs(title="For Sale", title.cex=0.5, caption="2015 Source: US Census")
 
 sold_2015 <- ggplot( data = phx.tidy, 
