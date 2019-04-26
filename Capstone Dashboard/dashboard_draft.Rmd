@@ -29,19 +29,6 @@ library( sp, quietly=TRUE)
 library(broom, quietly=TRUE)
 library(DT, quietly=TRUE)
 
-Censuskey <- "9cb83c4560f4fbcc326ddd18ea31460fdd34546f"
-
-## Global options
-options(max.print="75")
-opts_chunk$set(echo=TRUE,
-	             cache=TRUE,
-               prompt=FALSE,
-               tidy=TRUE,
-               comment=NA,
-               message=FALSE,
-               warning=FALSE)
-opts_knit$set(width=75)
-
 ```
 
 ```{r, chunk-2, include=FALSE, cache=FALSE}
@@ -60,94 +47,9 @@ plot( phx )
 
 phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
 
-url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.combined.data.csv"
-dat <- read.csv( url, stringsAsFactors=F )
-
-
 phx$geoid2 <- paste0( "G", phx$STATEFP10, 
                      "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
-
-phx.shape.data <- merge(phx, dat, by.x="geoid2", by.y="GISJOIN", all.x=T)
-
-phx_fortified <- tidy( phx, region = "geoid2")
-
-phx.tidy <- merge( phx_fortified, dat, by.x="id", by.y="GISJOIN", all.x=T)
-
-
-asian_1990 <- ggplot( data = phx.tidy, 
-               aes( x = long, y = lat, 
-                    group = group, fill=
-Asian_1990)) +
-  geom_polygon() +  coord_map() +
-     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
-     labs(title="Asian Population in 1990", title.cex=.75, caption="1990 Source: US Census, NHGIS")
-
-asian_2000 <- ggplot( data = phx.tidy, 
-               aes( x = long, y = lat, group = group, fill = Asian_2000 ) ) + 
-  geom_polygon() + coord_map()+
-  scale_fill_distiller(palette="Paired", direction=1, name="Population") +
-  labs(title="Asian Population in 2000", caption="2000 Source: NHGIS IPUMS data")
-
-
-asian_2010 <- ggplot( data = phx.tidy, 
-               aes( x = long, y = lat, 
-                    group = group, fill=
-Asian_2010)) +
-  geom_polygon() +  coord_map() +
-     scale_fill_distiller(palette="Paired", direction=1, name="Population") +
-     labs(title="Asian Population in 2010", title.cex=.75, caption="2010 Source: US Census, NHGIS")
-
-asian_2015 <- ggplot( data = phx.tidy, 
-               aes( x = long, y = lat, 
-                    group = group, fill=Asian_2015)) +
-  geom_polygon() +  coord_map() +
-  scale_fill_distiller(palette="Paired", direction=1, name="Population") +
-  labs(title="Asian Population in 2015", caption="2015 Source: US Census")
-
-
-
-forsale_1990 <- ggplot( data = phx.tidy, 
-               aes( x = long, y = lat, 
-                    group = group, fill=
-Vacant_ForSale_1990)) + geom_polygon() +  coord_map() +
-     scale_fill_distiller(palette="Dark2", direction=1, name="Population") +
-     labs(title="Vacant For Sale Housing Unit 1990 in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
-
-forsale_2000 <- ggplot( data = phx.tidy, 
-               aes( x = long, y = lat, 
-                    group = group, fill=
-Vacant_ForSale_2000)) + geom_polygon() +  coord_map() +
-     scale_fill_distiller(palette="RdYlGn", direction=1, name="Population") +
-     labs(title="Vacant For Sale Housing Unit 2000 in Maricopa County", title.cex=.75, caption="2000 Source: US Census, NHGIS")
-
-forsale_2010 <- ggplot( data = phx.tidy, 
-               aes( x = long, y = lat, 
-                    group = group, fill=
-Vacant_ForSale_2010)) + geom_polygon() +  coord_map() +
-     scale_fill_distiller(palette="RdYlGn", direction=1, name="Population") +
-     labs(title="Vacant For Sale Housing Unit 2010 in Maricopa County", title.cex=.75, caption="2010 Source: US Census, NHGIS")
-
-forsale_2015 <- ggplot( data = phx.tidy, 
-               aes( x = long, y = lat, 
-                    group = group, fill=
-Forsale_2015)) + geom_polygon() +  coord_map() +
-  scale_fill_distiller(palette="RdYlGn", direction=1, name="Population") +
-  labs(title="For Sale", title.cex=0.5, caption="2015 Source: US Census")
-
-twohundredkto250k_value_2010 <- ggplot( data = phx.tidy, 
-               aes( x = long, y = lat, 
-                    group = group, fill= 
-                      Twohundredkto250k_value_2010)) + geom_polygon() +  coord_map() +
-  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
-  labs(title="Between $200,000 and $250,000", title.cex=0.5, caption="2010 Source: US Census")
-
-twohundredkto250k_value_2015 <- ggplot( data = phx.tidy, 
-               aes( x = long, y = lat, 
-                    group = group, fill=
-                      Twohundredkto250k_value_2015)) + geom_polygon() +  coord_map() +
-  scale_fill_distiller(palette="BuGn", direction=1, name="Population") +
-  labs(title="Between $200,000 and $250,000", title.cex=0.5, caption="2015 Source: US Census")
-
+```
 
 
 ```
@@ -160,7 +62,15 @@ Column {data-width=600}
 
 ### Narrative
     
-### The narrative will go here
+### The narrative will go here.
+
+This project is an analysis of Phoenix demographic data changes from 1990-2015 indicating potential neighborhood change. It was done as the Capstone project for students in the Master of Program Evaluation and Data Analytics Program through the Watts College of Public Service and Community Solutions at ASU. 
+
+This dashboard identifies four demographic changes to consider: 
+Race from 1990 - 2015
+Ethnicity from 1990 - 2015
+Percentage of Homes for Sale from 1990-2015
+Income, with a focus on the highest income households and those below the poverty line from 2010-2015
 
 
 Race {data-orientation=rows}
@@ -168,6 +78,30 @@ Race {data-orientation=rows}
 
 Inputs {.sidebar data-width=300}
 -----------------------------------------------------------------------
+```{r, include=FALSE}
+
+
+dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/race.dashboard.dat.csv"
+
+race.dat <- read.csv( dat.url, stringsAsFactors=F )
+
+race.shape.data <- merge(phx, race.dat, by.x="geoid2", by.y="GISJOIN", all.x=T)
+
+phx_fortified <- tidy( phx, region = "geoid2")
+
+race.fortified <- merge( phx_fortified, race.dat, by.x="id", by.y="GISJOIN", all.x=T)
+
+race.dash <- gather(  race.fortified, "var_name", "value", 11:38 )
+
+race.dash <- separate( race.dash, var_name, c("level", "year")  )
+
+
+
+
+```
+
+
+
 
 ```{r, chunk-3, include=TRUE, cache=FALSE}
 
@@ -201,7 +135,7 @@ Row {data-height=400}
 ```{r, chunk-4}
 #filler
 
-asian_1990
+
 
 ```
 
@@ -210,7 +144,7 @@ asian_1990
 ```{r, chunk-5}
 #filler
 
-asian_2015
+
 
 
 ```   
@@ -256,14 +190,14 @@ Row {data-height=400}
 
 ```{r, chunk-7}
 
-forsale_2000
+
 ```
 
 ### Map 2
 
 ```{r, chunk-8}
 
-forsale_2010
+
 ```   
 
 Row {data-height=500}
@@ -311,7 +245,7 @@ Row {data-height=400}
 
 ```{r, chunk-11}
 
-twohundredkto250k_value_2010 
+
 
 ```
 
@@ -319,7 +253,7 @@ twohundredkto250k_value_2010
 
 ```{r, chunk-12}
 
-twohundredkto250k_value_2015
+
 
 ```   
 
@@ -330,16 +264,58 @@ Row {data-height=500}
 ```{r, chunk-13}
 ```
 
+Income {data-orientation=rows}
+=====================================     
+   
+Inputs {.sidebar data-width=300}
+-------------------------------------
+
+```{r, chunk-10, include=FALSE, cache=FALSE}
+# shiny inputs defined here
+
+
+```
+
+Row {data-height=400}
+-------------------------------------
+
+### Map 1
+
+```{r, chunk-11}
+
+
+
+```
+
+### Map 2
+
+```{r, chunk-12}
+
+
+
+```   
+
+Row {data-height=500}
+-------------------------------------  
+### Analysis
+
+```{r, chunk-13}
+```
+
+
+
 Dataset {data-orientation=rows}
 =====================================     
 
 ### NHGIS 1990,2000,2010 & ACS 2010, 2015
 
-This data table is a sample of the full dataset, including only those variables used in the narratives of this dashboard. For a full dataset, please visit ("link here"). 
+This data table is a sample of the full dataset, including only those variables used in the narratives of this dashboard. Additionally, due to the size of the tidy dataset used in this dashboard, this is only the first 800 observations. For a full dataset, please visit ("link here"). 
 
 ```{r, chunk-14, include=FALSE}
-dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.dashboard.dat.csv"
+dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/tidy.dashboard.dat.csv"
 table.dat <- read.csv( dat.url, stringsAsFactors=F )
+
+table.dat <- table.dat[1:800,]
 
 ```
 
