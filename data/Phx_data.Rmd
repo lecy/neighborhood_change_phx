@@ -1062,6 +1062,8 @@ write.csv( phx.combined.data, "phx.combined.data.csv", row.names=F)
 
 ###Checked: nrow 916 consistent, length 330 + 288 = 618
 
+
+
 ```
 
 ```{r}
@@ -1071,6 +1073,18 @@ phx.shape.data <- merge(phx, phx.combined.data, by.x="geoid2", by.y="GISJOIN", a
 #Convert large data file into GeoJson & write as GeoJson in shapefiles folder
 
 geojson_write( phx.shape.data, file = "../shapefiles/phx.geojson" )
+
+#Convert to tidy data
+
+url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.dashboard.dat.csv"
+dat <- read.csv( url, stringsAsFactors=F )
+
+dat <- gather(  dat, "var_name", "value", 5:71 )
+
+dat <- separate( dat, var_name, c("level", "year")  )
+
+write.csv(dat, "tidy.dashboard.dat.csv", row.names=F)
+
 ```
 
 
