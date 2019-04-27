@@ -76,9 +76,8 @@ Income, with a focus on the highest income households and those below the povert
 Race {data-orientation=rows}
 =====================================     
 
-Inputs {.sidebar data-width=300}
 -----------------------------------------------------------------------
-```{r, include=FALSE}
+```{r, chunk-dat1, include=FALSE}
 
 
 dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/race.dashboard.dat.csv"
@@ -91,42 +90,28 @@ phx_fortified <- tidy( phx, region = "geoid2")
 
 race.fortified <- merge( phx_fortified, race.dat, by.x="id", by.y="GISJOIN", all.x=T)
 
-race.dash <- gather(  race.fortified, "var_name", "value", 11:38 )
-
-race.dash <- separate( race.dash, var_name, c("level", "year")  )
-
-
-
 
 ```
 
 
-
+Inputs {.sidebar data-width=300}
 
 ```{r, chunk-3, include=TRUE, cache=FALSE}
 
-ui <- fluidPage(
-    
-  selectInput(inputId= "select", label = h3("Select Year"), 
+selectInput(inputId= "select", label = "Select Year", 
     choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), 
-    selected = 2000),
-  
-  hr(),
-  fluidRow(column(3, verbatimTextOutput("value")))
-  
-)
-
-server <- function(input,output)
-{
-
-  
-  output$value <- renderPrint({ input$select })
-
-}
-
-shinyApp(ui = ui, server=server)
+    selected = 2000)
 ```
-   
+
+
+```{r}
+renderPlot({
+  hist(race.fortified$white_1990, probability = TRUE, breaks = as.numeric(input$select))
+  })
+
+
+
+```
 Row {data-height=400}
 -------------------------------------
 
@@ -161,34 +146,41 @@ Ethnicity {data-orientation=rows}
 Inputs {.sidebar data-width=300}
 -------------------------------------
 
-```{r, chunk-6, cache=FALSE}
-# shiny inputs defined here
+```{r, chunk-dat2, include=FALSE}
 
 
-ui <- fluidPage(
+dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/ethnicity.dashboard.dat.csv"
 
-radioButtons(inputId = "radio", label = h3("Select a year"), choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected=2000 ),
-  
-hr(),
-fluidRow(column(3, verbatimTextOutput("value")))
-)
+ethnicity.dat <- read.csv( dat.url, stringsAsFactors=F )
 
-server <- function(input, output) { 
+ethnicity.shape.data <- merge(phx, ethnicity.dat, by.x="geoid2", by.y="GISJOIN", all.x=T)
 
-  output$value <- renderPrint({input$radio })
-  }
+phx_fortified <- tidy( phx, region = "geoid2")
 
-shinyApp(ui = ui, server=server)
+ethnicity.fortified <- merge( phx_fortified, ethnicity.dat, by.x="id", by.y="GISJOIN", all.x=T)
 
 
 ```
- 
+
+```{r, chunk-input2, include=TRUE, cache=FALSE}
+
+selectInput(inputId= "select", label = "Select Year", 
+    choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), 
+    selected = 2000)
+```
+
+
+
 Row {data-height=400}
 -------------------------------------
 
 ### Map 1
 
-```{r, chunk-7}
+```{r, render-2, include=FALSE}
+renderPlot({
+  hist(ethnicity.fortified$Hipsanic_Percent_1990, input$select)
+  })
+
 
 
 ```
@@ -213,29 +205,15 @@ Homes for Sale {data-orientation=rows}
 Inputs {.sidebar data-width=300}
 -------------------------------------
 
-```{r, chunk-10, include=FALSE, cache=FALSE}
-# shiny inputs defined here
+```{r,  include=FALSE, cache=FALSE}
 
 
-
-ui <- fluidPage(
-
-radioButtons(inputId = "radio", label = h3("Select a year"), choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected=2000 ),
+selectInput(inputId = "radio", label = h3("Select a year"), choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected=2000 )
   
-hr(),
-fluidRow(column(3, verbatimTextOutput("value")))
-)
-
-server <- function(input, output) { 
-
-  output$value <- renderPrint({input$radio })
-}
-
-shinyApp(ui = ui, server=server)
 ```
 
 ```{r, cache=FALSE, include=TRUE}
-shinyApp(ui = ui, server=server)
+
 ```
  
 Row {data-height=400}
@@ -270,7 +248,7 @@ Income {data-orientation=rows}
 Inputs {.sidebar data-width=300}
 -------------------------------------
 
-```{r, chunk-10, include=FALSE, cache=FALSE}
+```{r, include=FALSE, cache=FALSE}
 # shiny inputs defined here
 
 
@@ -281,7 +259,7 @@ Row {data-height=400}
 
 ### Map 1
 
-```{r, chunk-11}
+```{r}
 
 
 
@@ -289,7 +267,7 @@ Row {data-height=400}
 
 ### Map 2
 
-```{r, chunk-12}
+```{r}
 
 
 
@@ -299,7 +277,7 @@ Row {data-height=500}
 -------------------------------------  
 ### Analysis
 
-```{r, chunk-13}
+```{r}
 ```
 
 
@@ -339,7 +317,7 @@ dat.selected.table <- datatable( table.dat,
 
 ```{r}
 
-selected.datatable
+dat.selected.table
 
 ```
 
