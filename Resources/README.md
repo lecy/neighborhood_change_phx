@@ -26,3 +26,8 @@ https://shiny.rstudio.com/gallery/widget-gallery.html
 
 (4/24/2019) Census Tables used to calculate poverty rates
 https://www.census.gov/data/tables/time-series/demo/income-poverty/historical-poverty-thresholds.html
+
+(4/27/2019) Link to R Colors
+http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
+
+
