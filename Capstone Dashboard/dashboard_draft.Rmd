@@ -27,8 +27,8 @@ library(ggplot2, quietly=TRUE)
 library(tidyr, quietly=TRUE)
 library(viridis, quietly=TRUE)
 library(gridExtra, quietly=TRUE)
-library( leaflet, quietly=TRUE )
-library( sp, quietly=TRUE)
+library(leaflet, quietly=TRUE )
+library(sp, quietly=TRUE)
 library(broom, quietly=TRUE)
 library(DT, quietly=TRUE)
 library(tigris, quietly=TRUE)
@@ -590,13 +590,20 @@ remove(list=ls())
 Total{data-orientation=columns}
 =====================================   
 
+```{r global}
+URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/total.dat.csv"
+
+total.dat <- read.csv( URL, stringsAsFactors=FALSE )
+```
+
+
 Inputs {.sidebar}
 ------------------------------
 ```{r}
 
 # shiny inputs defined here
 # Reactive function
-selectInput("clusterNum", label = h3("Check Year"), choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected = "1990" )
+selectInput("clusterNum", label = "Check Year", choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected = "1990" )
 ```
 
 Column {data-width=500}
@@ -616,6 +623,17 @@ barplot(H, names.arg=M, ylim=range(900000:1600000), xpd=FALSE, ylab="Population 
 
 main="Population Growth by Year",border="darksalmon")
 ```
+
+### Total Population Count
+
+```{r}
+
+renderPlot({
+  hist(total.dat$population, 
+       xlab = "Total Population", main = "Population ")
+       })
+```
+
 
 ```{r}
 remove(list=ls())
