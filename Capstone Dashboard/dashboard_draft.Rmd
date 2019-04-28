@@ -1,8 +1,11 @@
 ---
-title: "Capstone Dashboard"
-author: "Kendelle Brown, Abby Henderson"
-date: "April 14, 2019"
-output: flexdashboard::flex_dashboard
+title: "PEDA Capstone"
+output:
+   flexdashboard::flex_dashboard:
+    theme: spacelab
+    social: menu
+    source: embed
+    smart: false
 runtime: shiny
 ---
 
@@ -28,6 +31,7 @@ library( leaflet, quietly=TRUE )
 library( sp, quietly=TRUE)
 library(broom, quietly=TRUE)
 library(DT, quietly=TRUE)
+library(tigris, quietly=TRUE)
 
 ```
 
@@ -51,35 +55,37 @@ phx$geoid2 <- paste0( "G", phx$STATEFP10,
                      "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
 ```
 
-
-```
-
-Narrative
+Narrative {data-orientation=columns}
 =====================================  
-    
-Column {data-width=600}
+
+Column {data-width=400}
 -------------------------------------
 
-### Narrative
-    
-### The narrative will go here.
+```{r}
+plot(phx)
+```
 
+
+Column {data-width=600}
+-------------------------------------
+### Project Narrative Overview
 This project is an analysis of Phoenix demographic data changes from 1990-2015 indicating potential neighborhood change. It was done as the Capstone project for students in the Master of Program Evaluation and Data Analytics Program through the Watts College of Public Service and Community Solutions at ASU. 
 
 This dashboard identifies four demographic changes to consider: 
-Race from 1990 - 2015
-Ethnicity from 1990 - 2015
-Percentage of Homes for Sale from 1990-2015
-Income, with a focus on the highest income households and those below the poverty line from 2010-2015
+
+* Race from 1990 - 2015
+
+* Ethnicity from 1990 - 2015
+
+* Homes for Sale from 1990-2015
+
+* Income from 2010-2015
+
 
 
 Race {data-orientation=rows}
 =====================================     
-
------------------------------------------------------------------------
-```{r, chunk-dat1, include=FALSE}
-
-
+```{r, include=FALSE}
 dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/race.dashboard.dat.csv"
 
 race.dat <- read.csv( dat.url, stringsAsFactors=F )
@@ -89,62 +95,151 @@ race.shape.data <- merge(phx, race.dat, by.x="geoid2", by.y="GISJOIN", all.x=T)
 phx_fortified <- tidy( phx, region = "geoid2")
 
 race.fortified <- merge( phx_fortified, race.dat, by.x="id", by.y="GISJOIN", all.x=T)
+```
 
+Row {data-height=400}
+-----------------------------------------------------------------------
+
+
+###Dot Map Race 1990
+```{r, include=FALSE}
+
+#Data
+
+URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/race.dashboard.dat.csv"
+
+race.dashboard <- read.csv( URL, stringsAsFactors=FALSE )
+# Join
+phx2 <- geo_join( phx, race.dashboard, by_sp="geoid2", by_df="GISJOIN", how="left" )
+# Maps
+
+White_1990 <- dotsInPolys( phx2 , race.dashboard$White_1990/100, f = "random", offset, compatible = FALSE)
+
+Black_1990 <- dotsInPolys( phx2 , race.dashboard$Black_1990/100, f = "random", offset, compatible = FALSE)
+
+NativeAmAlaskan_1990 <- dotsInPolys( phx2 , race.dashboard$NativeAmAlaskan_1990/100, f = "random", offset, compatible = FALSE)
+
+Asian_1990 <- dotsInPolys( phx2 , race.dashboard$Asian_1990/100, f = "random", offset, compatible = FALSE)
+
+NativeHawaiianPacificIslander_1990 <- dotsInPolys( phx2 , race.dashboard$NativeHawaiianPacificIslander_1990/1, f = "random", offset, compatible = FALSE)
+
+SomeOther_1990 <- dotsInPolys( phx2 , race.dashboard$SomeOther_1990/100, f = "random", offset, compatible = FALSE)
+```
+```{r}
+par( mar=c(0,0,0,0) )
+
+plot( phx2, border="black", xlim=NULL, ylim=NULL )
+points( White_1990, col=adjustcolor("firebrick", alpha.f=0.2), pch=19, cex=0.7 )
+points( Black_1990, col=adjustcolor("darkgoldenrod2", alpha.f=0.2), pch=19, cex=0.7 )
+points( NativeAmAlaskan_1990, col=adjustcolor("forestgreen", alpha.f=0.2), pch=19, cex=0.7 )
+points( Asian_1990, col=adjustcolor("darkviolet", alpha.f=0.2), pch=19, cex=0.7 )
+points( NativeHawaiianPacificIslander_1990, col=adjustcolor("deeppink4", alpha.f=0.2), pch=19, cex=0.7 )
+points( SomeOther_1990, col=adjustcolor("darkslategray3", alpha.f=0.2), pch=19, cex=0.7 )
+```
+
+Row {data-height=300}
+----------------------------
+
+### Dot Map Race 2015
+```{r, include=FALSE}
+White_2015 <- dotsInPolys( phx2 , race.dashboard$White_2015/100, f = "random", offset, compatible = FALSE)
+
+Black_2015 <- dotsInPolys( phx2 , race.dashboard$Black_2015/100, f = "random", offset, compatible = FALSE)
+
+AmericanIndian_2015 <- dotsInPolys( phx2 , race.dashboard$AmericaIndian_2015/100, f = "random", offset, compatible = FALSE)
+
+Asian_2015 <- dotsInPolys( phx2 , race.dashboard$Asian_2015/100, f = "random", offset, compatible = FALSE)
+
+PacificIslander_2015 <- dotsInPolys( phx2 , race.dashboard$PacificIslander_2015/1, f = "random", offset, compatible = FALSE)
+
+OtherRace_2015 <- dotsInPolys( phx2 , race.dashboard$OtherRace_2015/100, f = "random", offset, compatible = FALSE)
+
+TwoPlusRaces_2015 <- dotsInPolys( phx2 , race.dashboard$TwoPlusRaces_2015/100, f = "random", offset, compatible = FALSE)
+```
+```{r}
+par( mar=c(0,0,0,0) )
+
+plot( phx2, border="black", xlim=NULL, ylim=NULL )
+
+points( White_2015, col=adjustcolor("firebrick", alpha.f=0.2), pch=19, cex=0.7 )
+
+points( Black_2015, col=adjustcolor("darkgoldenrod2", alpha.f=0.2), pch=19, cex=0.7 )
+
+points( AmericanIndian_2015, col=adjustcolor("forestgreen", alpha.f=0.2), pch=19, cex=0.7 )
+
+points( Asian_2015, col=adjustcolor("darkviolet", alpha.f=0.2), pch=19, cex=0.7 )
+
+points( PacificIslander_2015, col=adjustcolor("deeppink4", alpha.f=0.2), pch=19, cex=0.7 )
+
+points( OtherRace_2015, col=adjustcolor("darkslategray3", alpha.f=0.2), pch=19, cex=0.7 )
+
+points( TwoPlusRaces_2015, col=adjustcolor("blue", alpha.f=0.2), pch=19, cex=0.7 )
+
+```
+  
+Row {.tabset .tabset-fade}
+---------------------------------
+
+###White
+
+```{r}
+hist(race.dashboard$White_1990,col=rgb(178,34,34, alpha=100, maxColorValue = 178), xlab="White Population Counts",main="Histograms for\n White Popluation in 1990 and 2015", breaks=40,  ylim=range(0:75))
+hist(race.dashboard$White_2015,col=rgb(170,30,30, alpha=100, maxColorValue = 170), add=TRUE, breaks=40)
 
 ```
 
+###Black
+```{r}
+hist(race.dashboard$Black_1990,col=rgb(184,134,11, alpha=100, maxColorValue = 184), xlab="Black Population Counts",main="Histograms for\n Black Popluation in 1990 and 2015", breaks=30,  ylim=range(0:75))
+hist(race.dashboard$Black_2015,col=rgb(175,130,9, alpha=100, maxColorValue = 175), add=TRUE, breaks=30)
 
-Inputs {.sidebar data-width=300}
-
-```{r, chunk-3, include=TRUE, cache=FALSE}
-
-selectInput(inputId= "select", label = "Select Year", 
-    choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), 
-    selected = 2000)
 ```
+
+###Asian
+
+```{r}
+hist(race.dashboard$Asian_1990,col=rgb(148,0,211, alpha=100, maxColorValue = 211), xlab="Asian Population Counts",main="Histograms for\n Asian Popluation in 1990 and 2015", breaks=40)
+hist(race.dashboard$Asian_2015,col=rgb(140,0,200, alpha=100, maxColorValue = 200), add=TRUE, breaks=40)
+
+```
+
+###Native American
+
+```{r}
+hist(race.dashboard$NativeAmAlaskan_1990,col=rgb(34,150,34, alpha=100, maxColorValue = 150), xlab="Native American Population Counts",main="Histograms for\n Native American Popluation in 1990 and 2015", breaks=40, ylim=range(0:75))
+hist(race.dashboard$AmericaIndian_2015, col=rgb(20,120,20, alpha=100, maxColorValue = 130), add=TRUE, breaks=40)
+
+```
+
+###Pacific Islander
 
 
 ```{r}
-renderPlot({
-  hist(race.fortified$white_1990, probability = TRUE, breaks = as.numeric(input$select))
-  })
-
-
-
-```
-Row {data-height=400}
--------------------------------------
-
-### Map 1
-
-```{r, chunk-4}
-#filler
-
-
+hist(race.dashboard$NativeHawaiianPacificIslander_1990,col=rgb(255,20,147, alpha=100, maxColorValue = 255), xlab="Native Hawaiian and Pacific Islander Population Counts",main="Histograms for\n Native Hawaiian and Pacific Islander\n Popluation in 1990 and 2015", breaks=30, ylim=range(0:75))
+hist(race.dashboard$PacificIslander_2015, col=rgb(245,20,140, alpha=100, maxColorValue = 245), add=TRUE, breaks=70)
 
 ```
 
-### Map 2
+###Some other race
 
-```{r, chunk-5}
-#filler
+```{r}
+hist(race.dashboard$SomeOther_1990,col=rgb(120,135,120, alpha=24, maxColorValue = 144), xlab="Some Other Race Population Counts",main="Histograms for\n Some Other Race Popluation in 1990 and 2015", breaks=40, ylim=range(0:75))
+hist(race.dashboard$OtherRace_2015, col=rgb(140,160,120, alpha=50, maxColorValue = 160), add=TRUE, breaks=40)
 
+```
 
+###Two or more
+```{r}
+## Note: This category did not exist on the 1990 census
 
+hist(race.dashboard$TwoPlusRaces_2015,col="blue", xlab="Two+ Races Population Counts",main="Histogram for\n Two or more races Popluation in 2015", breaks=40, ylim=range(0:75))
 
-```   
-
-Row {data-height=500}
--------------------------------------  
-### Analysis
+```
 
 
 
 Ethnicity {data-orientation=rows}
 =====================================     
-
-Inputs {.sidebar data-width=300}
--------------------------------------
 
 ```{r, chunk-dat2, include=FALSE}
 
@@ -162,102 +257,75 @@ ethnicity.fortified <- merge( phx_fortified, ethnicity.dat, by.x="id", by.y="GIS
 
 ```
 
-```{r, chunk-input2, include=TRUE, cache=FALSE}
-
-selectInput(inputId= "select", label = "Select Year", 
-    choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), 
-    selected = 2000)
-```
-
-
-
 Row {data-height=400}
 -------------------------------------
 
-### Map 1
-
-```{r, render-2, include=FALSE}
-renderPlot({
-  hist(ethnicity.fortified$Hipsanic_Percent_1990, input$select)
-  })
 
 
-
+### Chloropleth % Hispanic 1990
+```{r, include=FALSE}
+hispanic_1990 <- ggplot( data = ethnicity.fortified, 
+               aes( x = long, y = lat, 
+                    group = group, 
+                    fill = HispanicPercent_1990 ) ) + 
+                geom_polygon() +
+               coord_map() +
+               scale_fill_distiller(palette="Set3", direction=1,
+                                    name="Percent") +
+     labs(title="Hispanic/Latino 1990 Population\n in Maricopa County", title.cex=.75, caption="1990 Source: US Census, NHGIS")
+```
+```{r}
+hispanic_1990
 ```
 
-### Map 2
 
-```{r, chunk-8}
+### Chloropleth % Hispanic 2015
+```{r, include=FALSE}
+hispanic_2015 <- ggplot( data = ethnicity.fortified, 
+               aes( x = long, y = lat, 
+                    group = group, 
+                    fill = HispanicPercent_2015 ) ) + 
+                geom_polygon() +
+               coord_map() +
+               scale_fill_distiller(palette="Set3", direction=1,
+                                    name="Percent") +
+     labs(title="Hispanic/Latino 2015 Population\n in Maricopa County", title.cex=.75, caption="2015 Source: US Census, ACS5")
+```
+```{r}
+hispanic_2015
+```
 
-
-```   
 
 Row {data-height=500}
 -------------------------------------  
-### Analysis
+### Area Chart % Hispanic 1990-2015
 
-```{r, chunk-9}
-```
+
 
 Homes for Sale {data-orientation=rows}
 =====================================     
    
-Inputs {.sidebar data-width=300}
--------------------------------------
-
-```{r,  include=FALSE, cache=FALSE}
-
-
-selectInput(inputId = "radio", label = h3("Select a year"), choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected=2000 )
-  
-```
-
-```{r, cache=FALSE, include=TRUE}
-
-```
  
 Row {data-height=400}
 -------------------------------------
 
-### Map 1
-
-```{r, chunk-11}
+### Dot Map Houses for sale 2000
 
 
-
-```
-
-### Map 2
-
-```{r, chunk-12}
-
-
-
-```   
+### Dot Map Houses for sale 2010
 
 Row {data-height=500}
 -------------------------------------  
-### Analysis
+### Stacked Bar Chart
 
-```{r, chunk-13}
-```
 
 Income {data-orientation=rows}
 =====================================     
-   
-Inputs {.sidebar data-width=300}
--------------------------------------
-
-```{r, include=FALSE, cache=FALSE}
-# shiny inputs defined here
-
-
-```
-
+ 
 Row {data-height=400}
 -------------------------------------
 
-### Map 1
+### Dot Map Income 2010
 
 ```{r}
 
@@ -265,7 +333,7 @@ Row {data-height=400}
 
 ```
 
-### Map 2
+### Dot Map Income 2015
 
 ```{r}
 
@@ -275,11 +343,31 @@ Row {data-height=400}
 
 Row {data-height=500}
 -------------------------------------  
-### Analysis
+### Chloropleth below poverty 2010
 
 ```{r}
 ```
 
+### Chloropleth below poverty 2015
+
+Total {data-orientation=columns}
+=====================================   
+
+Inputs {.sidebar data-width=300}
+-----------------------------------------------------------------------
+
+```{r}
+# shiny inputs defined here
+# Reactive function
+```
+Column
+-----------------------------------------------------------------------
+
+### Geyser Eruption Duration
+
+```{r}
+# renderPlot
+```
 
 
 Dataset {data-orientation=rows}
