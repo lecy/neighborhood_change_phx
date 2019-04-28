@@ -53,6 +53,7 @@ phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
 
 phx$geoid2 <- paste0( "G", phx$STATEFP10, 
                      "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
+
 ```
 
 Narrative {data-orientation=columns}
@@ -86,6 +87,22 @@ This dashboard identifies four demographic changes to consider:
 Race {data-orientation=rows}
 =====================================     
 ```{r, include=FALSE}
+download.file( "https://github.com/lecy/neighborhood_change_phx/raw/master/shapefiles/tl_2010_04013_tract10.zip", 
+"maricopa-az-census_tract10.zip" )
+unzip( "maricopa-az-census_tract10.zip" )
+file.remove( "maricopa-az-census_tract10.zip" )
+dir()
+
+library( rgdal )
+phx <- readOGR("tl_2010_04013_tract10.shp")
+head( phx@data, 10)
+plot( phx )
+
+phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
+
+phx$geoid2 <- paste0( "G", phx$STATEFP10, 
+                     "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
+
 dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/race.dashboard.dat.csv"
 
 race.dat <- read.csv( dat.url, stringsAsFactors=F )
@@ -121,7 +138,7 @@ NativeAmAlaskan_1990 <- dotsInPolys( phx2 , race.dashboard$NativeAmAlaskan_1990/
 
 Asian_1990 <- dotsInPolys( phx2 , race.dashboard$Asian_1990/100, f = "random", offset, compatible = FALSE)
 
-NativeHawaiianPacificIslander_1990 <- dotsInPolys( phx2 , race.dashboard$NativeHawaiianPacificIslander_1990/1, f = "random", offset, compatible = FALSE)
+NHPI_1990 <- dotsInPolys( phx2 , race.dashboard$NHPI_1990/1, f = "random", offset, compatible = FALSE)
 
 SomeOther_1990 <- dotsInPolys( phx2 , race.dashboard$SomeOther_1990/100, f = "random", offset, compatible = FALSE)
 ```
@@ -133,7 +150,7 @@ points( White_1990, col=adjustcolor("firebrick", alpha.f=0.2), pch=19, cex=0.7 )
 points( Black_1990, col=adjustcolor("darkgoldenrod2", alpha.f=0.2), pch=19, cex=0.7 )
 points( NativeAmAlaskan_1990, col=adjustcolor("forestgreen", alpha.f=0.2), pch=19, cex=0.7 )
 points( Asian_1990, col=adjustcolor("darkviolet", alpha.f=0.2), pch=19, cex=0.7 )
-points( NativeHawaiianPacificIslander_1990, col=adjustcolor("deeppink4", alpha.f=0.2), pch=19, cex=0.7 )
+points( NHPI_1990, col=adjustcolor("deeppink4", alpha.f=0.2), pch=19, cex=0.7 )
 points( SomeOther_1990, col=adjustcolor("darkslategray3", alpha.f=0.2), pch=19, cex=0.7 )
 ```
 
@@ -215,7 +232,7 @@ hist(race.dashboard$AmericaIndian_2015, col=rgb(20,120,20, alpha=100, maxColorVa
 
 
 ```{r}
-hist(race.dashboard$NativeHawaiianPacificIslander_1990,col=rgb(255,20,147, alpha=100, maxColorValue = 255), xlab="Native Hawaiian and Pacific Islander Population Counts",main="Histograms for\n Native Hawaiian and Pacific Islander\n Popluation in 1990 and 2015", breaks=30, ylim=range(0:75))
+hist(race.dashboard$NHPI_1990,col=rgb(255,20,147, alpha=100, maxColorValue = 255), xlab="Native Hawaiian and Pacific Islander Population Counts",main="Histograms for\n Native Hawaiian and Pacific Islander\n Popluation in 1990 and 2015", breaks=30, ylim=range(0:75))
 hist(race.dashboard$PacificIslander_2015, col=rgb(245,20,140, alpha=100, maxColorValue = 245), add=TRUE, breaks=70)
 
 ```
@@ -234,6 +251,7 @@ hist(race.dashboard$OtherRace_2015, col=rgb(140,160,120, alpha=50, maxColorValue
 
 hist(race.dashboard$TwoPlusRaces_2015,col="blue", xlab="Two+ Races Population Counts",main="Histogram for\n Two or more races Popluation in 2015", breaks=40, ylim=range(0:75))
 
+remove(list=ls())
 ```
 
 
@@ -242,7 +260,21 @@ Ethnicity {data-orientation=rows}
 =====================================     
 
 ```{r, chunk-dat2, include=FALSE}
+download.file( "https://github.com/lecy/neighborhood_change_phx/raw/master/shapefiles/tl_2010_04013_tract10.zip", 
+"maricopa-az-census_tract10.zip" )
+unzip( "maricopa-az-census_tract10.zip" )
+file.remove( "maricopa-az-census_tract10.zip" )
+dir()
 
+library( rgdal )
+phx <- readOGR("tl_2010_04013_tract10.shp")
+head( phx@data, 10)
+plot( phx )
+
+phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
+
+phx$geoid2 <- paste0( "G", phx$STATEFP10, 
+                     "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
 
 dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/ethnicity.dashboard.dat.csv"
 
@@ -260,12 +292,10 @@ ethnicity.fortified <- merge( phx_fortified, ethnicity.dat, by.x="id", by.y="GIS
 Row {data-height=400}
 -------------------------------------
 
-
-
 ### Chloropleth % Hispanic 1990
 ```{r, include=FALSE}
 hispanic_1990 <- ggplot( data = ethnicity.fortified, 
-               aes( x = long, y = lat, 
+               aes( x = long, y = lat,
                     group = group, 
                     fill = HispanicPercent_1990 ) ) + 
                 geom_polygon() +
@@ -300,55 +330,226 @@ Row {data-height=500}
 -------------------------------------  
 ### Area Chart % Hispanic 1990-2015
 
+```{r}
+hist(ethnicity.fortified$HispanicPercent_1990,col=rgb(250,128,114, alpha=100, maxColorValue = 250), xlab="Hispanic Population Percentage",main="Histograms for\n Hispanic Percent Popluation in 1990 and 2015", breaks=50)
+hist(ethnicity.fortified$HispanicPercent_2015, col=rgb(255,127,80, alpha=50, maxColorValue = 255), add=TRUE, breaks=50)
+remove(list=ls())
+```
 
 
 Homes for Sale {data-orientation=rows}
 =====================================     
-   
+For Sale
+```{r, include=FALSE}
+#Data
+download.file( "https://github.com/lecy/neighborhood_change_phx/raw/master/shapefiles/tl_2010_04013_tract10.zip", 
+"maricopa-az-census_tract10.zip" )
+unzip( "maricopa-az-census_tract10.zip" )
+file.remove( "maricopa-az-census_tract10.zip" )
+dir()
+
+library( rgdal )
+phx <- readOGR("tl_2010_04013_tract10.shp")
+head( phx@data, 10)
+plot( phx )
+
+phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
+
+phx$geoid2 <- paste0( "G", phx$STATEFP10, 
+                     "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
+URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/vacancy.dashboard.dat.csv"
+
+vacancy.dashboard <- read.csv( URL, stringsAsFactors=FALSE )
+# Join
+
+phx2 <- geo_join( phx, vacancy.dashboard, by_sp="geoid2", by_df="GISJOIN", how="left" )
+```
  
 Row {data-height=400}
 -------------------------------------
 
 ### Dot Map Houses for sale 2000
 
+```{r, include=FALSE}
+VacantForSale_2000 <- dotsInPolys( phx2 , vacancy.dashboard$VacantForSale_2000/10, f = "random", offset, compatible = FALSE)
+```
+```{r}
+par( mar=c(0,0,0,0) )
 
-### Dot Map Houses for sale 2010
+plot( phx2, border="black", xlim=NULL, ylim=NULL )
+
+points( VacantForSale_2000, col=adjustcolor("firebrick4", alpha.f=0.2), pch=19, cex=0.7 )
+```
+
+### Dot Map Houses for Sale 2010
+ 
+```{r, include=FALSE}
+VacantForSale_2010 <- dotsInPolys( phx2 , vacancy.dashboard$VacantForSale_2010/10, f = "random", offset, compatible = FALSE)
+```
+```{r}
+par( mar=c(0,0,0,0) )
+
+plot( phx2, border="black", xlim=NULL, ylim=NULL )
+
+points( VacantForSale_2010, col=adjustcolor("goldenrod2", alpha.f=0.2), pch=19, cex=0.7 )
+```
+
 
 Row {data-height=500}
 -------------------------------------  
-### Stacked Bar Chart
+### Percent of Houses for Sale 2000
 
+```{r}
+
+#Data 2000
+
+pct2 <- c(1.13, 98.9)
+
+shades2 <- c("firebrick1", "firebrick4")
+
+categories2 <- c("1.13% Homes For Sale", "98.9% Homes Not For Sale")
+
+pie(pct2, labels = categories2, col = shades2)
+
+symbols(0, 0, circles = 1, add=TRUE, bg="white")
+```
+### Percent Houses for Sale 2010
+
+```{r}
+# Data 2010
+
+pct3 <- c(2.38, 97.6)
+
+shades3 <- c("darkkhaki", "darksalmon", "darkolivegreen3", "black")
+
+categories3 <- c("2.38% Homes For Sale", "97.6% Homes Not For Sale", "65.55% Above Poverty Level", "d")
+
+# Donut 2010
+
+pie(pct3, labels = categories3, col = shades3)
+
+symbols(0, 0, circles = 1, add=TRUE, bg="white")
+remove(list=ls())
+```
 
 Income {data-orientation=rows}
 =====================================     
  
-Row {data-height=400}
+```{r, include=FALSE}
+download.file( "https://github.com/lecy/neighborhood_change_phx/raw/master/shapefiles/tl_2010_04013_tract10.zip", 
+"maricopa-az-census_tract10.zip" )
+unzip( "maricopa-az-census_tract10.zip" )
+file.remove( "maricopa-az-census_tract10.zip" )
+dir()
+
+library( rgdal )
+phx <- readOGR("tl_2010_04013_tract10.shp")
+head( phx@data, 10)
+plot( phx )
+
+phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
+
+phx$geoid2 <- paste0( "G", phx$STATEFP10, 
+                     "0", phx$COUNTYFP10, "0", phx$TRACTCE10 )
+
+#Data
+URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/income.dashboard.dat.csv"
+
+income.dashboard <- read.csv( URL, stringsAsFactors=FALSE )
+
+phx2 <- geo_join( phx, income.dashboard, by_sp="geoid2", by_df="GISJOIN", how="left" )
+
+phx_fortified <- tidy( phx, region = "geoid2")
+
+income.fortified <- merge( phx_fortified, income.dashboard, by.x="id", by.y="GISJOIN", all.x=T)
+ 
+```
+
+ 
+Row {.tabset .tabset-fade}
 -------------------------------------
 
-### Dot Map Income 2010
+### Income 2010
 
+```{r, include=FALSE}
+BelowPoverty_2010 <- dotsInPolys( phx2 , income.dashboard$BelowPoverty_2010/100, f = "random", offset, compatible = FALSE)
+
+OnetwentyfivekPlusincome_2010 <- dotsInPolys( phx2 , income.dashboard$OnetwentyfivekPlusincome_2010/100, f = "random", offset, compatible = FALSE)
+```
 ```{r}
+par( mar=c(0,0,0,0) )
 
+plot( phx2, border="black", xlim=NULL, ylim=NULL )
 
+points( BelowPoverty_2010, col=adjustcolor("forestgreen", alpha.f=0.2), pch=19, cex=0.7 )
 
+points( OnetwentyfivekPlusincome_2010, col=adjustcolor("darkviolet", alpha.f=0.2), pch=19, cex=0.7 )
 ```
 
-### Dot Map Income 2015
+### Income 2015
 
+```{r, include=FALSE}
+# Income 2015 Maps
+
+BelowPoverty_2015 <- dotsInPolys( phx2 , income.dashboard$BelowPoverty_2015/100, f = "random", offset, compatible = FALSE)
+
+OnetwentyfivekPlusIncome_2015 <- dotsInPolys( phx2 , income.dashboard$OnetwentyfivekPlusIncome_2015/100, f = "random", offset, compatible = FALSE)
+```
 ```{r}
+par( mar=c(0,0,0,0) )
 
+plot( phx2, border="black", xlim=NULL, ylim=NULL )
 
+points( BelowPoverty_2015, col=adjustcolor("forestgreen", alpha.f=0.2), pch=19, cex=0.7 )
 
-```   
-
-Row {data-height=500}
+points( OnetwentyfivekPlusIncome_2015, col=adjustcolor("darkviolet", alpha.f=0.2), pch=19, cex=0.7 )
+```
+Row {.tabset .tabset-fade}
 -------------------------------------  
-### Chloropleth below poverty 2010
+### Percent in Poverty 2010
 
+```{r, include=FALSE}
+belowpoverty_2010 <- ggplot( data = income.fortified, 
+               aes( x = long, y = lat, 
+                    group = group, fill= BelowPovertyPercent_2010)) + geom_polygon() +  coord_map() +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Households Below the Poverty Line", title.cex=0.5, caption="2010 Source: US Census")
+```
 ```{r}
+belowpoverty_2010
 ```
 
-### Chloropleth below poverty 2015
+### Percent in Poverty 2015
+```{r, include=FALSE}
+
+belowpoverty_2015 <- ggplot( data = income.fortified, 
+               aes( x = long, y = lat, 
+                    group = group, fill= BelowPovertyPercent_2015)) + geom_polygon() +  coord_map() +
+  scale_fill_distiller(palette="Purples", direction=1, name="Population") +
+  labs(title="Households Below the Poverty Line", title.cex=0.5, caption="2010 Source: US Census")
+```
+```{r}
+belowpoverty_2015
+```
+
+### Percent in Poverty 2015
+```{r}
+#Data
+
+pct <- c(16.9, 18.16, 65.55)
+
+shades <- c("darkolivegreen1", "forestgreen", "darkolivegreen3", "black")
+
+categories <- c("16.9% Below Poverty Level", "18.16% Highest Level of Income", "65.55% Above Poverty Level", "d")
+
+# Donut
+pie(pct, labels = categories, col = shades)
+
+symbols(0, 0, circles = 1, add=TRUE, bg="white")
+
+remove(list=ls())
+```
+
 
 Total {data-orientation=columns}
 =====================================   
