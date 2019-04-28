@@ -21,7 +21,7 @@ If you'd like to know more about the developers of this project, see more about 
 
 And here is a [LINK](data-steps.html) to an HTML file that describes our datasets and the steps we took to prepare the data for analysis. The source code of the dashboard can be pulled directly from that link.
 
-Here is an iframe example:
+As the video below shows, Phoenix is a growing, diverse, and vibrant city. However, this project takes a step back to look at what the data says about how Phoenix has changed since 1990. How might it continue to change in the next 25 years?
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/fYM07019kEc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
