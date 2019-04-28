@@ -4,13 +4,13 @@ output:
    flexdashboard::flex_dashboard:
     theme: spacelab
     social: menu
-    source: embed
+    source_code: embed
     smart: false
 runtime: shiny
 ---
 
 ```{r setup, chunk-1, include=FALSE, cache=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 
 library(flexdashboard)
 library(knitr, quietly=TRUE)
@@ -84,7 +84,7 @@ This dashboard identifies four demographic changes to consider:
 
 
 
-Race {data-orientation=rows}
+Race {data-orientation=columns}
 =====================================     
 ```{r, include=FALSE}
 download.file( "https://github.com/lecy/neighborhood_change_phx/raw/master/shapefiles/tl_2010_04013_tract10.zip", 
@@ -114,7 +114,7 @@ phx_fortified <- tidy( phx, region = "geoid2")
 race.fortified <- merge( phx_fortified, race.dat, by.x="id", by.y="GISJOIN", all.x=T)
 ```
 
-Row {data-height=400}
+Column {data-width=400}
 -----------------------------------------------------------------------
 
 
@@ -144,17 +144,17 @@ SomeOther_1990 <- dotsInPolys( phx2 , race.dashboard$SomeOther_1990/100, f = "ra
 ```
 ```{r}
 par( mar=c(0,0,0,0) )
-
-plot( phx2, border="black", xlim=NULL, ylim=NULL )
+plot( phx2, border="black", 
+      xlim=c(-112.5, -111.5), ylim=c(33.2, 33.75) )
 points( White_1990, col=adjustcolor("firebrick", alpha.f=0.2), pch=19, cex=0.7 )
 points( Black_1990, col=adjustcolor("darkgoldenrod2", alpha.f=0.2), pch=19, cex=0.7 )
 points( NativeAmAlaskan_1990, col=adjustcolor("forestgreen", alpha.f=0.2), pch=19, cex=0.7 )
 points( Asian_1990, col=adjustcolor("darkviolet", alpha.f=0.2), pch=19, cex=0.7 )
 points( NHPI_1990, col=adjustcolor("deeppink4", alpha.f=0.2), pch=19, cex=0.7 )
-points( SomeOther_1990, col=adjustcolor("darkslategray3", alpha.f=0.2), pch=19, cex=0.7 )
+points( SomeOther_1990, col=adjustcolor("darkslategray3", alpha.f=0.2), pch=19, cex=0.7 ) 
 ```
 
-Row {data-height=300}
+Column {data-width=400}
 ----------------------------
 
 ### Dot Map Race 2015
@@ -176,20 +176,14 @@ TwoPlusRaces_2015 <- dotsInPolys( phx2 , race.dashboard$TwoPlusRaces_2015/100, f
 ```{r}
 par( mar=c(0,0,0,0) )
 
-plot( phx2, border="black", xlim=NULL, ylim=NULL )
-
+plot( phx2, border="black", 
+      xlim=c(-112.5, -111.5), ylim=c(33.2, 33.75) )
 points( White_2015, col=adjustcolor("firebrick", alpha.f=0.2), pch=19, cex=0.7 )
-
 points( Black_2015, col=adjustcolor("darkgoldenrod2", alpha.f=0.2), pch=19, cex=0.7 )
-
 points( AmericanIndian_2015, col=adjustcolor("forestgreen", alpha.f=0.2), pch=19, cex=0.7 )
-
 points( Asian_2015, col=adjustcolor("darkviolet", alpha.f=0.2), pch=19, cex=0.7 )
-
 points( PacificIslander_2015, col=adjustcolor("deeppink4", alpha.f=0.2), pch=19, cex=0.7 )
-
 points( OtherRace_2015, col=adjustcolor("darkslategray3", alpha.f=0.2), pch=19, cex=0.7 )
-
 points( TwoPlusRaces_2015, col=adjustcolor("blue", alpha.f=0.2), pch=19, cex=0.7 )
 
 ```
@@ -299,6 +293,8 @@ hispanic_1990 <- ggplot( data = ethnicity.fortified,
                     group = group, 
                     fill = HispanicPercent_1990 ) ) + 
                 geom_polygon() +
+                xlim(-112.5, -111.5) +
+                ylim(33.2, 33.75) +
                coord_map() +
                scale_fill_distiller(palette="Set3", direction=1,
                                     name="Percent") +
@@ -316,6 +312,8 @@ hispanic_2015 <- ggplot( data = ethnicity.fortified,
                     group = group, 
                     fill = HispanicPercent_2015 ) ) + 
                 geom_polygon() +
+                xlim(-112.5, -111.5) +
+                ylim(33.2, 33.75) +
                coord_map() +
                scale_fill_distiller(palette="Set3", direction=1,
                                     name="Percent") +
@@ -376,7 +374,8 @@ VacantForSale_2000 <- dotsInPolys( phx2 , vacancy.dashboard$VacantForSale_2000/1
 ```{r}
 par( mar=c(0,0,0,0) )
 
-plot( phx2, border="black", xlim=NULL, ylim=NULL )
+plot( phx2, border="black", 
+      xlim=c(-112.5, -111.5), ylim=c(33.2, 33.75)  )
 
 points( VacantForSale_2000, col=adjustcolor("firebrick4", alpha.f=0.2), pch=19, cex=0.7 )
 ```
@@ -389,13 +388,14 @@ VacantForSale_2010 <- dotsInPolys( phx2 , vacancy.dashboard$VacantForSale_2010/1
 ```{r}
 par( mar=c(0,0,0,0) )
 
-plot( phx2, border="black", xlim=NULL, ylim=NULL )
+plot( phx2, border="black", 
+      xlim=c(-112.5, -111.5), ylim=c(33.2, 33.75)  )
 
 points( VacantForSale_2010, col=adjustcolor("goldenrod2", alpha.f=0.2), pch=19, cex=0.7 )
 ```
 
 
-Row {data-height=500}
+Row {.tabset .tabset-fade}
 -------------------------------------  
 ### Percent of Houses for Sale 2000
 
@@ -405,7 +405,7 @@ Row {data-height=500}
 
 pct2 <- c(1.13, 98.9)
 
-shades2 <- c("firebrick1", "firebrick4")
+shades2 <- c("goldenrod2", "firebrick4")
 
 categories2 <- c("1.13% Homes For Sale", "98.9% Homes Not For Sale")
 
@@ -413,6 +413,8 @@ pie(pct2, labels = categories2, col = shades2)
 
 symbols(0, 0, circles = 1, add=TRUE, bg="white")
 ```
+
+
 ### Percent Houses for Sale 2010
 
 ```{r}
@@ -420,7 +422,7 @@ symbols(0, 0, circles = 1, add=TRUE, bg="white")
 
 pct3 <- c(2.38, 97.6)
 
-shades3 <- c("darkkhaki", "darksalmon", "darkolivegreen3", "black")
+shades3 <- c("firebrick", "goldenrod2", "darkolivegreen3", "black")
 
 categories3 <- c("2.38% Homes For Sale", "97.6% Homes Not For Sale", "65.55% Above Poverty Level", "d")
 
@@ -479,10 +481,9 @@ OnetwentyfivekPlusincome_2010 <- dotsInPolys( phx2 , income.dashboard$Onetwentyf
 ```{r}
 par( mar=c(0,0,0,0) )
 
-plot( phx2, border="black", xlim=NULL, ylim=NULL )
-
+plot( phx2, border="black",
+      xlim=c(-112.5, -111.5), ylim=c(33.2, 33.75)  )
 points( BelowPoverty_2010, col=adjustcolor("forestgreen", alpha.f=0.2), pch=19, cex=0.7 )
-
 points( OnetwentyfivekPlusincome_2010, col=adjustcolor("darkviolet", alpha.f=0.2), pch=19, cex=0.7 )
 ```
 
@@ -498,20 +499,22 @@ OnetwentyfivekPlusIncome_2015 <- dotsInPolys( phx2 , income.dashboard$Onetwentyf
 ```{r}
 par( mar=c(0,0,0,0) )
 
-plot( phx2, border="black", xlim=NULL, ylim=NULL )
-
+plot( phx2, border="black", 
+      xlim=c(-112.5, -111.5), ylim=c(33.2, 33.75)  )
 points( BelowPoverty_2015, col=adjustcolor("forestgreen", alpha.f=0.2), pch=19, cex=0.7 )
-
 points( OnetwentyfivekPlusIncome_2015, col=adjustcolor("darkviolet", alpha.f=0.2), pch=19, cex=0.7 )
 ```
-Row {.tabset .tabset-fade}
--------------------------------------  
+
 ### Percent in Poverty 2010
 
 ```{r, include=FALSE}
 belowpoverty_2010 <- ggplot( data = income.fortified, 
                aes( x = long, y = lat, 
-                    group = group, fill= BelowPovertyPercent_2010)) + geom_polygon() +  coord_map() +
+                    group = group, fill=
+                    BelowPovertyPercent_2010)) + geom_polygon() + 
+  xlim(-112.5, -111.5) +
+  ylim(33.2, 33.75) +
+  coord_map() +
   scale_fill_distiller(palette="Purples", direction=1, name="Population") +
   labs(title="Households Below the Poverty Line", title.cex=0.5, caption="2010 Source: US Census")
 ```
@@ -524,7 +527,10 @@ belowpoverty_2010
 
 belowpoverty_2015 <- ggplot( data = income.fortified, 
                aes( x = long, y = lat, 
-                    group = group, fill= BelowPovertyPercent_2015)) + geom_polygon() +  coord_map() +
+                    group = group, fill= BelowPovertyPercent_2015)) + geom_polygon() +
+   xlim(-112.5, -111.5) +
+  ylim(33.2, 33.75) +
+  coord_map() +
   scale_fill_distiller(palette="Purples", direction=1, name="Population") +
   labs(title="Households Below the Poverty Line", title.cex=0.5, caption="2010 Source: US Census")
 ```
@@ -532,7 +538,7 @@ belowpoverty_2015 <- ggplot( data = income.fortified,
 belowpoverty_2015
 ```
 
-### Percent in Poverty 2015
+### Percent in Poverty 2015 Total
 ```{r}
 #Data
 
@@ -564,7 +570,7 @@ Inputs {.sidebar data-width=300}
 Column
 -----------------------------------------------------------------------
 
-### Geyser Eruption Duration
+### Total Population Count
 
 ```{r}
 # renderPlot
@@ -599,7 +605,6 @@ dat.selected.table <- datatable( table.dat,
            options=list( dom='Bfrtip', 
                          buttons=these.buttons  )) %>%
   formatStyle( "GISJOIN", "white-space"="nowrap" )
-
 
 
 ```
