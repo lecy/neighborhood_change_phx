@@ -33,6 +33,7 @@ library(broom, quietly=TRUE)
 library(DT, quietly=TRUE)
 library(tigris, quietly=TRUE)
 library(shiny, quietly=TRUE)
+library(readr,quietly=TRUE)
 
 ```
 
@@ -119,7 +120,7 @@ Total{data-orientation=columns}
 =====================================   
 
 ```{r global}
-URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/total.dat.csv"
+URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/total.dat.2.csv"
 
 total.dat <- read.csv( URL, stringsAsFactors=FALSE )
 ```
@@ -162,7 +163,7 @@ phx$geoid2 <- paste0( "G", phx$STATEFP10,
                      "0", phx$COUNTYFP10, 
                      "0", phx$TRACTCE10 )
 
-dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/race.dashboard.dat.csv"
+dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/race.dashboard.dat.2.csv"
 
 race.dat <- read.csv( dat.url, stringsAsFactors=F )
 
@@ -182,7 +183,7 @@ Column {data-width=400}
 
 #Data
 
-URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/race.dashboard.dat.csv"
+URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/race.dashboard.dat.2.csv"
 
 race.dashboard <- read.csv( URL, stringsAsFactors=FALSE )
 # Join
@@ -331,7 +332,7 @@ phx$geoid2 <- paste0( "G", phx$STATEFP10,
                      "0", phx$COUNTYFP10, 
                      "0", phx$TRACTCE10 )
 
-dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/ethnicity.dashboard.dat.csv"
+dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/ethnicity.dashboard.dat.2.csv"
 
 ethnicity.dat <- read.csv( dat.url, stringsAsFactors=F )
 
@@ -415,7 +416,7 @@ phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
 phx$geoid2 <- paste0( "G", phx$STATEFP10, 
                      "0", phx$COUNTYFP10,
                      "0", phx$TRACTCE10 )
-URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/vacancy.dashboard.dat.csv"
+URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/vacancy.dashboard.dat.2.csv"
 
 vacancy.dashboard <- read.csv( URL, stringsAsFactors=FALSE )
 # Join
@@ -523,7 +524,7 @@ phx$geoid2 <- paste0( "G", phx$STATEFP10,
                      "0", phx$TRACTCE10 )
 
 #Data
-income.URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/income.dashboard.dat.csv"
+income.URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/income.dashboard.dat.2.csv"
 
 income.dashboard <- read.csv( income.URL, stringsAsFactors=FALSE )
 
@@ -671,7 +672,7 @@ This data table includes the names of the different variables from 1990-2015. No
 
 ```{r, chunk-15, include=FALSE}
 
-url2 <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.variable.name.crosswalk.csv"
+url2 <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.variable.name.crosswalk.2.csv"
 
 phx.var.crosswalk <- read.csv( url2, stringsAsFactors = F)
 
