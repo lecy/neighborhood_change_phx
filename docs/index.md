@@ -15,7 +15,7 @@ These concepts were chosen for one of two reasons: either the amount of change i
 
 One goal of this project is that it will further help Phoenix residents delineate and describe their neighborhoods. There are few well-defined neighborhoods in Phoenix at this time, but perhaps with better information about the natural breaks in geographic areas, neighborhoods can be better defined. 
 
-The analysis from this project is diplayed on a dashboard that can be found at [https://capstone-2019.shinyapps.io/dashboard_draft/]. It is separated by tabs for each concept. The final two tabs are datasets- one of the data used in the dashboard, and a second of the variable names from 1990-2015 for these variable levels in the Census data.
+The analysis from this project is diplayed on a dashboard that can be found at [link](https://capstone-2019.shinyapps.io/dashboard_draft/). It is separated by tabs for each concept. The final two tabs are datasets- one of the data used in the dashboard, and a second of the variable names from 1990-2015 for these variable levels in the Census data.
 
 If you'd like to know more about the developers of this project, see more about us. [link](about.html)
 
