@@ -154,21 +154,8 @@ main="Population Growth by Year",border="darksalmon")
 ```
 
 ### Total Population Count
-```{r}
-selectedData <- reactive({
-  total.dat[population, input$clusterNum]
-  })
 
-
-renderPlot({
- ggplot(selectedData(), aes_string(x=input$clusterNum,
-                            y=total.dat$population)) +
-    geom_bar(stat="identity", fill="salmon",
-             position=position_dodge()) +
-    xlim(1980, 2025) +
-    theme_minimal()
-})
-```
+This is where the interactive shiny renderPlot will go.
 
 ```{r}
 remove(list=ls())
