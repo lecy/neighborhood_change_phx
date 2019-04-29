@@ -32,6 +32,7 @@ library(sp, quietly=TRUE)
 library(broom, quietly=TRUE)
 library(DT, quietly=TRUE)
 library(tigris, quietly=TRUE)
+library(shiny, quietly=TRUE)
 
 ```
 
@@ -77,32 +78,41 @@ plot(phx, xlim=c(-112.5, -111.5), ylim=c(33.2, 33.75) )
 Column {data-width=600}
 -------------------------------------
 ### Project Narrative Overview
-This project is an analysis of Phoenix demographic data changes from 1990-2015 indicating potential neighborhood change. It was done as the Capstone project for students in the Master of Program Evaluation and Data Analytics Program through the Watts College of Public Service and Community Solutions at ASU. 
+This project is an analysis of Phoenix demographic data changes from 1990-2015 indicating potential neighborhood change. It was done as the Capstone Project for students in the Master of Program Evaluation and Data Analytics Program through the Watts College of Public Service and Community Solutions at ASU.
 
+ 
+Although the data pulled is for all of Maricopa County, this dashboard has a specific focus on the City of Phoenix. All maps have been set to look closely at Phoenix, where the population density is greater and therefore the census tracts are smaller.
 
-Although the data pulled is for all of Maricopa County, this dashboard has a specific focus on the City of Phoenix. All maps have been set to look closely at Phoenix, where the popluation density is greater and therefore the census tracts are smaller. 
-
-
+ 
 The 1990, 2000, and select 2010 data is pulled from NHGIS time-series tables available through IPUMS. Select 2010 variables and all 2015 data was collected using the censusapi() package in R. All of the source code for this project can be found on the Github page, and the final two tabs of this dashboard contain the data used in this dashboard and the original variable names associated with that data. Any questions or inquires about this project can be directed to the students responsible for its creation, with contact information available on the About Me page of the project website.
 
-This dashboard identifies four demographic changes to consider: 
 
-* Race from 1990 - 2015
-  + Race was selected for this analysis because of the changes in this time period. Specifically, there is a significant increase in the Asian population from 1990 to 2015 that can be seen with both the dot plots and the Asian Population histogram.
 
-* Ethnicity from 1990 - 2015
-  + Ethnicity was also selected for changes in this time period. As can be seen in the chloropleth and histogram, the Hispanic population of Phoenix increased greatly in this time period. An interesting further analysis could include looking at the ancestry of the increasing Hispanic population to determine if that changed as the immigration policies along the Arizona/Mexico border changed and as humanitarian crises increased in South and Central America.
-
-* Homes for Sale from 1990-2015
-  + The amount of homes for sale was selected due to The Great Recession and the housing bubble bursting in the late 2000's. Arizona saw a large increase in housing developments during the housing bubble, and outlying census tracts in Maricopa County were especially impacted by the Recession. The visuals in this dashboard focus on 2000 and 2010, to see how the housing market changed admist that crisis.
-
-* Income from 2010-2015
-  + Income was selected because of the impact it has on individuals livelihood. Specifically, this dashboard looks at the disparity between those living below the poverty line and those in the highest income bracket. As the dot plots show, the delineation between highest and lowest income brackets is not based on geography, but they appear to be comingled throughout Phoenix. As the chloropleth maps showing the percentage of individuals living under the poverty line indicate, there was an increase in individuals living under the poverty line between 2010 and 2015. Finally, a donut plot shows the split of income brackets in 2015, focusing on below the poverty line, the highest income bracket, and those living in between.
+This dashboard identifies four demographic changes to consider:
 
 * Total Phoenix Population from 1990-2015
+
   + Total population of Phoenix was considered because of the way the city and county have experienced growth in this time period. Specifically, the city of Phoenix grew from less than 990,000 residents in 1990 to over 1.5 million in 2015. Obviously this impacts the analysis, as the number of individuals living in the area of analysis grew by over 60% in this time period. As the city and county continue to grow, further analysis may be necessary to determine how the city changing as it grows.
 
 
+* Race from 1990 - 2015
+
+  + Race was selected for this analysis because of the changes in this time period. Specifically, there is a significant increase in the Asian population from 1990 to 2015 that can be seen with both the dot plots and the Asian Population histogram.
+
+
+* Ethnicity from 1990 - 2015
+
+  + Ethnicity was also selected for changes in this time period. As can be seen in the choropleth and histogram, the Hispanic population of Phoenix increased greatly in this time period. An interesting further analysis could include looking at the ancestry of the increasing Hispanic population to determine if that changed as the immigration policies along the Arizona/Mexico border changed and as humanitarian crises increased in South and Central America.
+
+
+* Homes for Sale from 1990-2015
+
+  + The amount of homes for sale was selected due to The Great Recession and the housing bubble bursting in the late 2000's. Arizona saw a large increase in housing developments during the housing bubble, and outlying census tracts in Maricopa County were especially impacted by the Recession. The visuals in this dashboard focus on 2000 and 2010, to see how the housing market changed amidst that crisis.
+
+
+* Income from 2010-2015
+
+  + Income was selected because of the impact it has on individuals livelihood. Specifically, this dashboard looks at the disparity between those living below the poverty line and those in the highest income bracket. As the dot plots show, the delineation between highest and lowest income brackets is not based on geography, but they appear to be comingled throughout Phoenix. As the choropleth maps showing the percentage of individuals living under the poverty line indicate, there was an increase in individuals living under the poverty line between 2010 and 2015. Finally, a donut plot shows the split of income brackets in 2015, focusing on below the poverty line, the highest income bracket, and those living in between.
 
 
 Total{data-orientation=columns}
@@ -114,34 +124,8 @@ URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/da
 total.dat <- read.csv( URL, stringsAsFactors=FALSE )
 ```
 
-
-Inputs {.sidebar}
-------------------------------
-```{r}
-
-# shiny inputs defined here
-# Reactive function
-selectInput("clusterNum", label = "Check Year", choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected = "1990" )
-```
-
 Column {data-width=500}
 ------------------------------
-
-### Total Population Count
-```{r}
-selectedData <- reactive({
-  total.dat[population, input$clusterNum]
-  })
-
-renderPlot({
- ggplot(selectedData(), aes_string(x=input$clusterNum,
-                            y=total.dat$population)) +
-    geom_bar(stat="identity", fill="salmon",
-             position=position_dodge()) +
-    xlim(1980, 2025) +
-    theme_minimal()
-})
-```
 
 ### Total Population Count
 
@@ -181,8 +165,6 @@ phx$geoid2 <- paste0( "G", phx$STATEFP10,
 dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/race.dashboard.dat.csv"
 
 race.dat <- read.csv( dat.url, stringsAsFactors=F )
-
-race.dat$GISJOIN <- paste0(race.dat$ï..GISJOIN)
 
 race.shape.data <- merge(phx, race.dat, by.x="geoid2", by.y="GISJOIN", all.x=T)
 
@@ -352,8 +334,6 @@ phx$geoid2 <- paste0( "G", phx$STATEFP10,
 dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/ethnicity.dashboard.dat.csv"
 
 ethnicity.dat <- read.csv( dat.url, stringsAsFactors=F )
-
-ethnicity.dat$GISJOIN <- paste0(ethnicity.dat$ï..GISJOIN)
 
 ethnicity.shape.data <- merge(phx, ethnicity.dat, by.x="geoid2", by.y="GISJOIN", all.x=T)
 
@@ -543,9 +523,9 @@ phx$geoid2 <- paste0( "G", phx$STATEFP10,
                      "0", phx$TRACTCE10 )
 
 #Data
-URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/income.dashboard.dat.csv"
+income.URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/income.dashboard.dat.csv"
 
-income.dashboard <- read.csv( URL, stringsAsFactors=FALSE )
+income.dashboard <- read.csv( income.URL, stringsAsFactors=FALSE )
 
 phx2 <- geo_join( phx, income.dashboard, by_sp="geoid2", by_df="GISJOIN", how="left" )
 
@@ -655,7 +635,7 @@ Dataset {data-orientation=rows}
 
 ### NHGIS 1990,2000,2010 & ACS 2010, 2015
 
-This data table is a sample of the full dataset, including only those variables used in the narratives of this dashboard. Additionally, due to the size of the tidy dataset used in this dashboard, this is only the first 800 observations. For a full dataset, please visit ("link here"). 
+This data table is a sample of the full dataset, including only those variables used in the narratives of this dashboard. Additionally, due to the size of the tidy dataset used in this dashboard, this is only the first 800 observations. For a full dataset, please visit https://github.com/lecy/neighborhood_change_phx/tree/master/data. 
 
 ```{r, chunk-14, include=FALSE}
 dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/tidy.dashboard.dat.csv"
@@ -687,7 +667,7 @@ Variable Crosswalk {data-orientation=rows}
 
 ### Data Table Variable Names
 
-This data table includes the names of the different variables from 1990-2015. Notes that 1990, 2000, and 2010 are the variable names from the NHGIS time series data tables downloaded at ("link goes here"). The 2015 variable names are those used to download data from the ACS 5 using the censusapi() package ("link goes here").
+This data table includes the names of the different variables from 1990-2015. Notes that 1990, 2000, and 2010 are the variable names from the NHGIS time series data tables downloaded at https://www.nhgis.org/. The 2015 variable names are those used to download data from the ACS 5 using the censusapi() package (more info: https://github.com/hrecht/censusapi).
 
 ```{r, chunk-15, include=FALSE}
 
