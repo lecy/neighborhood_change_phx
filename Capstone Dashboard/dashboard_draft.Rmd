@@ -325,6 +325,10 @@ legend( "right", legend="Two Plus Races", fill="mediumblue",  box.lty=2, box.col
 
 * Note: This category did not exist on the 1990 census
 
+```{r}
+remove(list=ls())
+```
+
 Ethnicity {data-orientation=rows}
 =====================================     
 
@@ -405,7 +409,9 @@ hist(ethnicity.fortified$HispanicPercent_2015, col=rgb(255,127,80, alpha=50, max
 legend( "right", legend= c("Hispanic % 1990", "Hispanic % 2015"), fill=c("lightsalmon", rgb(255,127,80, alpha=50, maxColorValue = 255)),  box.lty=2, box.col="black")
 ```
 
-
+```{r}
+remove(list=ls())
+```
 
 Homes for Sale {data-orientation=rows}
 =====================================     
@@ -510,6 +516,9 @@ legend("center", c("Houses for Sale", "Houses Not for Sale"), fill=c("firebrick4
 
 ```
 
+```{r}
+remove(list=ls())
+```
 
 Income {data-orientation=rows}
 =====================================     
@@ -633,6 +642,9 @@ symbols(0, 0, circles = 1, add=TRUE, bg="white")
 legend("center", c("Below Poverty Level", "Highest Income", "All Others" ), fill=c("darkolivegreen1", "forestgreen","darkolivegreen3"), box.lty=0, bg=NULL)
 ```
 
+```{r}
+remove(list=ls())
+```
 
 Dataset {data-orientation=rows}
 =====================================     
