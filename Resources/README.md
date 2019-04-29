@@ -30,4 +30,5 @@ https://www.census.gov/data/tables/time-series/demo/income-poverty/historical-po
 (4/27/2019) Link to R Colors
 http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
 
-
+(4/29/2019) Moved Example Tutorial Dr. Lecy posted in the resource folder
+https://github.com/andrewbtran/NICAR/tree/master/2019/mapping
