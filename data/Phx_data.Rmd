@@ -1076,7 +1076,7 @@ geojson_write( phx.shape.data, file = "../shapefiles/phx.geojson" )
 
 #Convert to tidy data
 
-url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/phx.dashboard.dat.csv"
+url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/archive/phx.dashboard.dat.csv"
 dat <- read.csv( url, stringsAsFactors=F )
 
 dat <- gather(  dat, "var_name", "value", 5:71 )
