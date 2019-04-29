@@ -120,9 +120,19 @@ Total{data-orientation=columns}
 =====================================   
 
 ```{r global}
-URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/total.dat.2.csv"
+URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/total.dat.csv"
 
 total.dat <- read.csv( URL, stringsAsFactors=FALSE )
+```
+
+
+Inputs {.sidebar}
+------------------------------
+```{r}
+
+# shiny inputs defined here
+# Reactive function
+selectInput("clusterNum", label = "Check Year", choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected = "1990" )
 ```
 
 Column {data-width=500}
@@ -141,6 +151,23 @@ M <- c("1990","2000","2010","2015")
 barplot(H, names.arg=M, ylim=range(900000:1600000), xpd=FALSE, ylab="Population Growth",col="darksalmon", xlab="Year",
 
 main="Population Growth by Year",border="darksalmon")
+```
+
+### Total Population Count
+```{r}
+selectedData <- reactive({
+  total.dat[population, input$clusterNum]
+  })
+
+
+renderPlot({
+ ggplot(selectedData(), aes_string(x=input$clusterNum,
+                            y=total.dat$population)) +
+    geom_bar(stat="identity", fill="salmon",
+             position=position_dodge()) +
+    xlim(1980, 2025) +
+    theme_minimal()
+})
 ```
 
 ```{r}
