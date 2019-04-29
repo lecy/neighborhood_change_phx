@@ -102,6 +102,66 @@ This dashboard identifies four demographic changes to consider:
 * Total Phoenix Population from 1990-2015
   + Total population of Phoenix was considered because of the way the city and county have experienced growth in this time period. Specifically, the city of Phoenix grew from less than 990,000 residents in 1990 to over 1.5 million in 2015. Obviously this impacts the analysis, as the number of individuals living in the area of analysis grew by over 60% in this time period. As the city and county continue to grow, further analysis may be necessary to determine how the city changing as it grows.
 
+
+
+
+Total{data-orientation=columns}
+=====================================   
+
+```{r global}
+URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/total.dat.csv"
+
+total.dat <- read.csv( URL, stringsAsFactors=FALSE )
+```
+
+
+Inputs {.sidebar}
+------------------------------
+```{r}
+
+# shiny inputs defined here
+# Reactive function
+selectInput("clusterNum", label = "Check Year", choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected = "1990" )
+```
+
+Column {data-width=500}
+------------------------------
+
+### Total Population Count
+```{r}
+selectedData <- reactive({
+  total.dat[population, input$clusterNum]
+  })
+
+renderPlot({
+ ggplot(selectedData(), aes_string(x=input$clusterNum,
+                            y=total.dat$population)) +
+    geom_bar(stat="identity", fill="salmon",
+             position=position_dodge()) +
+    xlim(1980, 2025) +
+    theme_minimal()
+})
+```
+
+### Total Population Count
+
+```{r}
+# renderPlot
+
+H <- c(983403,1321045,1445632,1563025)
+
+M <- c("1990","2000","2010","2015")
+ 
+
+barplot(H, names.arg=M, ylim=range(900000:1600000), xpd=FALSE, ylab="Population Growth",col="darksalmon", xlab="Year",
+
+main="Population Growth by Year",border="darksalmon")
+```
+
+```{r}
+remove(list=ls())
+```
+
 Race {data-orientation=columns}
 =====================================     
 ```{r, include=FALSE}
@@ -264,9 +324,6 @@ legend( "right", legend="Two Plus Races", fill="mediumblue",  box.lty=2, box.col
 ```
 
 * Note: This category did not exist on the 1990 census
-```{r}
-remove(list=ls())
-```
 
 Ethnicity {data-orientation=rows}
 =====================================     
@@ -347,9 +404,7 @@ hist(ethnicity.fortified$HispanicPercent_1990,col=rgb(250,128,114, alpha=100, ma
 hist(ethnicity.fortified$HispanicPercent_2015, col=rgb(255,127,80, alpha=50, maxColorValue = 255), add=TRUE, breaks=50)
 legend( "right", legend= c("Hispanic % 1990", "Hispanic % 2015"), fill=c("lightsalmon", rgb(255,127,80, alpha=50, maxColorValue = 255)),  box.lty=2, box.col="black")
 ```
-```{r}
-remove(list=ls())
-```
+
 
 
 Homes for Sale {data-orientation=rows}
@@ -455,11 +510,6 @@ legend("center", c("Houses for Sale", "Houses Not for Sale"), fill=c("firebrick4
 
 ```
 
-
-
-```{r}
-remove(list=ls())
-```
 
 Income {data-orientation=rows}
 =====================================     
@@ -582,62 +632,7 @@ symbols(0, 0, circles = 1, add=TRUE, bg="white")
 
 legend("center", c("Below Poverty Level", "Highest Income", "All Others" ), fill=c("darkolivegreen1", "forestgreen","darkolivegreen3"), box.lty=0, bg=NULL)
 ```
-```{r}
-remove(list=ls())
-```
 
-
-Total{data-orientation=columns}
-=====================================   
-
-```{r global}
-URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/total.dat.csv"
-
-total.dat <- read.csv( URL, stringsAsFactors=FALSE )
-```
-
-
-Inputs {.sidebar}
-------------------------------
-```{r}
-
-# shiny inputs defined here
-# Reactive function
-selectInput("clusterNum", label = "Check Year", choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected = "1990" )
-```
-
-Column {data-width=500}
-------------------------------
-
-### Total Population Count
-
-```{r}
-# renderPlot
-
-H <- c(983403,1321045,1445632,1563025)
-
-M <- c("1990","2000","2010","2015")
- 
-
-barplot(H, names.arg=M, ylim=range(900000:1600000), xpd=FALSE, ylab="Population Growth",col="darksalmon", xlab="Year",
-
-main="Population Growth by Year",border="darksalmon")
-```
-
-### Total Population Count
-
-```{r}
-
-renderPlot({
-  hist(total.dat$population, 
-       xlab = "Total Population", main = "Population ")
-       })
-```
-
-
-```{r}
-remove(list=ls())
-```
 
 Dataset {data-orientation=rows}
 =====================================     
