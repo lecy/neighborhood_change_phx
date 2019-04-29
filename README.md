@@ -9,19 +9,11 @@ The Census API for 2015 data and select 2010 data, and the NHGIS time series dat
 
 
 # Sub-folder Descriptions:
-Capstone Dashboard
-- This folder holds the files used to create our Dashboard
-Resources
-- This folder contains links to resources we used throughout our project
-Background
-- This folder contains research on some of the studies and methodologies we have drawn upon
-Data
-- This folder contains all our data files used to create our Dashboard, including an archive folder of data files we created but didn't end up using in our Dashboard
-Docs
-- This folder contains files for the GitHub Pages Site
-Grades
-- This folder contains a ReadME of the criteria for a successful project
-Maps
-- This folder contains code for all our static maps used to determine our three narratives
-Shapefiles
-- This folder contains the shapefiles for our project
+- Capstone Dashboard: This folder holds the files used to create our Dashboard
+- Resources: This folder contains links to resources we used throughout our project
+- Background: This folder contains research on some of the studies and methodologies we have drawn upon
+- Data: This folder contains all our data files used to create our Dashboard, including an archive folder of data files we created but didn't end up using in our Dashboard
+- Docs: This folder contains files for the GitHub Pages Site
+- Grades: This folder contains a ReadME of the criteria for a successful project
+- Maps: This folder contains code for all our static maps used to determine our three narratives
+- Shapefiles: This folder contains the shapefiles for our project
