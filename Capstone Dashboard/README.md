@@ -2,3 +2,9 @@
 
 (4/22/2019) Moved previous dashboard shell to archive folder
 (4/22/2019) Uploaded new dashboard shell with static maps for analysis and attempted Shiny apps
+
+
+(4/25/2019 - 4/29/2019) Continued updates to the dashboard_draft.Rmd with static maps and attempted Shiny widget elements.
+
+(04/28/2019) First attempt at shiny.io
+
