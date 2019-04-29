@@ -182,6 +182,8 @@ dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/maste
 
 race.dat <- read.csv( dat.url, stringsAsFactors=F )
 
+race.dat$GISJOIN <- paste0(race.dat$ï..GISJOIN)
+
 race.shape.data <- merge(phx, race.dat, by.x="geoid2", by.y="GISJOIN", all.x=T)
 
 phx_fortified <- tidy( phx, region = "geoid2")
@@ -350,6 +352,8 @@ phx$geoid2 <- paste0( "G", phx$STATEFP10,
 dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/ethnicity.dashboard.dat.csv"
 
 ethnicity.dat <- read.csv( dat.url, stringsAsFactors=F )
+
+ethnicity.dat$GISJOIN <- paste0(ethnicity.dat$ï..GISJOIN)
 
 ethnicity.shape.data <- merge(phx, ethnicity.dat, by.x="geoid2", by.y="GISJOIN", all.x=T)
 
