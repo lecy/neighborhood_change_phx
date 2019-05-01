@@ -34,6 +34,7 @@ library(DT, quietly=TRUE)
 library(tigris, quietly=TRUE)
 library(shiny, quietly=TRUE)
 library(readr,quietly=TRUE)
+library(purrr, quietly=TRUE)
 
 ```
 
@@ -120,20 +121,28 @@ Total{data-orientation=columns}
 =====================================   
 
 ```{r global}
-URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/total.dat.csv"
-
-total.dat <- read.csv( URL, stringsAsFactors=FALSE )
+# URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/total.dat.csv"
+# total.dat <- read.csv( URL, stringsAsFactors=FALSE )
+H <- c(983403,1321045,1445632,1563025)
+M <- c("1990","2000","2010","2015")
+total.dat <- data.frame( year=M, population=H, stringsAsFactors=F )
 ```
 
 
 Inputs {.sidebar}
 ------------------------------
 ```{r}
-
 # shiny inputs defined here
 # Reactive function
-selectInput("clusterNum", label = "Check Year", choices = list("1990" = 1990, "2000" = 2000, "2010" = 2010, "2015" = 2015), selected = "1990" )
+selectInput( "clusterNum", 
+             label = "Check Year", 
+             choices = list( "1990"="1990", 
+                             "2000"="2000", 
+                             "2010"="2010", 
+                             "2015"="2015" ), 
+             selected = "1990" )
 ```
+
 
 Column {data-width=500}
 ------------------------------
@@ -141,37 +150,52 @@ Column {data-width=500}
 ### Total Population Count
 
 ```{r}
-# renderPlot
+setColor <- reactive({
+  bar.color <- ifelse( M == input$clusterNum, "steelblue", "darksalmon" )
+})
 
-H <- c(983403,1321045,1445632,1563025)
-
-M <- c("1990","2000","2010","2015")
- 
-
-barplot(H, names.arg=M, ylim=range(900000:1600000), xpd=FALSE, ylab="Population Growth",col="darksalmon", xlab="Year",
-
-main="Population Growth by Year",border="darksalmon")
+renderPlot({
+  
+  selected.color <- setColor()
+    
+  barplot( H, names.arg=M, 
+           col=selected.color, 
+           ylim=range(900000:1600000), 
+           xpd=FALSE, 
+           ylab="Population",
+           xlab="Year",
+           main="Population by Year",
+           border="darksalmon" )
+  
+})
 ```
 
+
 ### Total Population Count
+
+This is where the interactive shiny renderPlot will go.
+
 ```{r}
 selectedData <- reactive({
-  total.dat[population, input$clusterNum]
+  total.dat[ total.dat$year == input$clusterNum , ]
+  # FOR TESTING:
+  # total.dat <- total.dat[ total.dat$year == 1990 , ]
   })
 
 
 renderPlot({
- ggplot(selectedData(), aes_string(x=input$clusterNum,
-                            y=total.dat$population)) +
-    geom_bar(stat="identity", fill="salmon",
-             position=position_dodge()) +
-    xlim(1980, 2025) +
-    theme_minimal()
+  
+ dat.for.plot <- selectedData()
+  
+ ggplot( dat.for.plot,
+         aes_string( x=dat.for.plot$year,
+                     y=dat.for.plot$population) ) +
+    geom_bar( stat="identity", 
+              fill="salmon",
+             position=position_dodge() ) +
+    xlim( 1980, 2025 ) + theme_minimal()
+  
 })
-```
-
-```{r}
-remove(list=ls())
 ```
 
 Race {data-orientation=columns}
