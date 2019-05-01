@@ -32,3 +32,6 @@ http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf
 
 (4/29/2019) Moved Example Tutorial Dr. Lecy posted in the resource folder
 https://github.com/andrewbtran/NICAR/tree/master/2019/mapping
+
+(05/01/2019) Helpful ggplot bar chart blog post 
+https://www.r-bloggers.com/detailed-guide-to-the-bar-chart-in-r-with-ggplot/
