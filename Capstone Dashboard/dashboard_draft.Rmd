@@ -9,36 +9,15 @@ output:
 runtime: shiny
 ---
 
-```{r setup, chunk-1, include=FALSE, cache=FALSE}
+```{r setup, chunk-1, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
-library(flexdashboard)
-library(knitr, quietly=TRUE)
-library(dplyr, quietly=TRUE)
-library(pander, quietly=TRUE)
-library(devtools, quietly=TRUE)
-library(censusapi, quietly=TRUE)
-library(maptools, quietly=TRUE)
-library(rgdal, quietly=TRUE)
-library(geojsonio, quietly=TRUE)
-library(rmapshaper, quietly=TRUE)
-library(sf, quietly=TRUE)
-library(ggplot2, quietly=TRUE)
-library(tidyr, quietly=TRUE)
-library(viridis, quietly=TRUE)
-library(gridExtra, quietly=TRUE)
-library(leaflet, quietly=TRUE )
-library(sp, quietly=TRUE)
-library(broom, quietly=TRUE)
-library(DT, quietly=TRUE)
-library(tigris, quietly=TRUE)
-library(shiny, quietly=TRUE)
-library(readr,quietly=TRUE)
-library(purrr, quietly=TRUE)
+library(flexdashboard, quietly=TRUE)
+
 
 ```
 
-```{r, chunk-2, include=FALSE, cache=FALSE}
+```{r, chunk-2, include=FALSE}
 # Import Shapefile
 
 download.file( "https://github.com/lecy/neighborhood_change_phx/raw/master/shapefiles/tl_2010_04013_tract10.zip", 
@@ -75,6 +54,7 @@ plot(phx)
 
 ```{r}
 plot(phx, xlim=c(-112.5, -111.5), ylim=c(33.2, 33.75) )
+remove(list=ls())
 ```
 
 Column {data-width=600}
@@ -121,10 +101,12 @@ Total{data-orientation=columns}
 =====================================   
 
 ```{r global}
+library(shiny)
+library(flexdashboard)
 # URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/total.dat.csv"
 # total.dat <- read.csv( URL, stringsAsFactors=FALSE )
 H <- c(983403,1321045,1445632,1563025)
-M <- c("1990","2000","2010","2015")
+M <- c(1990,2000,2010,2015)
 total.dat <- data.frame( year=M, population=H, stringsAsFactors=F )
 ```
 
@@ -136,15 +118,15 @@ Inputs {.sidebar}
 # Reactive function
 selectInput( "clusterNum", 
              label = "Check Year", 
-             choices = list( "1990"="1990", 
-                             "2000"="2000", 
-                             "2010"="2010", 
-                             "2015"="2015" ), 
+             choices = list( "1990"=1990, 
+                             "2000"=2000, 
+                             "2010"=2010, 
+                             "2015"=2015 ), 
              selected = "1990" )
 ```
 
 
-Column {data-width=500}
+outputs
 ------------------------------
 
 ### Total Population Count
@@ -201,6 +183,27 @@ renderPlot({
 Race {data-orientation=columns}
 =====================================     
 ```{r, include=FALSE}
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+library(leaflet, quietly=TRUE )
+library(sp, quietly=TRUE)
+library(broom, quietly=TRUE)
+library(DT, quietly=TRUE)
+library(tigris, quietly=TRUE)
+library(readr,quietly=TRUE)
+library(purrr, quietly=TRUE)
 download.file( "https://github.com/lecy/neighborhood_change_phx/raw/master/shapefiles/tl_2010_04013_tract10.zip", 
 "maricopa-az-census_tract10.zip" )
 unzip( "maricopa-az-census_tract10.zip" )
@@ -745,3 +748,5 @@ phx.var.datatable
 ```{r}
 remove(list=ls())
 ```
+
+
