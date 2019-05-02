@@ -233,7 +233,7 @@ Row {.tabset .tabset-fade}
 -----------------------------------------------------------------------
 
 
-###Dot Map Race 1990
+### Dot Map Race 1990
 ```{r, include=FALSE}
 
 #Data
@@ -305,7 +305,7 @@ legend( "bottomleft", legend= c("White", "Black", "Native American", "Asian", "P
 Row {.tabset .tabset-fade}
 ---------------------------------
 
-###White
+### White
 
 ```{r}
 hist(race.dashboard$White_1990, xpd=FALSE, col=rgb(178,34,34, alpha=100, maxColorValue = 178), xlab="White Population Counts",main="Histograms for\n White Popluation in 1990 and 2015", breaks=40,  ylim=range(0:100))
@@ -313,7 +313,7 @@ hist(race.dashboard$White_2015,col=rgb(170,30,30, alpha=100, maxColorValue = 170
 legend( "right", legend= c("White 1990", "White 2015"), fill=c("firebrick",rgb(170,30,30, alpha=100, maxColorValue = 170)), box.lty=2, box.col="black")
 ```
 
-###Black
+### Black
 ```{r}
 hist(race.dashboard$Black_1990, xpd=FALSE, col=rgb(184,134,11, alpha=100, maxColorValue = 184), xlab="Black Population Counts",main="Histograms for\n Black Popluation in 1990 and 2015", breaks=30,  ylim=range(0:150))
 hist(race.dashboard$Black_2015,col=rgb(175,130,9, alpha=100, maxColorValue = 175), add=TRUE, breaks=30)
@@ -321,7 +321,7 @@ legend( "right", legend= c("Black 1990", "Black 2015"), fill=c("goldenrod2", rgb
 ```
 
 
-###Native American
+### Native American
 
 ```{r}
 hist(race.dashboard$NativeAmAlaskan_1990, xpd=FALSE, col="forestgreen", xlab="Native American Population Counts",main="Histograms for\n Native American Popluation in 1990 and 2015", breaks=30, ylim=range(0:40))
@@ -330,7 +330,7 @@ legend( "right", legend= c("Native American 1990", "Native American 2015"), fill
 ```
 
 
-###Asian
+### Asian
 
 ```{r}
 hist(race.dashboard$Asian_1990, xpd=FALSE, col=rgb(148,0,211, alpha=100, maxColorValue = 211), xlab="Asian Population Counts",main="Histograms for\n Asian Popluation in 1990 and 2015", breaks=50, ylim=range(0:150))
@@ -338,7 +338,7 @@ hist(race.dashboard$Asian_2015,col=rgb(140,0,200, alpha=100, maxColorValue = 200
 legend( "right", legend= c("Asian 1990", "Asian 2015"), fill=c("darkviolet", rgb(140,0,200, alpha=100, maxColorValue = 200)),  box.lty=2, box.col="black")
 ```
 
-###Pacific Islander
+### Pacific Islander
 
 
 ```{r}
@@ -347,7 +347,7 @@ hist(race.dashboard$PacificIslander_2015, col=rgb(245,20,140, alpha=100, maxColo
 legend( "right", legend= c("Pacific Islander 1990", "Pacific Islander 2015"), fill=c("deeppink", rgb(245,20,140, alpha=100, maxColorValue = 245)),  box.lty=2, box.col="black")
 ```
 
-###Some other race
+### Some other race
 
 ```{r}
 hist(race.dashboard$SomeOther_1990, xpd=FALSE, col=rgb(0,139,139, alpha=100, maxColorValue = 139), xlab="Some Other Race Population Counts", main="Histograms for\n Some Other Race Popluation in 1990 and 2015", breaks=40, ylim=range(0:75))
@@ -355,7 +355,7 @@ hist(race.dashboard$OtherRace_2015, col=rgb(102,205,170, alpha=100, maxColorValu
 legend( "right", legend= c("Some Other Race 1990", "Some Other Race 2015"), fill=c("darkturquoise", "paleturquoise"),  box.lty=2, box.col="black")
 ```
 
-###Two or more
+### Two or more
 
 ```{r}
 
@@ -448,7 +448,6 @@ legend( "right", legend= c("Hispanic % 1990", "Hispanic % 2015"), fill=c("lights
 
 Homes for Sale {data-orientation=rows}
 =====================================     
-For Sale
 ```{r, include=FALSE}
 #Data
 download.file( "https://github.com/lecy/neighborhood_change_phx/raw/master/shapefiles/tl_2010_04013_tract10.zip", 
