@@ -28,7 +28,7 @@ As the video below shows, Phoenix is a growing, diverse, and vibrant city. Howev
 
 ### About Us
 
-If you'd like to know more about the developers of this project, see more about us. [link](about.html)
+If you'd like to know more about the developers of this project, see more [about us](about.html).
 
 ### Data Steps
 
