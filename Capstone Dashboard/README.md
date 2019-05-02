@@ -12,3 +12,9 @@
 
 (5/2/2019) Uploaded peda_capstone_2019.Rmd
 
+### The files in this folder include the dashboard R Markdown and the necessary shapefiles. 
+
+peda_capstone_2019.Rmd is the dashboard in a Markdown file
+
+All other files are elements of shapefiles
+
