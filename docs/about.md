@@ -9,4 +9,3 @@ Abby began learning R in January 2018. Her educational background is in Psycholo
 
 Kendelle began learning R in the Fall Semester of 2018. Her educational background is in Sociology and Social Work. Kendelle currently works as a Program Coordinator for Opportunities for Youth, an initiative under the Center of Human Capital and Youth Development at the Watts College of Public Service and Community Solutions. She hopes to use her data skillset to inform and create a more just and equitable society. She can be reached at kendelle.brown@asu.edu. Her LinkedIn page is https://www.linkedin.com/in/kendelle-b-493815149/.
 
-Anthony began learning R in 
