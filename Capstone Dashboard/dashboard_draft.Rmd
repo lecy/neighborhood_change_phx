@@ -47,7 +47,6 @@ unzip( "maricopa-az-census_tract10.zip" )
 file.remove( "maricopa-az-census_tract10.zip" )
 dir()
 
-library( rgdal )
 phx <- readOGR("tl_2010_04013_tract10.shp")
 head( phx@data, 10)
 plot( phx )
@@ -211,7 +210,6 @@ unzip( "maricopa-az-census_tract10.zip" )
 file.remove( "maricopa-az-census_tract10.zip" )
 dir()
 
-library( rgdal )
 phx <- readOGR("tl_2010_04013_tract10.shp")
 phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
 phx$geoid2 <- paste0( "G", phx$STATEFP10, 
@@ -365,9 +363,6 @@ legend( "right", legend="Two Plus Races", fill="mediumblue",  box.lty=2, box.col
 
 * Note: This category did not exist on the 1990 census
 
-```{r}
-remove(list=ls())
-```
 
 Ethnicity {data-orientation=rows}
 =====================================     
@@ -379,7 +374,6 @@ unzip( "maricopa-az-census_tract10.zip" )
 file.remove( "maricopa-az-census_tract10.zip" )
 dir()
 
-library( rgdal )
 phx <- readOGR("tl_2010_04013_tract10.shp")
 phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
 
@@ -449,9 +443,6 @@ hist(ethnicity.fortified$HispanicPercent_2015, col=rgb(255,127,80, alpha=50, max
 legend( "right", legend= c("Hispanic % 1990", "Hispanic % 2015"), fill=c("lightsalmon", rgb(255,127,80, alpha=50, maxColorValue = 255)),  box.lty=2, box.col="black")
 ```
 
-```{r}
-remove(list=ls())
-```
 
 Homes for Sale {data-orientation=rows}
 =====================================     
@@ -556,9 +547,6 @@ legend("center", c("Houses for Sale", "Houses Not for Sale"), fill=c("firebrick4
 
 ```
 
-```{r}
-remove(list=ls())
-```
 
 Income {data-orientation=rows}
 =====================================     
@@ -570,7 +558,6 @@ unzip( "maricopa-az-census_tract10.zip" )
 file.remove( "maricopa-az-census_tract10.zip" )
 dir()
 
-library( rgdal )
 phx <- readOGR("tl_2010_04013_tract10.shp")
 phx <- spTransform( phx, CRS("+proj=longlat +datum=WGS84") )
 
@@ -682,9 +669,6 @@ symbols(0, 0, circles = 1, add=TRUE, bg="white")
 legend("center", c("Below Poverty Level", "Highest Income", "All Others" ), fill=c("darkolivegreen1", "forestgreen","darkolivegreen3"), box.lty=0, bg=NULL)
 ```
 
-```{r}
-remove(list=ls())
-```
 
 Dataset {data-orientation=rows}
 =====================================     
@@ -714,9 +698,7 @@ dat.selected.table <- datatable( table.dat,
 dat.selected.table
 
 ```
-```{r}
-remove(list=ls())
-```
+
 Variable Crosswalk {data-orientation=rows}
 =====================================     
    
@@ -746,8 +728,6 @@ phx.var.datatable <- datatable( phx.var.crosswalk,
 ```{r}
 phx.var.datatable
 ```
-```{r}
-remove(list=ls())
-```
+
 
 
