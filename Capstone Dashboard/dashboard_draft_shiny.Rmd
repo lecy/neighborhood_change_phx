@@ -151,14 +151,15 @@ Column {data-width=500}
 
 ```{r}
 setColor <- reactive({
-  bar.color <- ifelse( M == input$clusterNum, "steelblue", "darksalmon" )
+  bar.color <- ifelse( total.dat$year == input$clusterNum, "steelblue", "darksalmon" )
 })
 
 renderPlot({
   
   selected.color <- setColor()
     
-  barplot( H, names.arg=M, 
+  barplot( total.dat$population, 
+           names.arg=total.dat$year, 
            col=selected.color, 
            ylim=range(900000:1600000), 
            xpd=FALSE, 
@@ -166,7 +167,6 @@ renderPlot({
            xlab="Year",
            main="Population by Year",
            border="darksalmon" )
-  
 })
 ```
 
