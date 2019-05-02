@@ -1,4 +1,10 @@
 
+# Shapefiles Folder
+
+This folder contains the shapefiles used for this project, the GeoJsons created as a part of this project, and the Zipped files of other shapefiles that were not used in this project but could be used in future analyses dependent on the year being analyzed.
+
+# Helpful Code
+
 ## Load GeoJSON Shapefile From GitHub
 
 Once GeoJson files are created, they can be loaded directly from GitHub:
