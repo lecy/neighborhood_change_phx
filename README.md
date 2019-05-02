@@ -1,6 +1,6 @@
 # PEDA Capstone: Neighborhood Change Phoenix
 
-This project is an analysis of Phoenix demographic data changes from 1990-2015 indicating potential neighborhood change. It was done as the Capstone Project for students in the Master of Program Evaluation and Data Analytics Program through the Watts College of Public Service and Community Solutions at ASU.
+This project is an analysis of Phoenix demographic data changes from 1990-2015 indicating potential neighborhood change. It was done as the Capstone Project for students in the Master of Program Evaluation and Data Analytics Program through the Watts College of Public Service and Community Solutions at ASU. The analysis from this project is diplayed on a dashboard that can be found at [link](https://capstone-2019.shinyapps.io/PEDA_Capstone_2019/).
 
 The overall goal of this project is to highlight Phoenix demographic data changes from 1990-2015. Another goal of this project is to layout all the steps of this project so that others are able to replicate the project and produce the same results. 
 
