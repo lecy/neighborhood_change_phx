@@ -202,7 +202,7 @@ renderPlot({
 })
 ```
 
-Race {data-orientation=columns}
+Race {data-orientation=rows}
 =====================================     
 ```{r, include=FALSE}
 
@@ -229,7 +229,7 @@ phx_fortified <- tidy( phx, region = "geoid2")
 race.fortified <- merge( phx_fortified, race.dat, by.x="id", by.y="GISJOIN", all.x=T)
 ```
 
-Column {data-width=400}
+Row {.tabset .tabset-fade}
 -----------------------------------------------------------------------
 
 
@@ -683,7 +683,7 @@ This data table is a sample of the full dataset, including only those variables 
 dat.url <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/tidy.dashboard.dat.csv"
 table.dat <- read.csv( dat.url, stringsAsFactors=F )
 
-table.dat <- table.dat[1:800,]
+table.dat <- table.dat[1:1600,]
 
 dat.selected.table <- datatable( table.dat,
            filter='top', rownames=FALSE, 
