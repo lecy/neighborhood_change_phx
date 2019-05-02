@@ -35,6 +35,7 @@ library(tigris, quietly=TRUE)
 library(readr,quietly=TRUE)
 library(purrr, quietly=TRUE)
 library(shiny, quietly=TRUE)
+library(mapproj, quietly=TRUE )
 
 rsconnect::setAccountInfo(name='capstone-2019',
 			  token='42374D46DF80838E3A170E7C68111248',
