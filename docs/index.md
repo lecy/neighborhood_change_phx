@@ -29,7 +29,7 @@ As the video below shows, Phoenix is a growing, diverse, and vibrant city. Howev
 
 ### About Us
 
-If you'd like to know more about the developers of this project, see more [about us](about.html).
+If you'd like to know more about the developers of this project, see more [about us](about.html). This project was done under the open science framework, so all code is included in our Github as well as all raw data, data sources, and Markdown files of analyses.
 
 ### Data Steps
 
