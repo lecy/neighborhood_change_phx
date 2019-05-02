@@ -20,9 +20,26 @@ All of the data is available in this folder- including raw data files that were 
 
 * Variable_lists- lists of variable names saved as .csv files to allow for Census API data downloads
 
-The files in this folder include:
+### The files in this folder include:
 
-Phx_data- this is the R Markdown that includes all necessary data renames, combinations, altercations, and static map build outs using ACS 5 and NHGIS time series data
+* NHGIS_data_rename.csv- this csv file is the renamed variables for the NHGIS data
+
+* NHGIS-data_rename1- this is a data rename file as well
+
+* Phx_data.Rmd- this is the R Markdown that includes all necessary data renames, combinations, altercations, and static map build outs using ACS 5 and NHGIS time series data
+
+* Phx_data.html- this is an html version of the Phx_data.Rmd
+
+* ethnicity.dashboard.dat.2.csv- this is the data file used in the Ethnicity tab of the Capstone Dashboard
+* income.dashboard.dat.2.csv- this is the data file used in the Income tab of the Capstone Dashboard
+* phx.combined.data.csv- this csv is a full data set of all data collected in this project from ACS and NHGIS, as well as shapefile data
+* phx.dat.csv- this is the data for this project from ACS and NHGIS without shapefile data
+* phx.geojson - this is the GeoJson of the phx.combined.dat.csv file
+* phx.variable.name.crosswalk.2.csv- this is the crosswalk of variable names from ACS 5 and NHGIS data used in this project
+* race.dashboard.dat.2.csv- this is the data file used in the Race tab of the Capstone Dashboard
+* tidy.dashboard.dat.csv- this is the data file used in the Dataset tab of the Capstone Dashboard
+* total.dat.2.csv- this is the data file used in the Total tab of the Capstone Dashboard pulled from Phoenix.gov
+* vacancy.dashboard.dat.2.csv- this is the data file used in the Vacancy tab of the Capstone Dashboard* 
 
 ## Build Project Database
 
