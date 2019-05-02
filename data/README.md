@@ -10,15 +10,15 @@ The NHGIS time series data tables were downloaded in April 2019 through https://
 
 All of the data is available in this folder- including raw data files that were not used for this project.
 
-The sub-folders include:
+### The sub-folders include:
 
-Archive- all data files and R Markdown files that were not used in the final project
+* Archive- all data files and R Markdown files that were not used in the final project
 
-Raw- all raw data files, excluding shapefiles
+* Raw- all raw data files, excluding shapefiles
 
-Crosswalk- all crosswalk data
+* Crosswalk- all crosswalk data
 
-Variable_lists- lists of variable names saved as .csv files to allow for Census API data downloads
+* Variable_lists- lists of variable names saved as .csv files to allow for Census API data downloads
 
 The files in this folder include:
 
