@@ -13,6 +13,27 @@ runtime: shiny
 knitr::opts_chunk$set(echo = FALSE)
 
 library(flexdashboard, quietly=TRUE)
+library(knitr, quietly=TRUE)
+library(dplyr, quietly=TRUE)
+library(pander, quietly=TRUE)
+library(devtools, quietly=TRUE)
+library(censusapi, quietly=TRUE)
+library(maptools, quietly=TRUE)
+library(rgdal, quietly=TRUE)
+library(geojsonio, quietly=TRUE)
+library(rmapshaper, quietly=TRUE)
+library(sf, quietly=TRUE)
+library(ggplot2, quietly=TRUE)
+library(tidyr, quietly=TRUE)
+library(viridis, quietly=TRUE)
+library(gridExtra, quietly=TRUE)
+library(leaflet, quietly=TRUE )
+library(sp, quietly=TRUE)
+library(broom, quietly=TRUE)
+library(DT, quietly=TRUE)
+library(tigris, quietly=TRUE)
+library(readr,quietly=TRUE)
+library(purrr, quietly=TRUE)
 
 
 ```
@@ -54,7 +75,7 @@ plot(phx)
 
 ```{r}
 plot(phx, xlim=c(-112.5, -111.5), ylim=c(33.2, 33.75) )
-remove(list=ls())
+
 ```
 
 Column {data-width=600}
@@ -102,7 +123,7 @@ Total{data-orientation=columns}
 
 ```{r global}
 library(shiny)
-library(flexdashboard)
+
 # URL <- "https://raw.githubusercontent.com/lecy/neighborhood_change_phx/master/data/total.dat.csv"
 # total.dat <- read.csv( URL, stringsAsFactors=FALSE )
 H <- c(983403,1321045,1445632,1563025)
@@ -126,7 +147,7 @@ selectInput( "clusterNum",
 ```
 
 
-outputs
+Outputs
 ------------------------------
 
 ### Total Population Count
@@ -183,27 +204,7 @@ renderPlot({
 Race {data-orientation=columns}
 =====================================     
 ```{r, include=FALSE}
-library(knitr, quietly=TRUE)
-library(dplyr, quietly=TRUE)
-library(pander, quietly=TRUE)
-library(devtools, quietly=TRUE)
-library(censusapi, quietly=TRUE)
-library(maptools, quietly=TRUE)
-library(rgdal, quietly=TRUE)
-library(geojsonio, quietly=TRUE)
-library(rmapshaper, quietly=TRUE)
-library(sf, quietly=TRUE)
-library(ggplot2, quietly=TRUE)
-library(tidyr, quietly=TRUE)
-library(viridis, quietly=TRUE)
-library(gridExtra, quietly=TRUE)
-library(leaflet, quietly=TRUE )
-library(sp, quietly=TRUE)
-library(broom, quietly=TRUE)
-library(DT, quietly=TRUE)
-library(tigris, quietly=TRUE)
-library(readr,quietly=TRUE)
-library(purrr, quietly=TRUE)
+
 download.file( "https://github.com/lecy/neighborhood_change_phx/raw/master/shapefiles/tl_2010_04013_tract10.zip", 
 "maricopa-az-census_tract10.zip" )
 unzip( "maricopa-az-census_tract10.zip" )
