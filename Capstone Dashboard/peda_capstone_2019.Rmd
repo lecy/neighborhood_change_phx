@@ -253,7 +253,7 @@ NativeAmAlaskan_1990 <- dotsInPolys( phx2 , race.dashboard$NativeAmAlaskan_1990/
 
 Asian_1990 <- dotsInPolys( phx2 , race.dashboard$Asian_1990/100, f = "random", offset, compatible = FALSE)
 
-NHPI_1990 <- dotsInPolys( phx2 , race.dashboard$NHPI_1990/1, f = "random", offset, compatible = FALSE)
+NHPI_1990 <- dotsInPolys( phx2 , race.dashboard$NHPI_1990/45, f = "random", offset, compatible = FALSE)
 
 SomeOther_1990 <- dotsInPolys( phx2 , race.dashboard$SomeOther_1990/100, f = "random", offset, compatible = FALSE)
 ```
@@ -265,9 +265,9 @@ points( White_1990, col=adjustcolor("firebrick", alpha.f=0.2), pch=19, cex=0.7 )
 points( Black_1990, col=adjustcolor("darkgoldenrod2", alpha.f=0.2), pch=19, cex=0.7 )
 points( NativeAmAlaskan_1990, col=adjustcolor("forestgreen", alpha.f=0.2), pch=19, cex=0.7 )
 points( Asian_1990, col=adjustcolor("darkviolet", alpha.f=0.2), pch=19, cex=0.7 )
-points( NHPI_1990, col=adjustcolor("deeppink4", alpha.f=0.2), pch=19, cex=0.7 )
+points( NHPI_1990, col=adjustcolor("pink", alpha.f=0.2), pch=19, cex=0.7 )
 points( SomeOther_1990, col=adjustcolor("darkslategray3", alpha.f=0.2), pch=19, cex=0.7 ) 
-legend( "bottomleft", legend= c("White", "Black", "Native American", "Asian", "Pacific Islander", "Some Other Race"), fill=c("firebrick", "goldenrod2", "forestgreen", "darkviolet", "deeppink4", "darkslategray3"), title="Races", box.lty=2, box.col="black", bg="white" )
+legend( "bottomleft", legend= c("White", "Black", "Native American", "Asian", "Pacific Islander", "Some Other Race"), fill=c("firebrick", "goldenrod2", "forestgreen", "darkviolet", "pink", "darkslategray3"), title="Races", box.lty=2, box.col="black", bg="white" )
 ```
 
 
@@ -281,7 +281,7 @@ AmericanIndian_2015 <- dotsInPolys( phx2 , race.dashboard$AmericaIndian_2015/100
 
 Asian_2015 <- dotsInPolys( phx2 , race.dashboard$Asian_2015/100, f = "random", offset, compatible = FALSE)
 
-PacificIslander_2015 <- dotsInPolys( phx2 , race.dashboard$PacificIslander_2015/1, f = "random", offset, compatible = FALSE)
+PacificIslander_2015 <- dotsInPolys( phx2 , race.dashboard$PacificIslander_2015/100, f = "random", offset, compatible = FALSE)
 
 OtherRace_2015 <- dotsInPolys( phx2 , race.dashboard$OtherRace_2015/100, f = "random", offset, compatible = FALSE)
 
@@ -296,10 +296,10 @@ points( White_2015, col=adjustcolor("firebrick", alpha.f=0.2), pch=19, cex=0.7 )
 points( Black_2015, col=adjustcolor("darkgoldenrod2", alpha.f=0.2), pch=19, cex=0.7 )
 points( AmericanIndian_2015, col=adjustcolor("forestgreen", alpha.f=0.2), pch=19, cex=0.7 )
 points( Asian_2015, col=adjustcolor("darkviolet", alpha.f=0.2), pch=19, cex=0.7 )
-points( PacificIslander_2015, col=adjustcolor("deeppink4", alpha.f=0.2), pch=19, cex=0.7 )
+points( PacificIslander_2015, col=adjustcolor("pink", alpha.f=0.2), pch=19, cex=0.7 )
 points( OtherRace_2015, col=adjustcolor("darkslategray3", alpha.f=0.2), pch=19, cex=0.7 )
 points( TwoPlusRaces_2015, col=adjustcolor("blue", alpha.f=0.2), pch=19, cex=0.7 )
-legend( "bottomleft", legend= c("White", "Black", "Native American", "Asian", "Pacific Islander", "Some Other Race", "Two Plus Races"), fill=c("firebrick", "goldenrod2", "forestgreen", "darkviolet", "deeppink4", "darkslategray3", "blue"), title="Races", box.lty=2, box.col="black", bg="white" )
+legend( "bottomleft", legend= c("White", "Black", "Native American", "Asian", "Pacific Islander", "Some Other Race", "Two Plus Races"), fill=c("firebrick", "goldenrod2", "forestgreen", "darkviolet", "pink", "darkslategray3", "blue"), title="Races", box.lty=2, box.col="black", bg="white" )
 ```
   
 Row {.tabset .tabset-fade}
