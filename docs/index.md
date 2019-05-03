@@ -3,11 +3,13 @@
 This project is an analysis of Phoenix demographic data changes from 1990-2015 indicating potential neighborhood change. It was done as the Capstone project for students in the Master of Program Evaluation and Data Analytics Program through the Watts College of Public Service and Community Solutions at ASU. The data used is from the U.S. Census, specifically tables sf3 (1990, 2000, 2010) and acs5 (2010 and 2015). 
 
 The primary changes this project tracked were:
-* race
-* ethnicity
-* housing sales
-* income 
-* total population growth
+
+* total population growth  
+* race  
+* ethnicity 
+* income   
+* housing sales  
+ 
 
 These concepts were chosen for one of two reasons: either the amount of change in the time period or the importance to the lives of Maricopa County citizens. Race, ethnicity, and housing sales were selected for the amount of change. Income and population growth were chosen for their importance to the citizens of Maricopa County. More description of what these analyses contained can be found in the Dashboard.
 
