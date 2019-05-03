@@ -253,7 +253,7 @@ NativeAmAlaskan_1990 <- dotsInPolys( phx2 , race.dashboard$NativeAmAlaskan_1990/
 
 Asian_1990 <- dotsInPolys( phx2 , race.dashboard$Asian_1990/100, f = "random", offset, compatible = FALSE)
 
-NHPI_1990 <- dotsInPolys( phx2 , race.dashboard$NHPI_1990/1, f = "random", offset, compatible = FALSE)
+NHPI_1990 <- dotsInPolys( phx2 , race.dashboard$NHPI_1990/25, f = "random", offset, compatible = FALSE)
 
 SomeOther_1990 <- dotsInPolys( phx2 , race.dashboard$SomeOther_1990/100, f = "random", offset, compatible = FALSE)
 ```
@@ -281,7 +281,7 @@ AmericanIndian_2015 <- dotsInPolys( phx2 , race.dashboard$AmericaIndian_2015/100
 
 Asian_2015 <- dotsInPolys( phx2 , race.dashboard$Asian_2015/100, f = "random", offset, compatible = FALSE)
 
-PacificIslander_2015 <- dotsInPolys( phx2 , race.dashboard$PacificIslander_2015/1, f = "random", offset, compatible = FALSE)
+PacificIslander_2015 <- dotsInPolys( phx2 , race.dashboard$PacificIslander_2015/25, f = "random", offset, compatible = FALSE)
 
 OtherRace_2015 <- dotsInPolys( phx2 , race.dashboard$OtherRace_2015/100, f = "random", offset, compatible = FALSE)
 
