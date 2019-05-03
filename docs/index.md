@@ -22,7 +22,10 @@ Phoenix is a growing, diverse, and vibrant city. However, this project takes a s
 # Dashboard
 
 The primary deliverable of this project is an interactive Dashboard built through the flexdashboard package using R Shiny. Please feel free to explore, see what you can learn from our project, and build upon our analyses.
-[Dashboard link](https://ahenderson.shinyapps.io/PEDA_Capstone_2019/)
+
+[**PHX Demographics Dashboard**](https://ahenderson.shinyapps.io/PEDA_Capstone_2019/)
+
+
 
 ### Audience
 
