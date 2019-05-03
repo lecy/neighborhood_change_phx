@@ -31,13 +31,14 @@ One goal of this project is that it will further help Phoenix residents delineat
 The analysis from this project is diplayed on a dashboard that can be found at [link](https://ahenderson.shinyapps.io/PEDA_Capstone_2019//). It is separated by tabs for each concept. The final two tabs are datasets- one of the data used in the dashboard, and a second of the variable names from 1990-2015 for these variable levels in the Census data.
 
 
-### About Us
-
-If you'd like to know more about the developers of this project, see more [about us](about.html). This project was done under the open science framework, so all code is included in our Github as well as all raw data, data sources, and Markdown files of analyses.
-
 ### Data Steps
 
 And here is a [link](data-steps.html) to an HTML file that describes our datasets and the steps we took to prepare the data for analysis. The source code of the dashboard can be pulled directly from that link.
+
+
+# About Us
+
+If you'd like to know more about the developers of this project, see more [about us](about.html). This project was done under the open science framework, so all code is included in our Github as well as all raw data, data sources, and Markdown files of analyses.
 
 ### Thank You!
 
