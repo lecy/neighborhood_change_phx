@@ -28,7 +28,7 @@ The primary deliverable of this project is an interactive Dashboard built throug
 
 Please feel free to explore, see what you can learn from our project, and build upon our analyses.
 
-[**PHX Demographics Dashboard**](https://ahenderson.shinyapps.io/PEDA_Capstone_2019/)
+[ ![dashboard](img/dash-preview.png) ](https://ahenderson.shinyapps.io/PEDA_Capstone_2019/)
 
 ### Data Sources
 
