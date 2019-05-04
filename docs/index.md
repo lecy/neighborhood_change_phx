@@ -24,9 +24,10 @@ Phoenix is a growing, diverse, and vibrant city. However, this project takes a s
 
 # Dashboard Implementation
 
-The primary deliverable of this project is an interactive Dashboard built through the flexdashboard package using R Shiny. It is separated by tabs for each concept. The final two tabs are datasets- one of the data used in the dashboard, and a second of the variable names from 1990-2015 for these variable levels in the Census data.
+The primary deliverable of this project is an interactive Dashboard built through the flexdashboard package using R Shiny. Please feel free to explore, see what you can learn from our project, and build upon our analyses.
 
-Please feel free to explore, see what you can learn from our project, and build upon our analyses.
+The dashboard is organized by tabs for each concept. The final two tabs display datasets - one of the data used in the dashboard, and a second of the variable names from 1990-2015 for these variable levels in the Census data.
+
 
 [ ![dashboard](img/dash-preview.png) ](https://ahenderson.shinyapps.io/PEDA_Capstone_2019/)
 
@@ -34,7 +35,7 @@ Please feel free to explore, see what you can learn from our project, and build 
 
 ### Data Steps
 
-And here is a [link](data-steps.html) to an HTML file that describes our datasets and the steps we took to prepare the data for analysis. The source code of the dashboard can be pulled directly from that link.
+And here is a [link](phx-data-steps.html) to an HTML file that describes our datasets and the steps we took to prepare the data for analysis. The source code of the dashboard can be pulled directly from that link.
 
 ### Implementation
 
