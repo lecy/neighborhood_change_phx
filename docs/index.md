@@ -31,15 +31,10 @@ The dashboard is organized by tabs for each concept. The final two tabs display 
 
 [ ![dashboard](img/dash-preview.png) ](https://ahenderson.shinyapps.io/PEDA_Capstone_2019/)
 
-### Data Sources
-
 ### Data Steps
 
 And here is a [link](phx-data-steps.html) to an HTML file that describes our datasets and the steps we took to prepare the data for analysis. The source code of the dashboard can be pulled directly from that link.
 
-### Implementation
-
-### Insights
 
 
 # About Us
