@@ -24,7 +24,7 @@ If you are new to Census data, you will find an overview of some concepts like d
 
 [https://www.census.gov/data/academy/courses/choroplethr.html](https://www.census.gov/data/academy/courses/choroplethr.html)
 
-This project uses the Census API package in R:
+This project uses the Census API package ("censusapi") in R:
 
 [https://cran.r-project.org/web/packages/censusapi/vignettes/getting-started.html](https://cran.r-project.org/web/packages/censusapi/vignettes/getting-started.html)
 
