@@ -8,7 +8,7 @@ Data sources for this project include:
 The Census API for 2015 data and select 2010 data, and the NHGIS time series data tables for 1990, 2000, and select 2010 data retrieved from https://www.nhgis.org/. 
 
 
-# Sub-folder Descriptions:
+## Sub-folder Descriptions:
 - Capstone Dashboard: This folder holds the files used to create our Dashboard
 - Resources: This folder contains links to resources we used throughout our project
 - Background: This folder contains research on some of the studies and methodologies we have drawn upon
@@ -17,3 +17,14 @@ The Census API for 2015 data and select 2010 data, and the NHGIS time series dat
 - Grades: This folder contains a ReadME of the criteria for a successful project
 - Maps: This folder contains code for all our static maps used to determine our three narratives
 - Shapefiles: This folder contains the shapefiles for our project
+
+## Census Data Overview
+
+If you are new to Census data, you will find an overview of some concepts like datasets (Dicennual Census vs American Community Survey files), and variables (over 40,000 available!). 
+
+[https://www.census.gov/data/academy/courses/choroplethr.html](https://www.census.gov/data/academy/courses/choroplethr.html)
+
+This project uses the Census API package in R:
+
+[https://cran.r-project.org/web/packages/censusapi/vignettes/getting-started.html](https://cran.r-project.org/web/packages/censusapi/vignettes/getting-started.html)
+
